@@ -12,6 +12,7 @@ const roomIdInput = document.getElementById("roomId");
 const roleSelect = document.getElementById("role");
 const champSearchInput = document.getElementById("champ-search");
 const champGridEl = document.getElementById("champ-grid");
+const clearSearchBtn = document.getElementById("clear-search-btn");
 const lockInButton = document.getElementById("lock-in-button");
 
 const banSlotsCount = 2;
@@ -73,6 +74,17 @@ async function loadCharacters() {
   }
 }
 
+function preloadSplashArts(charList) {
+  console.log("Preloading splash arts...");
+  charList.forEach(char => {
+    if (char.background) {
+      const img = new Image();
+      img.src = char.background;
+    }
+  });
+  console.log("Splash art preloading initiated.");
+}
+
 function renderChampionGrid(charList) {
   champGridEl.innerHTML = "";
   charList.forEach(char => {
@@ -99,13 +111,27 @@ function renderChampionGrid(charList) {
     };
     champGridEl.appendChild(item);
   });
+  // Bắt đầu tải trước ảnh nền sau khi render lưới tướng
+  preloadSplashArts(charList);
 }
 
 champSearchInput.oninput = () => {
   const query = champSearchInput.value.toLowerCase();
+  if (query.length > 0) {
+    clearSearchBtn.style.display = 'block';
+  } else {
+    clearSearchBtn.style.display = 'none';
+  }
   const filtered = uniqueCharacters.filter(char => char.en.toLowerCase().includes(query));
   renderChampionGrid(filtered);
 };
+
+clearSearchBtn.onclick = () => {
+  champSearchInput.value = '';
+  // Kích hoạt sự kiện oninput để cập nhật lại lưới tướng và ẩn nút clear
+  const event = new Event('input', { bubbles: true });
+  champSearchInput.dispatchEvent(event);
+}
 
 lockInButton.onclick = () => {
   if (!preSelectedChamp || !myRoom) return;

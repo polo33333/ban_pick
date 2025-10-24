@@ -106,7 +106,12 @@
 
         </div>
         <div id="champ-selection-controls" class="mt-4" style="display: none;">
-          <input id="champ-search" class="form-control mb-3" placeholder="Search champion..." autocomplete="off">
+          <div class="position-relative">
+            <input id="champ-search" class="form-control mb-3" placeholder="Tìm kiếm tướng..." autocomplete="off">
+            <span id="clear-search-btn" class="position-absolute top-50 translate-middle-y" style="display: none; cursor: pointer; right: 15px; z-index: 100;">
+              <i class="bi bi-x-circle-fill text-secondary"></i>
+            </span>
+          </div>
           <div id="champ-grid-container">
             <div id="champ-grid" class="champ-grid"></div>
           </div>

@@ -234,6 +234,16 @@ div#vs-bans {
   padding: 8px;
   box-sizing: border-box;
   margin-bottom: 10px;
+  /* Thêm padding-right để văn bản không bị che bởi nút clear */
+  padding-right: 40px;
+}
+
+#clear-search-btn i:hover {
+  color: var(--bs-gray-600) !important;
+}
+
+#champ-search::placeholder {
+  color: #a9a9a9;
 }
 
 #splash-art-container {
