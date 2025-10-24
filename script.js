@@ -15,7 +15,7 @@ const champGridEl = document.getElementById("champ-grid");
 const lockInButton = document.getElementById("lock-in-button");
 
 const banSlotsCount = 2;
-const pickSlotsCount = 8;
+const pickSlotsCount = 9;
 const blueBansEl = document.getElementById("blue-bans");
 const redBansEl = document.getElementById("red-bans");
 const bluePicksEl = document.getElementById("blue-picks");

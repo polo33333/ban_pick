@@ -54,6 +54,8 @@ function generateDraftOrder(firstPlayerId, secondPlayerId, phase = 1) {
     { team: firstTeam, type: "pick" },
     { team: firstTeam, type: "pick" },
     { team: secondTeam, type: "pick" },
+    { team: secondTeam, type: "pick" },
+    { team: firstTeam, type: "pick" },
   ];
 
   return phase === 1 ? phase1 : phase2;
