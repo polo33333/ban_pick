@@ -19,8 +19,23 @@ const banSlotsCount = 2;
 const pickSlotsCount = 9;
 const blueBansEl = document.getElementById("blue-bans");
 const redBansEl = document.getElementById("red-bans");
-const bluePicksEl = document.getElementById("blue-picks");
-const redPicksEl = document.getElementById("red-picks");
+// Thay thế các div cũ bằng các div cho từng phase
+const bluePicksP1El = document.getElementById("blue-picks-p1");
+const bluePicksP2El = document.getElementById("blue-picks-p2");
+const redPicksP1El = document.getElementById("red-picks-p1");
+const redPicksP2El = document.getElementById("red-picks-p2");
+
+// --- Pre-Draft Selection Elements ---
+const preDraftViewEl = document.getElementById("pre-draft-selection-view");
+const teamsContainerEl = document.getElementById("teams-container");
+const confirmPreDraftBtn = document.getElementById("confirm-pre-draft-button");
+const preDraftP1GridEl = document.getElementById("pre-draft-p1-champ-grid");
+const preDraftP2GridEl = document.getElementById("pre-draft-p2-champ-grid");
+const preDraftP1SelectionsEl = document.getElementById("pre-draft-p1-selections");
+const preDraftP2SelectionsEl = document.getElementById("pre-draft-p2-selections");
+let myPreDraftSelection = [];
+const p1PreDraftDisplayEl = document.getElementById("p1-pre-draft-display");
+const p2PreDraftDisplayEl = document.getElementById("p2-pre-draft-display");
 
 for (let i = 0; i < banSlotsCount; i++) {
   const b = document.createElement("div");
@@ -29,10 +44,14 @@ for (let i = 0; i < banSlotsCount; i++) {
   r.className = "slot red"; redBansEl.appendChild(r);
 }
 for (let i = 0; i < pickSlotsCount; i++) {
+  // Tạo slot cho cả 2 phase, nhưng chỉ điền vào phase 1 ban đầu
   const b = document.createElement("div");
-  b.className = "slot blue"; bluePicksEl.appendChild(b);
+  b.className = "slot blue";
   const r = document.createElement("div");
-  r.className = "slot red"; redPicksEl.appendChild(r);
+  r.className = "slot red";
+  // 4 slot đầu cho phase 1, 5 slot sau cho phase 2
+  if (i < 4) { bluePicksP1El.appendChild(b); redPicksP1El.appendChild(r); }
+  else { bluePicksP2El.appendChild(b); redPicksP2El.appendChild(r); }
 }
 
 //function log(msg) { logEl.innerText += msg + "\n"; }
@@ -63,6 +82,10 @@ async function loadCharacters() {
       seen.add(char.en);
       return !duplicate;
     });
+
+    // Sắp xếp danh sách tướng theo thứ tự ABC dựa trên tên 'en'
+    uniqueCharacters.sort((a, b) => a.en.localeCompare(b.en));
+
     characters = uniqueCharacters.reduce((obj, char) => {
       obj[char.en] = char;
       return obj;
@@ -218,6 +241,10 @@ roleSelect.dispatchEvent(new Event('change'));
 // Tải dữ liệu tướng khi trang được load
 loadCharacters();
 
+// --- Pre-Draft Logic ---
+confirmPreDraftBtn.onclick = () => {
+  socket.emit("confirm-pre-draft", { roomId: myRoom });
+};
 socket.on("room-state", (room) => {
   const turnChanged = currentRoomState?.currentTurn !== room.currentTurn;
   // Hiển thị draft view và ẩn login view khi nhận được state
@@ -277,6 +304,85 @@ socket.on("room-state", (room) => {
 
   } else {
     preDraftControls.style.display = "none";
+  }
+
+  // --- Logic hiển thị Pre-Draft Selection ---
+  const isPreDraftPhase = room.state === 'pre-draft-selection';
+  if (isPreDraftPhase) {
+    preDraftViewEl.style.display = 'block';
+    teamsContainerEl.style.display = 'none'; // Ẩn giao diện draft chính
+    champSelectionControlsEl.style.display = 'none'; // Ẩn phần chọn tướng chính
+
+    const playerOrder = room.playerOrder || [];
+    const p1_id = playerOrder[0];
+    const p2_id = playerOrder[1];
+
+    // Cập nhật tên người chơi
+    document.getElementById('pre-draft-p1-name').innerText = p1_id ? (truncateName(room.playerHistory[p1_id]?.name) || 'Player 1') : 'Đang đợi...';
+    document.getElementById('pre-draft-p2-name').innerText = p2_id ? (truncateName(room.playerHistory[p2_id]?.name) || 'Player 2') : 'Đang đợi...';
+
+    // Xác định grid và selection area của người chơi local
+    const isPlayer1 = socket.id === p1_id;
+    const localGridEl = isPlayer1 ? preDraftP1GridEl : preDraftP2GridEl;
+    const remoteGridEl = isPlayer1 ? preDraftP2GridEl : preDraftP1GridEl;
+    const localSelectionsEl = isPlayer1 ? preDraftP1SelectionsEl : preDraftP2SelectionsEl;
+    const remoteSelectionsEl = isPlayer1 ? preDraftP2SelectionsEl : preDraftP1SelectionsEl;
+
+    // Render lưới tướng cho người chơi local
+    const localSelections = room.preDraftSelections?.[socket.id] || [];
+    const opponentId = isPlayer1 ? p2_id : p1_id;
+    const opponentSelections = room.preDraftSelections?.[opponentId] || [];
+    renderPreDraftChampionGrid(localGridEl, localSelections, opponentSelections);
+
+    // Hiển thị placeholder cho đối thủ nếu họ chưa vào hoặc là host
+    // if (p2_id) {
+    //   remoteGridEl.innerHTML = '<div class="text-white-50 text-center">Lựa chọn của đối thủ</div>';
+    // } else {
+    //   preDraftP2GridEl.innerHTML = '<div class="text-white-50 text-center">Đang đợi đối thủ...</div>';
+    // }
+
+    // Cập nhật hiển thị các tướng đã chọn
+    if (p1_id) updatePreDraftSelections(room.preDraftSelections?.[p1_id] || [], preDraftP1SelectionsEl);
+    if (p2_id) updatePreDraftSelections(room.preDraftSelections?.[p2_id] || [], preDraftP2SelectionsEl);
+
+    // Cập nhật trạng thái nút xác nhận
+    if (room.preDraftReady?.[socket.id]) {
+      confirmPreDraftBtn.disabled = true;
+      confirmPreDraftBtn.innerText = 'Đã xác nhận';
+      confirmPreDraftBtn.classList.remove('btn-success');
+      confirmPreDraftBtn.classList.add('btn-secondary');
+    } else {
+      confirmPreDraftBtn.disabled = false;
+      confirmPreDraftBtn.innerText = 'Xác nhận lựa chọn';
+      confirmPreDraftBtn.classList.add('btn-success');
+      confirmPreDraftBtn.classList.remove('btn-secondary');
+    }
+
+    // Nếu là host, chỉ xem
+    if (myRole === 'host') {
+      document.getElementById('pre-draft-p1-champ-grid-container').style.display = 'none';
+      document.getElementById('pre-draft-p2-champ-grid-container').style.display = 'none';
+      confirmPreDraftBtn.style.display = 'none';
+      preDraftP1GridEl.innerHTML = '<div class="text-white-50 text-center">Player 1 đang chọn...</div>';
+      preDraftP2GridEl.innerHTML = '<div class="text-white-50 text-center">Player 2 đang chọn...</div>';
+    }
+
+  } else {
+    preDraftViewEl.style.display = 'none';
+    teamsContainerEl.style.display = 'flex'; // Hiện lại giao diện draft chính
+  }
+  // --- Kết thúc logic Pre-Draft ---
+
+  // Nếu đang trong pre-draft, không thực hiện logic render draft chính bên dưới
+  if (isPreDraftPhase) {
+    return;
+  }
+
+  // --- Cập nhật hiển thị Pre-Draft Selections trên màn hình chính ---
+  if (room.preDraftSelections) {
+    const playerOrder = room.playerOrder || [];
+    updatePreDraftSelections(room.preDraftSelections?.[playerOrder[0]] || [], p1PreDraftDisplayEl);
+    updatePreDraftSelections(room.preDraftSelections?.[playerOrder[1]] || [], p2PreDraftDisplayEl);
   }
 
   // Cập nhật tên 2 team (luôn cập nhật nếu có player)
@@ -417,10 +523,12 @@ socket.on("room-state", (room) => {
   }
 
   const turn = room.nextTurn;
-  const blueBanSlots = blueBansEl.children;
-  const bluePickSlots = bluePicksEl.children;
-  const redBanSlots = redBansEl.children;
-  const redPickSlots = redPicksEl.children;
+  const blueBanSlots = blueBansEl.children; 
+  const redBanSlots = redBansEl.children; 
+  // Gộp các slot từ 2 phase lại để xử lý chung
+  const bluePickSlots = [...bluePicksP1El.children, ...bluePicksP2El.children];
+  const redPickSlots = [...redPicksP1El.children, ...redPicksP2El.children];
+
 
   // Xóa highlight khỏi tất cả các ô
   for (let i = 0; i < banSlotsCount; i++) {
@@ -433,9 +541,23 @@ socket.on("room-state", (room) => {
   }
 
   // Cập nhật trạng thái disabled cho lưới tướng
-  const pickedChamps = new Set(room.actions.map(a => a.champ));
+  const disabledChamps = new Set(room.actions.map(a => a.champ));
+
+  // Tìm các tướng trùng lặp trong pre-draft
+  if (room.preDraftSelections) {
+    const playerSelections = Object.values(room.preDraftSelections);
+    if (playerSelections.length === 2) {
+      const [p1_selections, p2_selections] = playerSelections;
+      const p1_set = new Set(p1_selections);
+      p2_selections.forEach(champ => {
+        if (p1_set.has(champ)) {
+          disabledChamps.add(champ); // Thêm tướng trùng lặp vào danh sách vô hiệu hóa
+        }
+      });
+    }
+  }
   document.querySelectorAll('.champ-item').forEach(item => {
-    if (pickedChamps.has(item.dataset.name)) {
+    if (disabledChamps.has(item.dataset.name)) {
       item.classList.add('disabled');
     } else {
       item.classList.remove('disabled');
@@ -566,7 +688,7 @@ function updateSplashArt(champName, lockedActionType = null) {
     splashImg.style.display = 'block'; // Hiện ảnh
     countdownSvg.style.display = 'block';
     if (turn) {
-      turnText = `${truncateName(currentRoomState.players[turn.team]?.name) || '???'}: ${(turn.type).toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;// ${charData.en}`;
+      turnText = `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${(turn.type).toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;// ${charData.en}`;
     } else if (lockedActionType) {
       // Khi draft kết thúc, hiển thị hành động cuối cùng
       const lastAction = currentRoomState.actions[currentRoomState.actions.length - 1];
@@ -585,12 +707,53 @@ function updateSplashArt(champName, lockedActionType = null) {
     // Xử lý cho trường hợp SKIPPED hoặc không tìm thấy tướng
     const turn = currentRoomState.nextTurn;
     splashImg.src = '';
-    splashNameEl.innerText = turn ? `${truncateName(currentRoomState.players[turn.team]?.name) || '???'}: ${turn.type.toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}` : (lockedActionType || 'DRAFT COMPLETE');
+    splashNameEl.innerText = turn ? `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${turn.type.toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}` : (lockedActionType || 'DRAFT COMPLETE');
     const playerOrder = currentRoomState.playerOrder || [];
     splashNameEl.style.color = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
     splashImg.style.display = 'none'; // Ẩn ảnh
     countdownSvg.style.display = 'block'; // Vẫn hiện vòng tròn
   }
+}
+
+function renderPreDraftChampionGrid(gridElement, localSelections, opponentSelections) {
+  gridElement.innerHTML = "";
+
+  uniqueCharacters.forEach(char => {
+    const item = document.createElement('div');
+    item.className = 'champ-item';
+    item.dataset.name = char.en;
+    item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${char.en}</div>`;
+
+    if (localSelections.includes(char.en)) {
+      item.classList.add('pre-draft-selected');
+    }
+
+    item.onclick = () => {
+      // Logic cũ chặn chọn tướng của đối thủ đã được gỡ bỏ
+      const isSelected = localSelections.includes(char.en);
+      if (isSelected) {
+        myPreDraftSelection = localSelections.filter(c => c !== char.en);
+      } else {
+        myPreDraftSelection.push(char.en);
+      }
+      socket.emit('pre-draft-select', { roomId: myRoom, champs: myPreDraftSelection });
+    };
+    gridElement.appendChild(item);
+  });
+}
+
+function updatePreDraftSelections(selections, containerElement) {
+  containerElement.innerHTML = "";
+  selections.forEach(champName => {
+    const char = characters[champName];
+    if (!char) return;
+    // Thêm div cho tên tướng
+    containerElement.innerHTML += `
+      <div class="champ-item" title="${char.en}">
+        <img src="${char.icon}" alt="${char.en}">
+        <div class="pre-draft-display-champ-name">${char.en}</div>
+      </div>`;
+  });
 }
 socket.on("draft-finished", (data) => {
   lockInButton.disabled = true;

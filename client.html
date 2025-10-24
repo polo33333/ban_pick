@@ -38,16 +38,18 @@
       </div>
     </div>
   </div>
-
   <!-- Draft View -->
   <div id="draft-view" class="container mt-3" style="display: none;">
-
     <!-- Host Controls Offcanvas -->
-    <button id="host-controls-toggle" class="btn btn-warning position-fixed top-0 end-0 m-3 rounded-circle d-flex justify-content-center align-items-center d-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#host-controls-panel" aria-controls="host-controls-panel" style="z-index: 1050;" aria-label="Bảng điều khiển">
+    <button id="host-controls-toggle"
+      class="btn btn-warning position-fixed top-0 end-0 m-3 rounded-circle d-flex justify-content-center align-items-center d-none"
+      type="button" data-bs-toggle="offcanvas" data-bs-target="#host-controls-panel" aria-controls="host-controls-panel"
+      style="z-index: 1050;" aria-label="Bảng điều khiển">
       <i class="bi bi-gear-fill fs-5"></i>
     </button>
 
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="host-controls-panel" aria-labelledby="host-controls-panel-label">
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="host-controls-panel"
+      aria-labelledby="host-controls-panel-label">
       <div class="offcanvas-header">
         <h5 class="offcanvas-title" id="host-controls-panel-label">👉 <b>Bảng điều khiển</b></h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -73,19 +75,62 @@
 
     <div id="first-pick-status" class="text-center mb-2" style="font-weight: bold; color: white;"></div>
 
+    <!-- Pre-Draft Selection View -->
+    <div id="pre-draft-selection-view" style="display: none;">
+      <h4 class="text-center text-white mb-3">CHỌN TƯỚNG KHÔNG SỞ HỮU</h4>
+      <div class="row">
+        <!-- Player 1 Selection -->
+        <div class="col-6">
+          <div class="pre-draft-player-card">
+            <h5 id="pre-draft-p1-name" class="text-center">Player 1</h5>
+            <div id="pre-draft-p1-selections" class="pre-draft-selections-grid"></div>
+            <div id="pre-draft-p1-champ-grid-container" class="pre-draft-champ-grid-container">
+              <div id="pre-draft-p1-champ-grid" class="champ-grid"></div>
+            </div>
+          </div>
+        </div>
+        <!-- Player 2 Selection -->
+        <div class="col-6">
+          <div class="pre-draft-player-card">
+            <h5 id="pre-draft-p2-name" class="text-center">Player 2</h5>
+            <div id="pre-draft-p2-selections" class="pre-draft-selections-grid"></div>
+            <div id="pre-draft-p2-champ-grid-container" class="pre-draft-champ-grid-container">
+              <div id="pre-draft-p2-champ-grid" class="champ-grid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="d-grid gap-2 col-4 mx-auto mt-3">
+        <button id="confirm-pre-draft-button" class="btn btn-success btn-lg">Xác nhận lựa chọn</button>
+      </div>
+    </div>
+
     <div id="teams-container" class="row align-items-start">
+      <!-- Player 1 Unowned Champs (Far Left) -->
+      <div class="col-1">
+        <div class="pre-draft-display-container">
+          <h6 class="pre-draft-display-title">Không sở hữu</h6>
+          <div id="p1-pre-draft-display" class="pre-draft-display-grid"></div>
+        </div>
+      </div>
+
       <!-- Blue Team Picks (Left Column) -->
       <div id="player1-container" class="col-2">
         <h3 style="color: blue;" class="text-center">Player 1</h3>
-        <div class="picks-column" id="blue-picks"></div>
+        <div class="picks-container">
+          <div class="picks-column phase-1" id="blue-picks-p1"></div>
+          <div class="picks-column phase-2" id="blue-picks-p2"></div>
+        </div>
       </div>
 
       <!-- Bans (Center Column) -->
-      <div class="col-8 text-center">
+      <!-- Giảm từ col-8 xuống col-6 để nhường chỗ cho 2 cột mới -->
+      <div class="col-6 text-center">
         <h4 style="color: white;">CẤM - CHỌN</h4>
         <div class="team justify-content-center mb-4" id="pannel-bans">
           <div class="team mt-2" id="blue-bans"></div>
-          <div class="team mt-2" id="vs-bans"><img src="/assets/vs.png" alt="VS" style="width: 60px; filter: drop-shadow(2px 2px 5px #000);"></div>
+          <div class="team mt-2" id="vs-bans"><img src="/assets/vs.png" alt="VS"
+              style="width: 60px; filter: drop-shadow(2px 2px 5px #000);"></div>
           <div class="team mt-2" id="red-bans"></div>
         </div>
 
@@ -101,14 +146,15 @@
             <div id="countdown-text"></div>
             <img id="splash-art-img" src="" alt="Selected Champion Splash Art">
           </div>
-          <h4 id="splash-art-name"
-            style="position: relative; z-index: 3; text-align: center; text-shadow: rgb(0, 0, 0) 1px 1px 2px;"></h4>
+          <h2 id="splash-art-name"
+            style="position: relative; z-index: 3; text-align: center; text-shadow: rgb(0, 0, 0) 1px 1px 2px;"></h2>
 
         </div>
         <div id="champ-selection-controls" class="mt-4" style="display: none;">
           <div class="position-relative">
             <input id="champ-search" class="form-control mb-3" placeholder="Tìm kiếm tướng..." autocomplete="off">
-            <span id="clear-search-btn" class="position-absolute top-50 translate-middle-y" style="display: none; cursor: pointer; right: 15px; z-index: 100;">
+            <span id="clear-search-btn" class="position-absolute top-50 translate-middle-y"
+              style="display: none; cursor: pointer; right: 15px; z-index: 100;">
               <i class="bi bi-x-circle-fill text-secondary"></i>
             </span>
           </div>
@@ -124,15 +170,20 @@
       <!-- Red Team Picks (Right Column) -->
       <div id="player2-container" class="col-2">
         <h3 style="color: red;" class="text-center">Player 2</h3>
-        <div class="picks-column" id="red-picks"></div>
+        <div class="picks-container">
+          <div class="picks-column phase-1" id="red-picks-p1"></div>
+          <div class="picks-column phase-2" id="red-picks-p2"></div>
+        </div>
+      </div>
+
+      <!-- Player 2 Unowned Champs (Far Right) -->
+      <div class="col-1">
+        <div class="pre-draft-display-container">
+          <h6 class="pre-draft-display-title">Không sở hữu</h6>
+          <div id="p2-pre-draft-display" class="pre-draft-display-grid"></div>
+        </div>
       </div>
     </div>
-
-
-    <!-- <div id="log-container" class="mt-4" style="display: none;">
-      <h3>Draft Actions Log</h3>
-      <pre id="log" class="bg-dark text-white p-3 rounded"></pre>
-    </div> -->
 
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"

@@ -3,7 +3,7 @@ body {
 }
 
 .container {
-  max-width: 1400px;
+  max-width: 1600px;
 }
 
 .team {
@@ -15,7 +15,7 @@ margin: 15px 10px;
 }
 
 .slot {
-  width: 150px;
+  width: 130px;
   height: 110px;
   border: 1px solid #ccc;
   display: flex;
@@ -122,7 +122,7 @@ margin: 15px 10px;
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
   font-size: 14px;
-  font-weight: normal;
+  /* font-weight: normal; */
   text-align: center;
   padding: 3px 0;
 }
@@ -253,7 +253,7 @@ div#vs-bans {
   position: relative;
   width: 280px;
   /* Kích thước của container */
-  height: 280px;
+  height: 250px;
   margin-left: auto;
   margin-right: auto;
 }
@@ -379,16 +379,109 @@ div#vs-bans {
   background-color: rgba(var(--bs-light-rgb), var(--bs-bg-opacity)) !important;
 }
 
+.picks-container {
+  display: flex;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 1rem;
+}
+
 .picks-column {
   display: flex;
   flex-direction: column;
   gap: 5px;
   align-items: center;
-  margin-top: 1rem;
 }
 
 #host-controls-toggle.btn.rounded-circle {
     width: 50px;
     height: 50px;
     padding: 0;
+}
+
+/* Pre-Draft Selection Styles */
+#pre-draft-selection-view {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.pre-draft-player-card {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid #555;
+  border-radius: 10px;
+  padding: 15px;
+}
+
+.pre-draft-player-card h5 {
+  color: white;
+  font-weight: bold;
+}
+
+.pre-draft-selections-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 5px;
+  margin-bottom: 15px;
+  min-height: 50px; /* Reserve space */
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.pre-draft-selections-grid .champ-item img {
+  width: 80px;
+  height: 80px;
+}
+
+.pre-draft-champ-grid-container {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 5px; /* for scrollbar */
+}
+
+.champ-item.pre-draft-selected img {
+  border: 3px solid #0D6EFD; /* Bootstrap primary blue */
+  box-shadow: 0 0 10px #0D6EFD;
+}
+
+/* Pre-Draft Display on Main Screen */
+.pre-draft-display-container {
+  background-color: rgba(0, 0, 0, 0.3);
+  border: 1px solid #444;
+  border-radius: 8px;
+  padding: 8px;
+  margin-bottom: 1rem;
+}
+
+.pre-draft-display-title {
+  color: #e0e0e0;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.pre-draft-display-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
+  gap: 4px;
+}
+
+.pre-draft-display-grid .champ-item img {
+  width: 45px;
+  height: 45px;
+}
+
+/* Style for the name under the unowned champ icons */
+.pre-draft-display-champ-name {
+  font-size: 12px;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+  text-align: center;
 }

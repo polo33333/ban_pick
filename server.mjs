@@ -68,6 +68,9 @@ function broadcastRoomState(roomId) {
 
   const safeRoom = {
     id: room.id,
+    state: room.state,
+    preDraftSelections: room.preDraftSelections,
+    preDraftReady: room.preDraftReady,
     actions: room.actions,
     currentTurn: room.currentTurn,
     nextTurn: room.nextTurn,
@@ -198,6 +201,9 @@ io.on("connection", socket => {
     // Tạo phòng nếu chưa có
     if (role === 'host' && !rooms[roomId]) {
         rooms[roomId] = {
+            state: 'waiting', // 'waiting', 'pre-draft-selection', 'drafting', 'finished'
+            preDraftSelections: {}, // { socketId: ['champ1', 'champ2'] }
+            preDraftReady: {}, // { socketId: true }
             id: roomId,
             actions: [],
             currentTurn: -1,
@@ -265,6 +271,16 @@ io.on("connection", socket => {
           room.nextTurn.team = newSocketId;
         }
 
+        // 5. Cập nhật preDraftSelections và preDraftReady (FIX)
+        if (room.preDraftSelections && room.preDraftSelections[oldSocketId]) {
+          room.preDraftSelections[newSocketId] = room.preDraftSelections[oldSocketId];
+          delete room.preDraftSelections[oldSocketId];
+        }
+        if (room.preDraftReady && room.preDraftReady[oldSocketId]) {
+          room.preDraftReady[newSocketId] = room.preDraftReady[oldSocketId];
+          delete room.preDraftReady[oldSocketId];
+        }
+
       } else if (Object.keys(room.players).length >= 2) {
         return socket.emit("draft-error", { message: "Room is full." });
       } else {
@@ -280,12 +296,20 @@ io.on("connection", socket => {
       room.hostId = socket.id;
     }
 
+    // Nếu có ít nhất 1 người chơi và đang ở trạng thái chờ, chuyển sang pre-draft
+    // Người chơi vào sau sẽ thấy phòng đã ở sẵn trạng thái này.
+    if (room.playerOrder.length >= 1 && room.state === 'waiting') {
+      room.state = 'pre-draft-selection';
+      console.log(`Room ${roomId} is now in pre-draft selection phase.`);
+    }
+
     broadcastRoomState(roomId);
   });
 
   socket.on("choose-first", ({ roomId, team }) => {
     const room = rooms[roomId];
-    if (!room || room.hostId !== socket.id || room.draftOrder.length > 0) return;
+    // Chỉ cho phép bắt đầu khi đã qua giai đoạn pre-draft
+    if (!room || room.hostId !== socket.id || room.draftOrder.length > 0 || room.state === 'pre-draft-selection') return;
 
     if (room.playerOrder.length !== 2) {
       return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi để bắt đầu." });
@@ -298,6 +322,7 @@ io.on("connection", socket => {
     room.currentTurn = 0;
     room.phase = 1;
     room.nextTurn = room.draftOrder[0];
+    room.state = 'drafting'; // Chuyển trạng thái sang đang draft
     
     startCountdown(roomId);
     broadcastRoomState(roomId);
@@ -322,6 +347,35 @@ io.on("connection", socket => {
 
     // Gửi cập nhật chọn nháp cho những người khác trong phòng (bao gồm cả host)
     socket.to(roomId).emit("pre-select-update", { champ });
+  });
+
+  // --- Pre-Draft Handlers ---
+  socket.on('pre-draft-select', ({ roomId, champs }) => {
+    const room = rooms[roomId];
+    if (!room || room.state !== 'pre-draft-selection') return;
+
+    if (!room.preDraftSelections) room.preDraftSelections = {};
+    room.preDraftSelections[socket.id] = champs;
+
+    // Gửi lại state cho mọi người để cập nhật UI
+    broadcastRoomState(roomId);
+  });
+
+  socket.on('confirm-pre-draft', ({ roomId }) => {
+    const room = rooms[roomId];
+    if (!room || room.state !== 'pre-draft-selection') return;
+
+    if (!room.preDraftReady) room.preDraftReady = {};
+    room.preDraftReady[socket.id] = true;
+
+    // Kiểm tra xem cả 2 người chơi đã tham gia VÀ đã sẵn sàng chưa
+    const allPlayersIn = room.playerOrder.length === 2;
+    const allPlayersReady = allPlayersIn && room.playerOrder.every(id => room.preDraftReady[id]);
+    if (allPlayersReady) {
+      room.state = 'drafting'; // Chuyển sang trạng thái draft chính
+    }
+
+    broadcastRoomState(roomId);
   });
 
   // --- Host Control Handlers ---
@@ -379,6 +433,11 @@ io.on("connection", socket => {
     const room = rooms[roomId];
     if (room && room.hostId === socket.id) {
       // Host rời đi, đóng phòng
+      // Xóa người chơi khỏi danh sách active
+      if (room.players) {
+        Object.keys(room.players).forEach(playerId => handlePlayerDisconnect(io.sockets.sockets.get(playerId)));
+      }
+
       io.to(roomId).emit("host-left");
       clearInterval(room.timer);
       delete rooms[roomId];
@@ -391,7 +450,7 @@ io.on("connection", socket => {
   function handlePlayerDisconnect(socket) {
     const roomId = socket.data.roomId;
     const room = rooms[roomId];
-    if (!room) return;
+    if (!room || !socket) return;
 
     // Xóa người chơi khỏi danh sách active
     delete room.players[socket.id];
