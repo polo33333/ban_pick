@@ -250,9 +250,12 @@ div#vs-bans {
 
 .center-block {
   min-height: 280px;
-  background: antiquewhite;
+  background: rgb(255 255 255 / 80%); /* Giảm độ mờ của nền */
   border-radius: 10px;
   padding: 10px 15px;
+  display: flex; /* Bật Flexbox */
+  flex-direction: column; /* Xếp các mục theo chiều dọc */
+  justify-content: center; /* Căn giữa các mục theo chiều dọc */
 }
 
 #countdown-svg {
@@ -272,7 +275,6 @@ div#vs-bans {
 #splash-art-img {
   max-height: 250px;
   border-radius: 8px;
-  position: relative;
   /* Đưa ảnh lên trên SVG */
   z-index: 2;
   /* Căn giữa ảnh trong container */
@@ -284,13 +286,10 @@ div#vs-bans {
 
 #splash-art-name {
   font-size: 18px;
-  position: relative;
-  top: 15px;
-  /* Đặt vị trí ở trên cùng, bên trong container */
-  left: 0;
-  right: 0;
-  z-index: 3;
   text-align: center;
+  width: 100%;
+  margin-top: auto; /* Quan trọng: Đẩy phần tử này xuống dưới cùng */
+  padding-bottom: 10px; /* Thêm một chút khoảng cách ở dưới */
 }
 
 #lock-in-button {
@@ -373,7 +372,7 @@ div#vs-bans {
 .picks-column {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
   align-items: center;
   margin-top: 1rem;
 }

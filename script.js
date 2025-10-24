@@ -540,7 +540,7 @@ function updateSplashArt(champName, lockedActionType = null) {
     splashImg.style.display = 'block'; // Hiện ảnh
     countdownSvg.style.display = 'block';
     if (turn) {
-      turnText = `${truncateName(currentRoomState.players[turn.team]?.name) || '???'}: ${(turn.type).toUpperCase() =="PICK" ? "CHỌN" : "CẤM"} ${charData.en}`;
+      turnText = `${truncateName(currentRoomState.players[turn.team]?.name) || '???'}: ${(turn.type).toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;// ${charData.en}`;
     } else if (lockedActionType) {
       // Khi draft kết thúc, hiển thị hành động cuối cùng
       const lastAction = currentRoomState.actions[currentRoomState.actions.length - 1];
