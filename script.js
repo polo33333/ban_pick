@@ -29,10 +29,10 @@ const redPicksP2El = document.getElementById("red-picks-p2");
 const preDraftViewEl = document.getElementById("pre-draft-selection-view");
 const teamsContainerEl = document.getElementById("teams-container");
 const confirmPreDraftBtn = document.getElementById("confirm-pre-draft-button");
-const preDraftP1GridEl = document.getElementById("pre-draft-p1-champ-grid");
-const preDraftP2GridEl = document.getElementById("pre-draft-p2-champ-grid");
-const preDraftP1SelectionsEl = document.getElementById("pre-draft-p1-selections");
-const preDraftP2SelectionsEl = document.getElementById("pre-draft-p2-selections");
+const preDraftMyGridEl = document.getElementById("pre-draft-my-champ-grid");
+const preDraftMySelectionsEl = document.getElementById("pre-draft-my-selections");
+const preDraftPlayerNameEl = document.getElementById("pre-draft-player-name");
+
 let myPreDraftSelection = [];
 const p1PreDraftDisplayEl = document.getElementById("p1-pre-draft-display");
 const p2PreDraftDisplayEl = document.getElementById("p2-pre-draft-display");
@@ -308,42 +308,32 @@ socket.on("room-state", (room) => {
 
   // --- Logic hiển thị Pre-Draft Selection ---
   const isPreDraftPhase = room.state === 'pre-draft-selection';
-  if (isPreDraftPhase) {
+  // Hiển thị pre-draft nếu: đang trong phase pre-draft, user là player, VÀ user chưa sẵn sàng.
+  const shouldShowPreDraft = isPreDraftPhase && myRole === 'player' && !room.preDraftReady?.[socket.id];
+
+  if (shouldShowPreDraft) {
     preDraftViewEl.style.display = 'block';
     teamsContainerEl.style.display = 'none'; // Ẩn giao diện draft chính
     champSelectionControlsEl.style.display = 'none'; // Ẩn phần chọn tướng chính
+    // Nếu là host, chỉ xem
+    if (myRole === 'host') {
+      confirmPreDraftBtn.style.display = 'none';
+    }
 
-    const playerOrder = room.playerOrder || [];
-    const p1_id = playerOrder[0];
-    const p2_id = playerOrder[1];
-
-    // Cập nhật tên người chơi
-    document.getElementById('pre-draft-p1-name').innerText = p1_id ? (truncateName(room.playerHistory[p1_id]?.name) || 'Player 1') : 'Đang đợi...';
-    document.getElementById('pre-draft-p2-name').innerText = p2_id ? (truncateName(room.playerHistory[p2_id]?.name) || 'Player 2') : 'Đang đợi...';
-
-    // Xác định grid và selection area của người chơi local
-    const isPlayer1 = socket.id === p1_id;
-    const localGridEl = isPlayer1 ? preDraftP1GridEl : preDraftP2GridEl;
-    const remoteGridEl = isPlayer1 ? preDraftP2GridEl : preDraftP1GridEl;
-    const localSelectionsEl = isPlayer1 ? preDraftP1SelectionsEl : preDraftP2SelectionsEl;
-    const remoteSelectionsEl = isPlayer1 ? preDraftP2SelectionsEl : preDraftP1SelectionsEl;
+    // Cập nhật tên người chơi của chính mình
+    const myPlayerData = room.players[socket.id];
+    if (myPlayerData) {
+      preDraftPlayerNameEl.innerText = myPlayerData.name;
+    }
 
     // Render lưới tướng cho người chơi local
     const localSelections = room.preDraftSelections?.[socket.id] || [];
-    const opponentId = isPlayer1 ? p2_id : p1_id;
-    const opponentSelections = room.preDraftSelections?.[opponentId] || [];
-    renderPreDraftChampionGrid(localGridEl, localSelections, opponentSelections);
-
-    // Hiển thị placeholder cho đối thủ nếu họ chưa vào hoặc là host
-    // if (p2_id) {
-    //   remoteGridEl.innerHTML = '<div class="text-white-50 text-center">Lựa chọn của đối thủ</div>';
-    // } else {
-    //   preDraftP2GridEl.innerHTML = '<div class="text-white-50 text-center">Đang đợi đối thủ...</div>';
-    // }
+    // Không cần opponentSelections nữa vì không hiển thị
+    renderPreDraftChampionGrid(preDraftMyGridEl, localSelections, []);
 
     // Cập nhật hiển thị các tướng đã chọn
-    if (p1_id) updatePreDraftSelections(room.preDraftSelections?.[p1_id] || [], preDraftP1SelectionsEl);
-    if (p2_id) updatePreDraftSelections(room.preDraftSelections?.[p2_id] || [], preDraftP2SelectionsEl);
+    updatePreDraftSelections(localSelections, preDraftMySelectionsEl);
+
 
     // Cập nhật trạng thái nút xác nhận
     if (room.preDraftReady?.[socket.id]) {
@@ -353,18 +343,9 @@ socket.on("room-state", (room) => {
       confirmPreDraftBtn.classList.add('btn-secondary');
     } else {
       confirmPreDraftBtn.disabled = false;
-      confirmPreDraftBtn.innerText = 'Xác nhận lựa chọn';
+      confirmPreDraftBtn.innerText = 'Xác nhận';
       confirmPreDraftBtn.classList.add('btn-success');
       confirmPreDraftBtn.classList.remove('btn-secondary');
-    }
-
-    // Nếu là host, chỉ xem
-    if (myRole === 'host') {
-      document.getElementById('pre-draft-p1-champ-grid-container').style.display = 'none';
-      document.getElementById('pre-draft-p2-champ-grid-container').style.display = 'none';
-      confirmPreDraftBtn.style.display = 'none';
-      preDraftP1GridEl.innerHTML = '<div class="text-white-50 text-center">Player 1 đang chọn...</div>';
-      preDraftP2GridEl.innerHTML = '<div class="text-white-50 text-center">Player 2 đang chọn...</div>';
     }
 
   } else {
@@ -373,8 +354,8 @@ socket.on("room-state", (room) => {
   }
   // --- Kết thúc logic Pre-Draft ---
 
-  // Nếu đang trong pre-draft, không thực hiện logic render draft chính bên dưới
-  if (isPreDraftPhase) {
+  // Nếu player đang ở màn hình pre-draft, không render phần còn lại.
+  if (shouldShowPreDraft) {
     return;
   }
 
@@ -409,17 +390,14 @@ socket.on("room-state", (room) => {
     }
 
     // Cập nhật vòng tròn countdown
-    const countdownCircle = document.getElementById('countdown-circle');
-    if (countdownCircle && room.countdown != null && room.nextTurn) {
-      const radius = countdownCircle.r.baseVal.value;
-      const circumference = 2 * Math.PI * radius;
+    const countdownBar = document.getElementById('countdown-bar');
+    if (countdownBar && room.countdown != null && room.nextTurn) {
       const totalTime = room.countdownDuration || 30;
-      const offset = circumference - (room.countdown / totalTime) * circumference;
-      countdownCircle.style.strokeDasharray = `${circumference} ${circumference}`;
-      countdownCircle.style.strokeDashoffset = offset;
-    } else if (countdownCircle) {
+      const scale = room.countdown / totalTime; // Giá trị từ 0 đến 1
+      countdownBar.style.transform = `scaleX(${scale})`;
+    } else if (countdownBar) {
       // Reset khi không có lượt
-      countdownCircle.style.strokeDashoffset = 0;
+      countdownBar.style.transform = 'scaleX(1)';
     }
   }
 
@@ -498,11 +476,11 @@ socket.on("room-state", (room) => {
     socket.emit("pre-select-champ", { roomId: myRoom, champ: null }); // Gửi tín hiệu xóa chọn nháp
 
     // Reset vòng tròn countdown ngay lập tức
-    const countdownCircle = document.getElementById('countdown-circle');
-    countdownCircle.style.transition = 'none'; // Tắt hiệu ứng chuyển tiếp
-    countdownCircle.style.strokeDashoffset = 0;
-    countdownCircle.offsetHeight; // Kích hoạt reflow để áp dụng thay đổi ngay
-    countdownCircle.style.transition = 'stroke-dashoffset 1s linear'; // Bật lại hiệu ứng
+    const countdownBar = document.getElementById('countdown-bar');
+    countdownBar.style.transition = 'none'; // Tắt hiệu ứng chuyển tiếp
+    countdownBar.style.transform = 'scaleX(1)';
+    countdownBar.offsetHeight; // Kích hoạt reflow để áp dụng thay đổi ngay
+    countdownBar.style.transition = 'transform 1s linear'; // Bật lại hiệu ứng
   }
 
   if (room.nextTurn) {
@@ -523,8 +501,8 @@ socket.on("room-state", (room) => {
   }
 
   const turn = room.nextTurn;
-  const blueBanSlots = blueBansEl.children; 
-  const redBanSlots = redBansEl.children; 
+  const blueBanSlots = [...blueBansEl.children]; 
+  const redBanSlots = [...redBansEl.children]; 
   // Gộp các slot từ 2 phase lại để xử lý chung
   const bluePickSlots = [...bluePicksP1El.children, ...bluePicksP2El.children];
   const redPickSlots = [...redPicksP1El.children, ...redPicksP2El.children];
@@ -539,6 +517,22 @@ socket.on("room-state", (room) => {
     bluePickSlots[i].classList.remove("highlight");
     redPickSlots[i].classList.remove("highlight");
   }
+
+  // Logic gán số thứ tự cho các ô pick của mỗi người chơi từ 1 đến 9
+  bluePickSlots.forEach((slot, index) => {
+    slot.dataset.turnNumber = index + 1;
+  });
+  redPickSlots.forEach((slot, index) => {
+    slot.dataset.turnNumber = index + 1;
+  });
+  // Gán số thứ tự cho các ô ban
+  blueBanSlots.forEach((slot, index) => {
+    slot.dataset.turnNumber = index + 1;
+  });
+  redBanSlots.forEach((slot, index) => {
+    slot.dataset.turnNumber = index + 1;
+  });
+
 
   // Cập nhật trạng thái disabled cho lưới tướng
   const disabledChamps = new Set(room.actions.map(a => a.champ));
@@ -679,22 +673,18 @@ socket.on("pre-select-update", ({ champ }) => {
 function updateSplashArt(champName, lockedActionType = null) {
   const splashImg = document.getElementById('splash-art-img');
   const splashNameEl = document.getElementById('splash-art-name');
-  const countdownSvg = document.getElementById('countdown-svg');
   const charData = characters[champName];
   const turn = currentRoomState.nextTurn;
 
   if (charData) {
     let turnText = '';
     splashImg.style.display = 'block'; // Hiện ảnh
-    countdownSvg.style.display = 'block';
     if (turn) {
       turnText = `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${(turn.type).toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;// ${charData.en}`;
     } else if (lockedActionType) {
       // Khi draft kết thúc, hiển thị hành động cuối cùng
       const lastAction = currentRoomState.actions[currentRoomState.actions.length - 1];
       turnText = "";//`${lastAction.team.toUpperCase()} ${lastAction.type.toUpperCase()}`;
-      splashImg.style.display = 'None'; // Hiện ảnh
-      countdownSvg.style.display = 'None';
     }
     const playerOrder = currentRoomState.playerOrder || [];
     const turnColor = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
@@ -702,7 +692,6 @@ function updateSplashArt(champName, lockedActionType = null) {
     splashNameEl.innerText = turnText;
     splashNameEl.style.color = turnColor;
     // splashImg.style.display = 'block'; // Hiện ảnh
-    // countdownSvg.style.display = 'block';
   } else {
     // Xử lý cho trường hợp SKIPPED hoặc không tìm thấy tướng
     const turn = currentRoomState.nextTurn;
@@ -711,7 +700,6 @@ function updateSplashArt(champName, lockedActionType = null) {
     const playerOrder = currentRoomState.playerOrder || [];
     splashNameEl.style.color = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
     splashImg.style.display = 'none'; // Ẩn ảnh
-    countdownSvg.style.display = 'block'; // Vẫn hiện vòng tròn
   }
 }
 

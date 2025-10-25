@@ -51,7 +51,7 @@
     <div class="offcanvas offcanvas-end" tabindex="-1" id="host-controls-panel"
       aria-labelledby="host-controls-panel-label">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="host-controls-panel-label">👉 <b>Bảng điều khiển</b></h5>
+        <h5 class="offcanvas-title" id="host-controls-panel-label"><b>Bảng điều khiển</b></h5>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body">
@@ -78,30 +78,20 @@
     <!-- Pre-Draft Selection View -->
     <div id="pre-draft-selection-view" style="display: none;">
       <h4 class="text-center text-white mb-3">CHỌN TƯỚNG KHÔNG SỞ HỮU</h4>
-      <div class="row">
-        <!-- Player 1 Selection -->
-        <div class="col-6">
+      <div class="row justify-content-center">
+        <!-- Player's Own Selection Area -->
+        <div class="col-12 col-md-8">
           <div class="pre-draft-player-card">
-            <h5 id="pre-draft-p1-name" class="text-center">Player 1</h5>
-            <div id="pre-draft-p1-selections" class="pre-draft-selections-grid"></div>
-            <div id="pre-draft-p1-champ-grid-container" class="pre-draft-champ-grid-container">
-              <div id="pre-draft-p1-champ-grid" class="champ-grid"></div>
-            </div>
-          </div>
-        </div>
-        <!-- Player 2 Selection -->
-        <div class="col-6">
-          <div class="pre-draft-player-card">
-            <h5 id="pre-draft-p2-name" class="text-center">Player 2</h5>
-            <div id="pre-draft-p2-selections" class="pre-draft-selections-grid"></div>
-            <div id="pre-draft-p2-champ-grid-container" class="pre-draft-champ-grid-container">
-              <div id="pre-draft-p2-champ-grid" class="champ-grid"></div>
+            <h5 id="pre-draft-player-name" class="text-center">Tên người chơi</h5>
+            <div id="pre-draft-my-selections" class="pre-draft-selections-grid"></div>
+            <div id="pre-draft-my-champ-grid-container" class="pre-draft-champ-grid-container">
+              <div id="pre-draft-my-champ-grid" class="champ-grid"></div>
             </div>
           </div>
         </div>
       </div>
       <div class="d-grid gap-2 col-4 mx-auto mt-3">
-        <button id="confirm-pre-draft-button" class="btn btn-success btn-lg">Xác nhận lựa chọn</button>
+        <button id="confirm-pre-draft-button" class="btn btn-success btn-lg">Xác nhận</button>
       </div>
     </div>
 
@@ -136,19 +126,15 @@
 
         <!-- Countdown and Champ Select moved here -->
         <div class="center-block">
-          <div id="splash-art-container" class="mb-3 mt-4">
-            <svg id="countdown-svg" viewBox="0 0 100 100">
-              <circle id="countdown-circle-bg" cx="50" cy="50" r="48" stroke="#f0e4e4" stroke-width="2" fill="none">
-              </circle>
-              <circle id="countdown-circle" cx="50" cy="50" r="48" stroke="#4caf50" stroke-width="2" fill="none"
-                transform="rotate(-90 50 50)"></circle>
-            </svg>
+          <div id="splash-art-container" class="mb-3 mt-4" style="width: 250px; height: 250px;">
             <div id="countdown-text"></div>
             <img id="splash-art-img" src="" alt="Selected Champion Splash Art">
           </div>
           <h2 id="splash-art-name"
             style="position: relative; z-index: 3; text-align: center; text-shadow: rgb(0, 0, 0) 1px 1px 2px;"></h2>
-
+          <div id="countdown-bar-container">
+            <div id="countdown-bar"></div>
+          </div>
         </div>
         <div id="champ-selection-controls" class="mt-4" style="display: none;">
           <div class="position-relative">
