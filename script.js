@@ -33,6 +33,8 @@ const preDraftMyGridEl = document.getElementById("pre-draft-my-champ-grid");
 const preDraftMySelectionsEl = document.getElementById("pre-draft-my-selections");
 const preDraftPlayerNameEl = document.getElementById("pre-draft-player-name");
 
+let myPlayerName = null; // Lưu tên người chơi hiện tại
+let hasLoadedFromStorage = false; // Cờ để đảm bảo chỉ tải từ localStorage một lần
 let myPreDraftSelection = [];
 const p1PreDraftDisplayEl = document.getElementById("p1-pre-draft-display");
 const p2PreDraftDisplayEl = document.getElementById("p2-pre-draft-display");
@@ -204,7 +206,10 @@ document.getElementById("join").onclick = () => {
       alert('Vui lòng nhập tên người chơi!');
       return;
     }
+    myPlayerName = playerName; // Lưu tên người chơi
     joinData.playerName = playerName;
+    // Lưu tên người chơi vào localStorage để sử dụng lần sau
+    localStorage.setItem('lastPlayerName', playerName);
   }
   socket.emit("join-room", joinData);
   lockInButton.style.backgroundColor = 'green';
@@ -311,6 +316,21 @@ socket.on("room-state", (room) => {
   // Hiển thị pre-draft nếu: đang trong phase pre-draft, user là player, VÀ user chưa sẵn sàng.
   const shouldShowPreDraft = isPreDraftPhase && myRole === 'player' && !room.preDraftReady?.[socket.id];
 
+  // Tải danh sách tướng không sở hữu từ localStorage khi vào màn hình pre-draft
+  if (shouldShowPreDraft && !hasLoadedFromStorage && myPlayerName) {
+    const savedChampsJSON = localStorage.getItem(`unownedChamps_${myPlayerName}`);
+    if (savedChampsJSON) {
+      try {
+        const savedChamps = JSON.parse(savedChampsJSON);
+        if (Array.isArray(savedChamps)) {
+          myPreDraftSelection = savedChamps;
+          socket.emit('pre-draft-select', { roomId: myRoom, champs: myPreDraftSelection });
+        }
+      } catch (e) { console.error("Lỗi khi đọc dữ liệu từ localStorage:", e); }
+    }
+    hasLoadedFromStorage = true; // Đánh dấu đã tải để không lặp lại
+  }
+
   if (shouldShowPreDraft) {
     preDraftViewEl.style.display = 'block';
     teamsContainerEl.style.display = 'none'; // Ẩn giao diện draft chính
@@ -401,11 +421,19 @@ socket.on("room-state", (room) => {
     }
   }
 
+  // Logic cảnh báo hết giờ cho #countdown-text
+  const countdownTextEl = document.getElementById('countdown-text');
+  if (countdownTextEl) {
+    if (!room.paused && room.nextTurn && room.countdown <= 10) {
+      countdownTextEl.classList.add('time-warning');
+    } else {
+      countdownTextEl.classList.remove('time-warning');
+    }
+  }
+
   // Hiển thị đội đi trước
   const firstPickStatusEl = document.getElementById("first-pick-status");
   if (room.draftOrder && room.draftOrder.length > 0) {
-    const firstTeam = room.draftOrder[0].team;
-    firstPickStatusEl.innerText = `Chọn trước: ${room.players[firstTeam]?.name || firstTeam.toUpperCase()}`;
     firstPickStatusEl.innerHTML = `ID Phòng: <strong>${myRoom}</strong>`;
   } else {
     firstPickStatusEl.innerHTML = `ID Phòng: <strong>${myRoom}</strong>`;
@@ -471,6 +499,7 @@ socket.on("room-state", (room) => {
   // Reset trạng thái chọn nháp khi có lượt mới
   if (turnChanged) {
     lockInButton.disabled = true;
+      hasLoadedFromStorage = false; // Reset cờ khi draft bắt đầu
     document.querySelectorAll('.champ-item.pre-selected').forEach(el => el.classList.remove('pre-selected'));
     preSelectedChamp = null;
     remotePreSelectedChamp = null; // Xóa cả lựa chọn nháp từ xa
@@ -552,7 +581,34 @@ socket.on("room-state", (room) => {
     }
   }
   document.querySelectorAll('.champ-item').forEach(item => {
-    if (disabledChamps.has(item.dataset.name)) {
+    const champName = item.dataset.name;
+    let isUnownedAndPickTurn = false;
+    let isOpponentUnownedAndBanTurn = false;
+
+    const turn = room.nextTurn;
+
+    // Logic: Không cho PICK tướng mình không sở hữu
+    if (turn && turn.team === socket.id && turn.type === 'pick' && room.preDraftSelections?.[socket.id]) {
+        const myUnownedChamps = new Set(room.preDraftSelections[socket.id]);
+        if (myUnownedChamps.has(champName)) {
+            isUnownedAndPickTurn = true;
+        }
+    }
+
+    // Logic: Không cho BAN tướng đối phương không sở hữu
+    if (turn && turn.team === socket.id && turn.type === 'ban' && room.playerOrder && room.preDraftSelections) {
+      const opponentId = room.playerOrder.find(id => id !== socket.id);
+      if (opponentId && room.preDraftSelections[opponentId]) {
+        const opponentUnownedChamps = new Set(room.preDraftSelections[opponentId]);
+        if (opponentUnownedChamps.has(champName)) {
+          isOpponentUnownedAndBanTurn = true;
+        }
+      }
+    }
+
+    // Vô hiệu hóa tướng nếu: đã được chọn/cấm, hoặc là tướng không sở hữu trong lượt PICK,
+    // hoặc là tướng đối phương không sở hữu trong lượt BAN.
+    if (disabledChamps.has(champName) || isUnownedAndPickTurn || isOpponentUnownedAndBanTurn) {
       item.classList.add('disabled');
     } else {
       item.classList.remove('disabled');
@@ -702,7 +758,9 @@ function updateSplashArt(champName, lockedActionType = null) {
     if (turn) {
       splashNameEl.innerText = `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${turn.type.toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;
     } else if (currentRoomState && currentRoomState.actions.length > 0) {
-      splashNameEl.innerText = lockedActionType || 'DRAFT COMPLETE';
+      // Khi draft kết thúc, không hiển thị gì cả.
+      splashNameEl.innerText = '';
+      splashImg.style.display = 'none';
     } else {
       splashNameEl.innerText = 'Đợi host bắt đầu...';
     }
@@ -734,6 +792,11 @@ function renderPreDraftChampionGrid(gridElement, localSelections, opponentSelect
         myPreDraftSelection.push(char.en);
       }
       socket.emit('pre-draft-select', { roomId: myRoom, champs: myPreDraftSelection });
+
+      // Lưu lựa chọn vào localStorage
+      if (myPlayerName) {
+        localStorage.setItem(`unownedChamps_${myPlayerName}`, JSON.stringify(myPreDraftSelection));
+      }
     };
     gridElement.appendChild(item);
   });
@@ -752,6 +815,12 @@ function updatePreDraftSelections(selections, containerElement) {
       </div>`;
   });
 }
+
+// Tải lại tên người chơi đã sử dụng lần cuối từ localStorage
+document.addEventListener('DOMContentLoaded', () => {
+    const lastPlayerName = localStorage.getItem('lastPlayerName');
+    if (lastPlayerName) playerNameInput.value = lastPlayerName;
+});
 socket.on("draft-finished", (data) => {
   lockInButton.disabled = true;
 

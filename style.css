@@ -60,7 +60,9 @@ margin: 15px 10px;
 }
 
 .slot.banned::after {
-  content: '✕'; /* Ký tự X */
+  /* Sử dụng icon từ Bootstrap Icons */
+  font-family: "bootstrap-icons";
+  content: '\F6B6'; /* Unicode for bi-no-entry-fill (biển báo cấm) */
   position: absolute;
   top: 0;
   left: 0;
@@ -69,10 +71,9 @@ margin: 15px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 80px;
-  color: rgba(255, 0, 0, 0.7);
+  font-size: 70px; /* Tăng kích thước icon */
+  color: rgb(220, 53, 69); /* Màu đỏ đậm, không mờ */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  z-index: 10;
   pointer-events: none;
 }
 
@@ -221,6 +222,9 @@ div#vs-bans {
   align-content: center;
   align-items: center;
 }
+div#blue-bans {
+  flex-direction: row-reverse;
+}
 
 .grid-champ-name {
   font-size: 12px;
@@ -282,7 +286,7 @@ div#vs-bans {
 }
 
 #splash-art-name {
-  font-size: 18px;
+  font-size: 20px;
   text-align: center;
   width: 100%;
   margin-top: auto; /* Quan trọng: Đẩy phần tử này xuống dưới cùng */
@@ -356,6 +360,19 @@ div#vs-bans {
   }
 }
 
+@keyframes flash-warning {
+  50% {
+    /* Thay đổi màu chữ và bóng đổ để tạo hiệu ứng nhấp nháy */
+    color: #dc3545; /* Màu đỏ cảnh báo */
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+  }
+}
+
+.time-warning {
+  /* Áp dụng animation nhấp nháy, lặp lại vô hạn */
+  animation: flash-warning 1s infinite;
+}
+
 @keyframes slot-reveal {
   0% {
     transform: rotateY(90deg) scale(0.8);
@@ -396,6 +413,10 @@ div#vs-bans {
   flex-direction: column;
   gap: 5px;
   align-items: center;
+}
+
+#player2-container .picks-container {
+  flex-direction: row-reverse;
 }
 
 #host-controls-toggle.btn.rounded-circle {
