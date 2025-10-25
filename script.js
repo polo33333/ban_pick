@@ -473,6 +473,7 @@ socket.on("room-state", (room) => {
     lockInButton.disabled = true;
     document.querySelectorAll('.champ-item.pre-selected').forEach(el => el.classList.remove('pre-selected'));
     preSelectedChamp = null;
+    remotePreSelectedChamp = null; // Xóa cả lựa chọn nháp từ xa
     socket.emit("pre-select-champ", { roomId: myRoom, champ: null }); // Gửi tín hiệu xóa chọn nháp
 
     // Reset vòng tròn countdown ngay lập tức
@@ -651,6 +652,8 @@ socket.on("room-state", (room) => {
   } else {
     // Ẩn đi khi draft chưa bắt đầu hoặc đã kết thúc
     splashContainer.style.display = 'none';
+    remotePreSelectedChamp = null; // Dọn dẹp khi draft kết thúc
+    updateSplashArt(null); // Dọn dẹp khi draft kết thúc
   }
 });
 
@@ -696,7 +699,13 @@ function updateSplashArt(champName, lockedActionType = null) {
     // Xử lý cho trường hợp SKIPPED hoặc không tìm thấy tướng
     const turn = currentRoomState.nextTurn;
     splashImg.src = '';
-    splashNameEl.innerText = turn ? `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${turn.type.toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}` : (lockedActionType || 'DRAFT COMPLETE');
+    if (turn) {
+      splashNameEl.innerText = `${truncateName(currentRoomState.players[turn.team]?.name).toUpperCase() || '???'}: ${turn.type.toUpperCase() =="PICK" ? "CHỌN" : "CẤM"}`;
+    } else if (currentRoomState && currentRoomState.actions.length > 0) {
+      splashNameEl.innerText = lockedActionType || 'DRAFT COMPLETE';
+    } else {
+      splashNameEl.innerText = 'Đợi host bắt đầu...';
+    }
     const playerOrder = currentRoomState.playerOrder || [];
     splashNameEl.style.color = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
     splashImg.style.display = 'none'; // Ẩn ảnh
