@@ -119,7 +119,7 @@ function handleSelectChamp(socket, { roomId, champ }) {
 }
 
 function handlePreSelectChamp(socket, { roomId, champ }) {
-    socket.to(roomId).emit("pre-select-update", { champ });
+    ioInstance.to(roomId).emit("pre-select-update", { champ });
 }
 
 function handlePreDraftSelect(socket, { roomId, champs }) {
@@ -156,7 +156,12 @@ function handleTogglePause(socket, { roomId }) {
         if (room.paused) {
             resumeCountdown(roomId);
         } else {
-            clearInterval(room.timer);
+            // Hủy timeout hiện tại và tính thời gian còn lại
+            clearTimeout(room.timer);
+            const timeElapsed = Date.now() - room.turnStartTime;
+            const totalDuration = (room.countdownDuration || 30) * 1000;
+            room.remainingTime = Math.max(0, totalDuration - timeElapsed);
+
             room.paused = true;
             broadcastRoomState(roomId);
         }
@@ -193,8 +198,14 @@ function handleDisconnect(io, socket) {
     } else { // Player disconnect
         delete room.players[socket.id];
         if (room.nextTurn && !room.paused) {
-            clearInterval(room.timer);
+            clearTimeout(room.timer); // Hủy timeout khi người chơi thoát
+
+            // TÍNH TOÁN VÀ LƯU LẠI THỜI GIAN CÒN LẠI (FIX)
+            const timeElapsed = Date.now() - room.turnStartTime;
+            const totalDuration = (room.countdownDuration || 30) * 1000;
+            room.remainingTime = Math.max(0, totalDuration - timeElapsed);
             room.paused = true;
+
         }
         console.log(`Player ${socket.id} disconnected from room ${roomId}`);
         broadcastRoomState(roomId);

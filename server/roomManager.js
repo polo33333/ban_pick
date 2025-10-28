@@ -14,6 +14,9 @@ export function createRoom(roomId, hostId) {
         hostId: hostId,
         countdownDuration: 30,
         timer: null,
+        turnStartTime: null, // Thời điểm bắt đầu lượt
+        pauseTime: null, // Thời điểm bắt đầu pause
+        remainingTime: null, // Thời gian còn lại khi pause
         draftOrder: [],
         phase: 1,
         paused: false,
@@ -49,6 +52,9 @@ export function getSafeRoomState(roomId) {
         hostId: room.hostId,
         countdown: room.countdown,
         countdownDuration: room.countdownDuration,
+        turnStartTime: room.turnStartTime,
+        pauseTime: room.pauseTime,
+        remainingTime: room.remainingTime,
         phase: room.phase,
         players: room.players,
         paused: room.paused,

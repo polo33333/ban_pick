@@ -38,7 +38,6 @@ export function renderChampionGrid(charList) {
             DOM.lockInButton.disabled = false;
 
             emitPreSelectChamp(char.en);
-            updateSplashArt(char.en);
         };
         DOM.champGridEl.appendChild(item);
     });
@@ -62,28 +61,42 @@ export function updateSplashArt(champName) {
         }
         DOM.splashArtNameEl.innerText = turnText;
         const playerOrder = room.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
+        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
 
     } else { // Trường hợp không có tướng (lượt mới, skip,...)
         DOM.splashArtContainer.style.display = 'block'; // Luôn hiển thị container
         DOM.splashArtImg.src = '';
         DOM.splashArtImg.style.display = 'none';
         
-        let text = 'Đợi host bắt đầu...';
+        let text = '';
         if (turn) {
             const playerName = room.players[turn.team]?.name || '???';
             const actionText = turn.type.toUpperCase() === "PICK" ? "CHỌN" : "CẤM";
             text = `${truncateName(playerName).toUpperCase()}: ${actionText}`;
-        } else if (room?.state === 'drafting' && !turn && room.actions.length === 0) {
-            // Trường hợp cả 2 player đã sẵn sàng, state là 'drafting' nhưng host chưa chọn người đi trước (chưa có action nào)
+        } else if (room?.state === 'pre-draft-selection') {
+            // Giai đoạn chọn tướng không sở hữu
+            const notReadyPlayers = room.playerOrder.filter(id => !room.preDraftReady?.[id]);
+            if (notReadyPlayers.length > 1) {
+                text = `Đợi ${notReadyPlayers.length} người chơi...`;
+            } else if (notReadyPlayers.length === 1) {
+                const waitingForPlayerId = notReadyPlayers[0];
+                const playerName = room.playerHistory[waitingForPlayerId]?.name || 'Player';
+                text = `Đợi ${truncateName(playerName)}...`;
+            } else {
+                text = 'Đợi host bắt đầu...';
+            }
+        } else if (room?.state === 'drafting' && room?.actions?.length === 0) {
+            // Giai đoạn drafting nhưng host chưa chọn người đi trước
             text = 'Đợi host bắt đầu...';
-        } else if (!turn && room?.actions?.length > 0) { // Chỉ ẩn khi draft đã thực sự kết thúc
-            text = ''; // Draft finished, hide text
-            DOM.splashArtContainer.style.display = 'none';
+        } else if (!turn && room?.actions?.length > 0) {
+            // Trường hợp draft đã kết thúc
+            text = 'DRAFT COMPLETE';
+        } else {
+            text = 'Đợi người chơi...';
         }
         DOM.splashArtNameEl.innerText = text;
         const playerOrder = room?.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? 'blue' : 'red') : 'white';
+        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
     }
 }
 

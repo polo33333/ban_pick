@@ -4,6 +4,8 @@ import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSe
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
 
+let clientCountdownInterval = null;
+
 // Logic chính cho màn hình draft, xử lý sự kiện `room-state`
 
 export function initializeDraftView() {
@@ -44,6 +46,7 @@ export function initializeDraftView() {
 
 export function handleRoomStateUpdate(room) {
     const turnChanged = state.currentRoomState?.currentTurn !== room.currentTurn;
+    const wasPaused = state.currentRoomState?.paused && !room.paused; // Vừa được resume
     state.currentRoomState = room;
 
     DOM.loginViewEl.style.display = 'none';
@@ -57,8 +60,11 @@ export function handleRoomStateUpdate(room) {
 
     // FIX: Xử lý trường hợp player vừa chuyển từ pre-draft sang ban/pick
     // và đang chờ người chơi khác hoặc host.
-    // Điều kiện này đúng khi cả 2 player đã sẵn sàng, state là 'drafting' nhưng host chưa chọn người đi trước.
-    if (room.state === 'drafting' && !room.nextTurn && state.myRole === 'player') {
+    // Điều kiện này đúng khi state là 'drafting', player không có lượt tiếp theo
+    const draftFinished = room.state === 'drafting' && room.draftOrder.length > 0 && room.actions.length >= room.draftOrder.length;
+    if (draftFinished) {
+        // Không làm gì cả, để updateSplashArt xử lý
+    } else if (room.state === 'drafting' && !room.nextTurn && state.myRole === 'player') {
         DOM.splashArtNameEl.innerText = 'Đợi host bắt đầu...';
         DOM.countdownText.style.display = 'none'; // Đảm bảo countdown text bị ẩn
     }
@@ -87,7 +93,8 @@ export function handleRoomStateUpdate(room) {
     updateActionSlots(room, turnChanged);
     updateTurnHighlight(room);
     updateSplashOnTurnChange(turnChanged);
-    updateCountdown(room); // Move to the end to ensure it overrides other display properties
+    updateSplashArt(state.preSelectedChamp?.en || state.remotePreSelectedChamp); // Phải chạy trước updateCountdown
+    updateCountdown(room, turnChanged || wasPaused); // Chuyển xuống cuối để ghi đè các thuộc tính hiển thị khác
 
     // Centralized logic for Lock-in button visibility and state
     const lockInContainer = DOM.lockInButton.parentElement;
@@ -183,7 +190,7 @@ function updateHostControls(room) {
         });
 
         // Choose first player buttons
-        const canChooseFirst = room.playerOrder.length === 2 && room.state === 'drafting' && room.actions.length === 0;
+        const canChooseFirst = room.playerOrder.length === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
         DOM.preDraftControls.style.display = canChooseFirst ? "flex" : "none";
         if (canChooseFirst) {
             DOM.preDraftControls.innerHTML = "";
@@ -217,9 +224,9 @@ function updatePlayerStatus(room) {
         if (!playerId) return `<span class="me-4" style="color: white;">⏳ <strong>${defaultText}:</strong> Đợi...</span>`;
         const playerData = room.playerHistory[playerId];
         const isConnected = connectedPlayerIds.has(playerId);
-        const color = isConnected ? 'white' : 'grey';
+        const color = isConnected ? 'white' : 'white';
         const icon = isConnected ? '✅' : '❌';
-        const style = isConnected ? 'font-weight: bold;' : 'font-style: italic;';
+        const style = isConnected ? 'font-weight: bold;' : 'font-weight: bold;';
         return `<span class="me-4" style="color: ${color}; ${style}">${icon} <strong>${truncateName(playerData.name)}:</strong> ${isConnected ? 'Đã kết nối' : 'Mất kết nối'}</span>`;
     };
 
@@ -237,22 +244,36 @@ function updateTeamNames(room) {
     }
 }
 
-function updateCountdown(room) {
+function updateCountdown(room, forceRestart = false) {
+    clearInterval(clientCountdownInterval);
+
     if (room.paused) {
         DOM.countdownText.style.display = 'block';
         DOM.countdownText.innerText = "PAUSED";
         DOM.countdownBar.style.transform = `scaleX(1)`;
+        DOM.countdownText.classList.remove('time-warning');
     } else if (room.countdown != null && room.nextTurn) {
+        let remaining = room.countdown;
         DOM.countdownText.style.display = 'block';
-        DOM.countdownText.innerText = room.countdown;
-        const scale = room.countdown / (room.countdownDuration || 30);
-        DOM.countdownBar.style.transform = `scaleX(${scale})`;
+
+        const updateDisplay = () => {
+            DOM.countdownText.innerText = Math.max(0, Math.floor(remaining));
+            const scale = Math.max(0, remaining) / (room.countdownDuration || 30);
+            DOM.countdownBar.style.transform = `scaleX(${scale})`;
+            DOM.countdownText.classList.toggle('time-warning', remaining <= 10);
+        };
+
+        updateDisplay(); // Cập nhật ngay lập tức
+
+        clientCountdownInterval = setInterval(() => {
+            remaining -= 1;
+            updateDisplay();
+            if (remaining < 0) clearInterval(clientCountdownInterval);
+        }, 1000);
     } else {
-        // Ẩn countdown text khi không có lượt để splash-art-name được hiển thị
         DOM.countdownText.style.display = 'none';
         DOM.countdownBar.style.transform = 'scaleX(1)';
     }
-    DOM.countdownText.classList.toggle('time-warning', !room.paused && room.nextTurn && room.countdown <= 10);
 }
 
 function updateDisabledChamps(room) {
@@ -362,16 +383,16 @@ function updateTurnHighlight(room) {
 
 function updateSplashOnTurnChange(turnChanged) {
     if (turnChanged) {
+        // Luôn cập nhật splash art để hiển thị đúng trạng thái (VD: Đợi player..., DRAFT COMPLETE)
+        // Chỉ reset khi lượt thay đổi
+        updateSplashArt(null);
         state.preSelectedChamp = null;
         state.remotePreSelectedChamp = null;
         document.querySelectorAll('.champ-item.pre-selected').forEach(el => el.classList.remove('pre-selected'));
 
-        // Reset countdown bar animation
         DOM.countdownBar.style.transition = 'none';
         DOM.countdownBar.style.transform = 'scaleX(1)';
         void DOM.countdownBar.offsetWidth; // Trigger reflow
         DOM.countdownBar.style.transition = 'transform 1s linear';
-
-        updateSplashArt(null);
     }
 }

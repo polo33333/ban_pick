@@ -27,29 +27,34 @@ export function startCountdown(roomId) {
     if (!room) return;
 
     clearInterval(room.timer);
+    clearTimeout(room.timer); // Xóa cả timeout cũ
+
     room.countdown = room.countdownDuration || 30;
     room.paused = false;
+    room.remainingTime = null; // Reset thời gian còn lại
+    room.turnStartTime = Date.now(); // Lưu thời điểm bắt đầu lượt
 
-    room.timer = setInterval(() => {
-        if (room.paused) {
-            clearInterval(room.timer);
-            return;
-        }
-        room.countdown--;
-        broadcastRoomState(roomId);
-
-        if (room.countdown <= 0) {
-            clearInterval(room.timer);
-            handleTimeout(roomId);
-        }
-    }, 1000);
+    // Đặt một "cái hẹn" duy nhất để xử lý timeout
+    room.timer = setTimeout(() => {
+        handleTimeout(roomId);
+    }, room.countdown * 1000);
 }
 
 export function resumeCountdown(roomId) {
     const room = rooms[roomId];
     if (!room || !room.paused) return;
+
+    const timeToResume = room.remainingTime ?? (room.countdownDuration * 1000);
     room.paused = false;
-    startCountdown(roomId);
+    room.countdown = Math.round(timeToResume / 1000); // Cập nhật lại countdown để client hiển thị
+    room.turnStartTime = Date.now(); // Cập nhật lại thời điểm bắt đầu cho lần pause tiếp theo
+    
+    // Đặt lại timeout với thời gian còn lại
+    room.timer = setTimeout(() => {
+        handleTimeout(roomId);
+    }, timeToResume);
+
+    broadcastRoomState(roomId); // Gửi trạng thái ngay khi resume
 }
 
 export function nextTurn(roomId) {
@@ -62,7 +67,7 @@ export function nextTurn(roomId) {
         if (room.phase === 1) {
             startPhase2(roomId);
         } else {
-            clearInterval(room.timer);
+            clearTimeout(room.timer);
             room.nextTurn = null;
             broadcastRoomState(roomId);
             room.io?.to(roomId).emit("draft-finished", { actions: room.actions });
@@ -78,11 +83,22 @@ export function nextTurn(roomId) {
 function handleTimeout(roomId) {
     const room = rooms[roomId];
     if (!room) return;
-    const turn = room.draftOrder[room.currentTurn];
-    if (turn) {
-        room.actions.push({ team: turn.team, type: turn.type, champ: "SKIPPED" });
-    }
-    nextTurn(roomId);
+
+    // Đảm bảo client nhận được trạng thái countdown = 0
+    clearTimeout(room.timer);
+    room.countdown = 0;
+    broadcastRoomState(roomId);
+
+    // Đợi 1 giây để client hiển thị số 0, sau đó mới xử lý và chuyển lượt
+    setTimeout(() => {
+        const currentRoom = rooms[roomId];
+        // Kiểm tra lại phòng trong trường hợp nó đã bị xóa hoặc pause trong 1 giây chờ
+        if (!currentRoom || currentRoom.paused) return;
+
+        const turn = currentRoom.draftOrder[currentRoom.currentTurn];
+        if (turn) currentRoom.actions.push({ team: turn.team, type: turn.type, champ: "SKIPPED" });
+        nextTurn(roomId);
+    }, 1000); // 1 giây
 }
 
 function startPhase2(roomId) {

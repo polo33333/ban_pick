@@ -71,7 +71,7 @@ margin: 15px 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 70px; /* Tăng kích thước icon */
+  font-size: 68px; /* Tăng kích thước icon */
   color: rgb(220, 53, 69); /* Màu đỏ đậm, không mờ */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   pointer-events: none;
@@ -151,7 +151,10 @@ margin: 15px 10px;
   background-size: cover;
   background-position: center;
   transition: background-image 0.5s ease-in-out;
-  background-image: url('../assets/background.webp');
+  /* background-image: url('../assets/background-1.webp'); */
+  background-image: 
+    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
+    url('../assets/background.webp');
   /* Đặt ảnh nền tại đây */
   /* opacity: 0.2; */
 }
@@ -267,7 +270,7 @@ div#blue-bans {
 .center-block {
   max-height: 260px;
   min-height: 260px;
-  background: rgb(255 255 255 / 80%); /* Giảm độ mờ của nền */
+  background: rgb(33 29 29 / 80%);/* Giảm độ mờ của nền */
   border-radius: 10px;
   padding: 10px 15px;
   display: flex; /* Bật Flexbox */
@@ -352,18 +355,16 @@ div#blue-bans {
 
 @keyframes blink-border {
   0% {
-    border-color: #973232;
+    border-color: #ff6600; /* vàng */
   }
-
   50% {
-    border-color: #ffd700;
+    border-color: #10ee39; /* xanh */
   }
-
-  /* Màu vàng gold để chớp nháy */
   100% {
-    border-color: #ba1515;
-  }
+    border-color: #ff2a00; /* quay lại vàng */
+  } 
 }
+
 
 @keyframes flash-warning {
   50% {
@@ -483,7 +484,7 @@ div#blue-bans {
   background-color: rgba(0, 0, 0, 0.3);
   border: 1px solid #444;
   border-radius: 8px;
-  padding: 8px;
+  padding: 2px;
   margin-bottom: 1rem;
 }
 
