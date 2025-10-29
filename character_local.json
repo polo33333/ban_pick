@@ -246,6 +246,19 @@
     "zh-Hans": "奥古斯塔",
     "ja": "オーガスタ"
   },
+  "1411": {
+        "icon": "/icon/Qiuyuan.webp",
+        "background": "/background/Qiuyuan.webp",
+        "rank": 5,
+        "weapon": 2,
+        "element": 4,
+        "en": "Qiuyuan",
+        "nickname": "Qiuyuan",
+        "desc": "Former senior agent of Mingting's Internal Security Agency. \n\nThough enmity filled his younger days, loyalty defined his later years. However, scapegoated for a murder, he is now but a blind swordsman wandering the world alone.",
+        "ko": "구원",
+        "zh-Hans": "仇远",
+        "ja": "仇遠"
+  },
   "1402": {
     "icon": "/icon/Yangyang.webp",
     "background": "/background/Yangyang.webp",

@@ -164,7 +164,7 @@ margin: 15px 10px;
   padding: 10px;
   margin-top: 10px;
   min-height: 390px;
-  max-height: 390px;
+  max-height: 490px;
   overflow-y: auto;
   border-radius: 10px;
 }
@@ -172,7 +172,7 @@ margin: 15px 10px;
 .champ-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 8px;
+  gap: 5px;
 }
 
 .champ-item {
