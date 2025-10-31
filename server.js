@@ -5,14 +5,26 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import { initializeSocketHandlers } from "./server/socketHandlers.js";
+import compression from "compression"; // <-- thêm dòng này
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-const PORT = 3000;
+const PORT = 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+// 🛠️ Chỉ nén JSON/HTML, không nén ảnh
+app.use(
+  compression({
+    filter: (req, res) => {
+      const type = res.getHeader("Content-Type") || "";
+      if (req.url.match(/\.(webp|png|jpg|jpeg|gif)$/i)) return false;
+      return compression.filter(req, res);
+    },
+  })
+);
 
 // Phục vụ các tệp tĩnh từ thư mục 'public'
 app.use(express.static(path.join(__dirname, 'public')));
