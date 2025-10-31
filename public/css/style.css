@@ -150,13 +150,11 @@ margin: 15px 10px;
   z-index: -1;
   background-size: cover;
   background-position: center;
-  transition: background-image 0.5s ease-in-out;
-  /* background-image: url('../assets/background-1.webp'); */
-  background-image: 
-    linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)),
-    url('../assets/background.webp');
-  /* Đặt ảnh nền tại đây */
-  /* opacity: 0.2; */
+  transition: background-image 1s ease-in-out;
+  /* Ảnh nền sẽ được load bằng JS để tối ưu. */
+  /* Chỉ giữ lại gradient làm nền tạm thời. */
+  background-color: #1a1a1a; /* Màu nền tối dự phòng */
+  background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
 }
 
 #champ-grid-container {
