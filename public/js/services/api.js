@@ -39,7 +39,7 @@ export async function loadCharacters() {
         // ví dụ: chỉ preload ảnh của các tướng phổ biến hoặc khi người dùng hover.
         // preloadSplashArts(state.uniqueCharacters);
         console.log("Characters loaded successfully.");
-        lazyLoadMainBackground(); // Tải ảnh nền chính sau khi các thành phần cốt lõi đã xong
+        //lazyLoadMainBackground(); // Tải ảnh nền chính sau khi các thành phần cốt lõi đã xong
     } catch (error) {
         console.error("Failed to load characters:", error);
     }
