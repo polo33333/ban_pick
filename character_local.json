@@ -12,6 +12,19 @@
     "zh-Hans": "散华",
     "ja": "散華"
   },
+  "1508": {
+        "icon": "/icon/Chisa.webp",
+        "background": "/background/Chisa.webp",
+        "rank": 5,
+        "weapon": 1,
+        "element": 6,
+        "en": "Chisa",
+        "nickname": "Chisa",
+        "desc": "\"Just an ordinary student.\"\n\nCalmly, she introduces herself, a faint iridescent shimmer flickering in her eyes. Again, the structures of the world reveal themselves in her vision. Narrowing her eyes, she singles out the very thread that tugs at life itself.",
+        "ko": "치사",
+        "zh-Hans": "千咲",
+        "ja": "千咲"
+  },
   "1103": {
     "icon": "/icon/Baizhi.webp",
     "background": "/background/Baizhi.webp",
