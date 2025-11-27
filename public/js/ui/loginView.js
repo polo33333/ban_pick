@@ -42,10 +42,29 @@ export function initializeLoginView() {
             }
             localStorage.setItem('lastPlayerName', playerName);
         }
-        
+
         emitJoinRoom(roomId, role, playerName);
     };
 
     // Tự động tạo ID cho host khi tải trang
     DOM.roleSelect.dispatchEvent(new Event('change'));
+
+    // Copy Room ID functionality
+    if (DOM.copyRoomIdBtn) {
+        DOM.copyRoomIdBtn.onclick = () => {
+            const roomId = DOM.roomIdInput.value;
+            if (roomId) {
+                navigator.clipboard.writeText(roomId).then(() => {
+                    // Visual feedback
+                    const originalIcon = DOM.copyRoomIdBtn.innerHTML;
+                    DOM.copyRoomIdBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
+                    setTimeout(() => {
+                        DOM.copyRoomIdBtn.innerHTML = originalIcon;
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Failed to copy: ', err);
+                });
+            }
+        };
+    }
 }

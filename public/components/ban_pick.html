@@ -1,0 +1,72 @@
+<!-- Player 1 Unowned Champs (Far Left) -->
+<div class="col-1">
+    <div class="pre-draft-display-container">
+        <h6 class="pre-draft-display-title">Không sở hữu</h6>
+        <div id="p1-pre-draft-display" class="pre-draft-display-grid"></div>
+    </div>
+</div>
+
+<!-- Blue Team Picks (Left Column) -->
+<div id="player1-container" class="col-2">
+    <h3 style="color: blue;" class="text-center">Player 1</h3>
+    <div class="picks-container">
+        <div class="picks-column phase-1" id="blue-picks-p1"></div>
+        <div class="picks-column phase-2" id="blue-picks-p2"></div>
+    </div>
+</div>
+
+<!-- Bans (Center Column) -->
+<!-- Giảm từ col-8 xuống col-6 để nhường chỗ cho 2 cột mới -->
+<div class="col-6 text-center">
+    <h4 style="color: white;">CẤM - CHỌN</h4>
+    <div class="team justify-content-center mb-4" id="pannel-bans">
+        <div class="team mt-2" id="blue-bans"></div>
+        <div class="team mt-2" id="vs-bans"><img src="/assets/vs.png" alt="VS"
+                style="width: 60px; filter: drop-shadow(2px 2px 5px #000);"></div>
+        <div class="team mt-2" id="red-bans"></div>
+    </div>
+
+    <!-- Countdown and Champ Select moved here -->
+    <div class="center-block">
+        <div id="splash-art-container" class="mb-3 mt-4" style="width: 250px; height: 250px;">
+            <div id="countdown-text"></div>
+            <img id="splash-art-img" src="" alt="Selected Champion Splash Art">
+        </div>
+        <div id="splash-art-name" class="text-center fw-bold fs-5" style="color: white;"></div>
+        <div id="countdown-bar-container">
+            <div id="countdown-bar"></div>
+        </div>
+    </div>
+    <div id="champ-selection-controls" class="mt-4" style="display: none;">
+        <div class="position-relative">
+            <input id="champ-search" class="form-control mb-3" placeholder="Tìm kiếm..." autocomplete="off">
+            <span id="clear-search-btn" class="position-absolute top-50 translate-middle-y"
+                style="display: none; cursor: pointer; right: 15px; z-index: 100;">
+                <i class="bi bi-x-circle-fill text-secondary"></i>
+            </span>
+        </div>
+        <div id="champ-grid-container">
+            <div id="champ-grid" class="champ-grid"></div>
+        </div>
+        <div class="d-grid">
+            <button id="lock-in-button" class="btn btn-lg mt-3" disabled>Khóa</button>
+        </div>
+    </div>
+</div>
+
+<!-- Red Team Picks (Right Column) -->
+<div id="player2-container" class="col-2">
+    <h3 style="color: red;" class="text-center">Player 2</h3>
+    <div class="picks-container">
+        <div class="picks-column phase-1" id="red-picks-p1"></div>
+        <div class="picks-column phase-2" id="red-picks-p2"></div>
+    </div>
+</div>
+
+<!-- Player 2 Unowned Champs (Far Right) -->
+<div class="col-1">
+    <div class="pre-draft-display-container">
+        <h6 class="pre-draft-display-title">Không sở hữu</h6>
+        <div id="p2-pre-draft-display" class="pre-draft-display-grid"></div>
+    </div>
+</div>

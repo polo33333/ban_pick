@@ -1,0 +1,30 @@
+<div class="glass-panel p-4 animate-fade-in-up">
+    <h4 class="text-center glass-title mb-4" style="font-size: 1.8rem;">CHỌN TƯỚNG KHÔNG SỞ HỮU</h4>
+
+    <div class="row justify-content-center">
+        <!-- Player's Own Selection Area -->
+        <div class="col-12 col-md-10">
+            <div class="pre-draft-player-card glass-panel border-0" style="background: rgba(0,0,0,0.2);">
+                <h5 id="pre-draft-player-name" class="text-center text-white mb-3 fw-bold text-uppercase"
+                    style="letter-spacing: 2px;">Tên người chơi</h5>
+
+
+
+                <div id="pre-draft-my-selections" class="pre-draft-selections-grid mb-3"></div>
+                <div class="">
+                    <input id="pre-draft-search" class="form-control glass-input" placeholder="Tìm kiếm tướng..."
+                        autocomplete="off">
+                </div>
+                <div id="pre-draft-my-champ-grid-container" class="pre-draft-champ-grid-container custom-scrollbar">
+                    <div id="pre-draft-my-champ-grid" class="champ-grid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-grid gap-3 col-6 mx-auto mt-4">
+        <button id="confirm-pre-draft-button" class="btn btn-lg glass-btn">XÁC NHẬN</button>
+        <div id="pre-draft-wait-status" class="text-center text-warning fw-bold mt-2"
+            style="text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);"></div>
+    </div>
+</div>

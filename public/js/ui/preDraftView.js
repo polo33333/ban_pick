@@ -4,11 +4,15 @@ import { emitConfirmPreDraft, emitPreDraftSelect } from '../services/socket.js';
 
 // Logic cho màn hình chọn tướng không sở hữu
 
-function renderPreDraftChampionGrid() {
+function renderPreDraftChampionGrid(filterText = "") {
     DOM.preDraftMyGridEl.innerHTML = "";
     const localSelections = state.currentRoomState.preDraftSelections?.[state.socket.id] || [];
 
     state.uniqueCharacters.forEach(char => {
+        if (filterText && !char.en.toLowerCase().includes(filterText.toLowerCase())) {
+            return;
+        }
+
         const item = document.createElement('div');
         item.className = 'champ-item';
         item.dataset.name = char.en;
@@ -51,6 +55,12 @@ function updatePreDraftMySelections() {
 
 export function initializePreDraftView() {
     DOM.confirmPreDraftBtn.onclick = emitConfirmPreDraft;
+
+    if (DOM.preDraftSearchInput) {
+        DOM.preDraftSearchInput.addEventListener('input', (e) => {
+            renderPreDraftChampionGrid(e.target.value);
+        });
+    }
 }
 
 export function handlePreDraftPhase(room) {
