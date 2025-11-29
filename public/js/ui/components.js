@@ -27,7 +27,7 @@ export function renderChampionGrid(charList) {
         item.className = 'champ-item';
         item.dataset.name = char.en;
         item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${char.en}</div>`;
-        
+
         item.onclick = () => {
             const room = state.currentRoomState;
             if (item.classList.contains('disabled') || !room?.nextTurn || room.paused || room.nextTurn.team !== state.socket.id) return;
@@ -52,7 +52,7 @@ export function updateSplashArt(champName) {
         DOM.splashArtContainer.style.display = 'block';
         DOM.splashArtImg.style.display = 'block';
         DOM.splashArtImg.src = charData.background || '';
-        
+
         let turnText = '';
         if (turn) {
             const playerName = room.players[turn.team]?.name || '???';
@@ -63,11 +63,38 @@ export function updateSplashArt(champName) {
         const playerOrder = room.playerOrder || [];
         DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
 
+        if (DOM.selectedChampNameEl) {
+            DOM.selectedChampNameEl.innerText = charData.en;
+        }
+
+        if (DOM.selectedChampElementContainer) {
+            if (charData.element && CONSTANTS.ELEMENT_NAMES[charData.element]) {
+                DOM.selectedChampElementContainer.classList.remove('d-none');
+                DOM.selectedChampElementContainer.classList.add('d-flex');
+                DOM.selectedChampElementEl.src = `/element/${CONSTANTS.ELEMENT_NAMES[charData.element]}.webp`;
+                DOM.selectedChampElementNameEl.innerText = CONSTANTS.ELEMENT_NAMES[charData.element];
+            } else {
+                DOM.selectedChampElementContainer.classList.add('d-none');
+                DOM.selectedChampElementContainer.classList.remove('d-flex');
+            }
+        }
+
+        if (DOM.selectedChampRankContainer) {
+            if (charData.rank) {
+                DOM.selectedChampRankContainer.classList.remove('d-none');
+                DOM.selectedChampRankContainer.classList.add('d-flex');
+                DOM.selectedChampRankEl.innerHTML = '★'.repeat(charData.rank);
+            } else {
+                DOM.selectedChampRankContainer.classList.add('d-none');
+                DOM.selectedChampRankContainer.classList.remove('d-flex');
+            }
+        }
+
     } else { // Trường hợp không có tướng (lượt mới, skip,...)
         DOM.splashArtContainer.style.display = 'block'; // Luôn hiển thị container
         DOM.splashArtImg.src = '';
         DOM.splashArtImg.style.display = 'none';
-        
+
         let text = '';
         if (turn) {
             const playerName = room.players[turn.team]?.name || '???';
@@ -97,6 +124,20 @@ export function updateSplashArt(champName) {
         DOM.splashArtNameEl.innerText = text;
         const playerOrder = room?.playerOrder || [];
         DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
+
+        if (DOM.selectedChampNameEl) {
+            DOM.selectedChampNameEl.innerText = '';
+        }
+
+        if (DOM.selectedChampElementContainer) {
+            DOM.selectedChampElementContainer.classList.add('d-none');
+            DOM.selectedChampElementContainer.classList.remove('d-flex');
+        }
+
+        if (DOM.selectedChampRankContainer) {
+            DOM.selectedChampRankContainer.classList.add('d-none');
+            DOM.selectedChampRankContainer.classList.remove('d-flex');
+        }
     }
 }
 

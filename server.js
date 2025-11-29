@@ -45,8 +45,18 @@ io.on("connection", socket => {
 app.get("/characters", async (req, res) => {
   try {
     const data = await fs.readFile(path.join(__dirname, 'character_local.json'), 'utf-8');
+    const characters = JSON.parse(data);
+
+    // Filter characters where isActive is true
+    const activeCharacters = {};
+    for (const [id, char] of Object.entries(characters)) {
+      if (char.isActive) {
+        activeCharacters[id] = char;
+      }
+    }
+
     res.setHeader('Content-Type', 'application/json');
-    res.send(data);
+    res.json(activeCharacters);
   } catch (error) {
     console.error("Failed to load character_local.json:", error);
     res.status(500).send("Error loading character data");

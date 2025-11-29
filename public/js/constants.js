@@ -31,12 +31,19 @@ export const DOM = {
     get splashArtContainer() { return document.getElementById('splash-art-container'); },
     get splashArtImg() { return document.getElementById('splash-art-img'); },
     get splashArtNameEl() { return document.getElementById('splash-art-name'); },
+    get selectedChampNameEl() { return document.getElementById('selected-champ-name'); },
+    get selectedChampElementEl() { return document.getElementById('selected-champ-element'); },
+    get selectedChampElementContainer() { return document.getElementById('selected-champ-element-container'); },
+    get selectedChampElementNameEl() { return document.getElementById('selected-champ-element-name'); },
+    get selectedChampRankContainer() { return document.getElementById('selected-champ-rank-container'); },
+    get selectedChampRankEl() { return document.getElementById('selected-champ-rank'); },
     get countdownText() { return document.getElementById("countdown-text"); },
     get countdownBar() { return document.getElementById('countdown-bar'); },
     get hostControlsToggle() { return document.getElementById("host-controls-toggle"); },
     get kickButtonsContainer() { return document.getElementById("kick-buttons-container"); },
     get preDraftControls() { return document.getElementById("pre-draft-controls"); },
     get preDraftSearchInput() { return document.getElementById("pre-draft-search"); },
+    get preDraftClearSearchBtn() { return document.getElementById("pre-draft-search-clear"); },
     get playerStatusEl() { return document.getElementById("player-status"); },
     get firstPickStatusEl() { return document.getElementById("first-pick-status"); },
     get player1NameEl() { return document.querySelector('#player1-container h3'); },
@@ -54,5 +61,13 @@ export const CONSTANTS = {
         4: '#99ffd6', // Aero
         5: '#fff3a0', // Spectro
         6: '#ad6f30'  // Havoc
+    },
+    ELEMENT_NAMES: {
+        1: 'Glacio',
+        2: 'Fusion',
+        3: 'Electro',
+        4: 'Aero',
+        5: 'Spectro',
+        6: 'Havoc'
     }
 };

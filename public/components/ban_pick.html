@@ -31,6 +31,22 @@
         <div id="splash-art-container" class="mb-3 mt-4" style="width: 250px; height: 250px;">
             <div id="countdown-text"></div>
             <img id="splash-art-img" src="" alt="Selected Champion Splash Art">
+            <div id="selected-champ-name"
+                class="position-absolute bottom-0 start-50 translate-middle-x w-100 text-center text-white fw-bold"
+                style="background: transparent; padding: 5px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; z-index: 3;">
+            </div>
+            <div id="selected-champ-element-container"
+                class="position-absolute top-0 start-0 m-3 d-none align-items-center"
+                style="background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 15px; z-index: 3;">
+                <img id="selected-champ-element" src="" style="width: 25px; height: 25px;" alt="">
+                <span id="selected-champ-element-name" class="text-white me-2 fw-bold"
+                    style="font-size: 0.8rem;"></span>
+
+            </div>
+            <div id="selected-champ-rank-container" class="position-absolute d-none align-items-center"
+                style="top: 48px; left: 16px; background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 15px; z-index: 3;">
+                <span id="selected-champ-rank" class="text-warning fw-bold" style="font-size: 0.9rem;"></span>
+            </div>
         </div>
         <div id="splash-art-name" class="text-center fw-bold fs-5" style="color: white;"></div>
         <div id="countdown-bar-container">

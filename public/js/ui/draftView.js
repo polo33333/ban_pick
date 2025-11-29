@@ -390,6 +390,19 @@ function updateSplashOnTurnChange(turnChanged) {
         state.remotePreSelectedChamp = null;
         document.querySelectorAll('.champ-item.pre-selected').forEach(el => el.classList.remove('pre-selected'));
 
+        // Reset champion name and element container
+        if (DOM.selectedChampNameEl) {
+            DOM.selectedChampNameEl.innerText = '';
+        }
+        if (DOM.selectedChampElementContainer) {
+            DOM.selectedChampElementContainer.classList.add('d-none');
+            DOM.selectedChampElementContainer.classList.remove('d-flex');
+        }
+        if (DOM.selectedChampRankContainer) {
+            DOM.selectedChampRankContainer.classList.add('d-none');
+            DOM.selectedChampRankContainer.classList.remove('d-flex');
+        }
+
         DOM.countdownBar.style.transition = 'none';
         DOM.countdownBar.style.transform = 'scaleX(1)';
         void DOM.countdownBar.offsetWidth; // Trigger reflow

@@ -58,7 +58,20 @@ export function initializePreDraftView() {
 
     if (DOM.preDraftSearchInput) {
         DOM.preDraftSearchInput.addEventListener('input', (e) => {
-            renderPreDraftChampionGrid(e.target.value);
+            const value = e.target.value;
+            renderPreDraftChampionGrid(value);
+            if (DOM.preDraftClearSearchBtn) {
+                DOM.preDraftClearSearchBtn.style.display = value ? 'block' : 'none';
+            }
+        });
+    }
+
+    if (DOM.preDraftClearSearchBtn) {
+        DOM.preDraftClearSearchBtn.addEventListener('click', () => {
+            DOM.preDraftSearchInput.value = '';
+            renderPreDraftChampionGrid("");
+            DOM.preDraftClearSearchBtn.style.display = 'none';
+            DOM.preDraftSearchInput.focus();
         });
     }
 }
