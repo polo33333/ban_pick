@@ -6,6 +6,27 @@ import { handlePreDraftPhase } from './preDraftView.js';
 
 let clientCountdownInterval = null;
 
+// Notification sound function using Web Audio API
+function playNotificationSound() {
+    try {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        // Create a simple beep notification sound
+        oscillator.frequency.value = 880; // A5 note
+        gainNode.gain.value = 0.2; // Volume
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.15); // Short beep
+    } catch (error) {
+        console.error('Error playing notification sound:', error);
+    }
+}
+
 // Logic chính cho màn hình draft, xử lý sự kiện `room-state`
 
 export function initializeDraftView() {
@@ -51,6 +72,12 @@ export function handleRoomStateUpdate(room) {
 
     DOM.loginViewEl.style.display = 'none';
     DOM.draftViewEl.style.display = 'block';
+
+    // Hide developer footer when in draft view
+    const developerFooter = document.getElementById('developer-footer');
+    if (developerFooter) {
+        developerFooter.style.display = 'none';
+    }
 
     // Handle pre-draft phase first
     const isInPreDraft = handlePreDraftPhase(room);
@@ -108,6 +135,11 @@ export function handleRoomStateUpdate(room) {
         if (isPlayer && isDrafting) {
             const isMyTurn = room.nextTurn?.team === state.socket.id;
             DOM.lockInButton.disabled = !isMyTurn || room.paused || !state.preSelectedChamp;
+
+            // Play notification sound when it's the player's turn
+            if (turnChanged && isMyTurn && !room.paused) {
+                playNotificationSound();
+            }
         }
     }
 }
@@ -251,6 +283,7 @@ function updateCountdown(room, forceRestart = false) {
         DOM.countdownText.style.display = 'block';
         DOM.countdownText.innerText = "PAUSED";
         DOM.countdownBar.style.transform = `scaleX(1)`;
+        DOM.countdownText.style.fontSize = '20px';
         DOM.countdownText.classList.remove('time-warning');
     } else if (room.countdown != null && room.nextTurn) {
         let remaining = room.countdown;
@@ -258,6 +291,7 @@ function updateCountdown(room, forceRestart = false) {
 
         const updateDisplay = () => {
             DOM.countdownText.innerText = Math.max(0, Math.floor(remaining));
+            DOM.countdownText.style.fontSize = '48px';
             const scale = Math.max(0, remaining) / (room.countdownDuration || 30);
             DOM.countdownBar.style.transform = `scaleX(${scale})`;
             DOM.countdownText.classList.toggle('time-warning', remaining <= 10);
