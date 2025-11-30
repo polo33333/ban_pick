@@ -311,6 +311,17 @@ div#blue-bans {
   transform: translate(-50%, -50%);
 }
 
+.logo-container {
+  position: absolute;
+  background: transparent;
+  top: -12%;
+  left: 40%;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+  justify-items: center;
+}
+
 div#splash-art-name {
   background: rgb(65 65 65 / 50%);
   padding: 2px 8px;
@@ -463,8 +474,8 @@ div#splash-art-name {
 }
 
 #host-controls-toggle.btn.rounded-circle {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   padding: 0;
 }
 
@@ -574,7 +585,7 @@ div#selected-champ-rank-container {
   position: absolute;
   top: 2px;
   left: 4px;
-  font-size: 16px;
+  font-size: 14px;
   color: white;
   z-index: 1;
 }

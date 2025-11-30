@@ -61,6 +61,16 @@ export function initializeDraftView() {
     };
     window.kickPlayer = emitKickPlayer;
     window.chooseFirst = emitChooseFirst;
+
+    // Room ID Visibility Toggle
+    window.isRoomIdHidden = true; // Default hidden
+    window.toggleRoomIdVisibility = () => {
+        window.isRoomIdHidden = !window.isRoomIdHidden;
+        // Re-render status to update ID visibility
+        if (state.currentRoomState) {
+            updatePlayerStatus(state.currentRoomState);
+        }
+    };
 }
 
 // --- Socket Event Handlers ---
@@ -246,7 +256,15 @@ function updateHostControls(room) {
 }
 
 function updatePlayerStatus(room) {
-    DOM.firstPickStatusEl.innerHTML = `ID Phòng: <strong>${state.myRoom}</strong>`;
+    const roomIdDisplay = window.isRoomIdHidden ? '******' : state.myRoom;
+    const eyeIcon = window.isRoomIdHidden ? 'bi-eye-slash-fill' : 'bi-eye-fill';
+
+    DOM.firstPickStatusEl.innerHTML = `
+        ID Phòng: <strong class="me-2">${roomIdDisplay}</strong>
+        <button class="btn btn-sm btn-outline-light border-0" onclick="toggleRoomIdVisibility()" title="${window.isRoomIdHidden ? 'Hiện ID' : 'Ẩn ID'}">
+            <i class="bi ${eyeIcon}"></i>
+        </button>
+    `;
 
     const playerOrder = room.playerOrder || [];
     const connectedPlayerIds = new Set(Object.keys(room.players));
