@@ -32,7 +32,8 @@ export function startCountdown(roomId) {
     room.countdown = room.countdownDuration || 30;
     room.paused = false;
     room.remainingTime = null; // Reset thời gian còn lại
-    room.turnStartTime = Date.now(); // Lưu thời điểm bắt đầu lượt
+    // Thêm 0.5 giây buffer để bù trừ network latency, đảm bảo client hiển thị đủ 30 giây và xuống được 0
+    room.countdownEndTime = Date.now() + (room.countdown * 1000) + 500;
 
     // Đặt một "cái hẹn" duy nhất để xử lý timeout
     room.timer = setTimeout(() => {
@@ -47,8 +48,9 @@ export function resumeCountdown(roomId) {
     const timeToResume = room.remainingTime ?? (room.countdownDuration * 1000);
     room.paused = false;
     room.countdown = Math.round(timeToResume / 1000); // Cập nhật lại countdown để client hiển thị
-    room.turnStartTime = Date.now(); // Cập nhật lại thời điểm bắt đầu cho lần pause tiếp theo
-    
+    // Thêm 0.5 giây buffer để bù trừ network latency
+    room.countdownEndTime = Date.now() + timeToResume + 500;
+
     // Đặt lại timeout với thời gian còn lại
     room.timer = setTimeout(() => {
         handleTimeout(roomId);
@@ -84,21 +86,14 @@ function handleTimeout(roomId) {
     const room = rooms[roomId];
     if (!room) return;
 
-    // Đảm bảo client nhận được trạng thái countdown = 0
     clearTimeout(room.timer);
-    room.countdown = 0;
-    broadcastRoomState(roomId);
 
-    // Đợi 1 giây để client hiển thị số 0, sau đó mới xử lý và chuyển lượt
-    setTimeout(() => {
-        const currentRoom = rooms[roomId];
-        // Kiểm tra lại phòng trong trường hợp nó đã bị xóa hoặc pause trong 1 giây chờ
-        if (!currentRoom || currentRoom.paused) return;
+    // Kiểm tra nếu phòng bị pause thì không xử lý
+    if (room.paused) return;
 
-        const turn = currentRoom.draftOrder[currentRoom.currentTurn];
-        if (turn) currentRoom.actions.push({ team: turn.team, type: turn.type, champ: "SKIPPED" });
-        nextTurn(roomId);
-    }, 1000); // 1 giây
+    const turn = room.draftOrder[room.currentTurn];
+    if (turn) room.actions.push({ team: turn.team, type: turn.type, champ: "SKIPPED" });
+    nextTurn(roomId);
 }
 
 function startPhase2(roomId) {

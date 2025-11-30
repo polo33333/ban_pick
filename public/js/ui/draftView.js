@@ -285,11 +285,12 @@ function updateCountdown(room, forceRestart = false) {
         DOM.countdownBar.style.transform = `scaleX(1)`;
         DOM.countdownText.style.fontSize = '20px';
         DOM.countdownText.classList.remove('time-warning');
-    } else if (room.countdown != null && room.nextTurn) {
-        let remaining = room.countdown;
+    } else if (room.countdownEndTime != null && room.nextTurn) {
         DOM.countdownText.style.display = 'block';
 
         const updateDisplay = () => {
+            // Tính toán thời gian còn lại dựa trên timestamp từ server
+            const remaining = Math.max(0, (room.countdownEndTime - Date.now()) / 1000);
             DOM.countdownText.innerText = Math.max(0, Math.floor(remaining));
             DOM.countdownText.style.fontSize = '48px';
             const scale = Math.max(0, remaining) / (room.countdownDuration || 30);
@@ -299,11 +300,14 @@ function updateCountdown(room, forceRestart = false) {
 
         updateDisplay(); // Cập nhật ngay lập tức
 
+        // Cập nhật mỗi 100ms để hiển thị mượt mà và đồng bộ chính xác
         clientCountdownInterval = setInterval(() => {
-            remaining -= 1;
             updateDisplay();
-            if (remaining < 0) clearInterval(clientCountdownInterval);
-        }, 1000);
+            // Dừng interval khi hết thời gian
+            if (room.countdownEndTime - Date.now() < 0) {
+                clearInterval(clientCountdownInterval);
+            }
+        }, 100);
     } else {
         DOM.countdownText.style.display = 'none';
         DOM.countdownBar.style.transform = 'scaleX(1)';

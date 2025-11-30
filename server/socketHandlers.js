@@ -64,7 +64,7 @@ function handlePlayerJoin(socket, room, playerName) {
         const [oldSocketId] = oldPlayerEntry;
         const newSocketId = socket.id;
         console.log(`Player ${playerName} reconnected. Mapping ${oldSocketId} to ${newSocketId}`);
-        
+
         // Cập nhật các cấu trúc dữ liệu với socket.id mới
         const updateId = (obj) => { if (obj && obj.team === oldSocketId) obj.team = newSocketId; };
         room.playerOrder = room.playerOrder.map(id => (id === oldSocketId ? newSocketId : id));
@@ -158,9 +158,7 @@ function handleTogglePause(socket, { roomId }) {
         } else {
             // Hủy timeout hiện tại và tính thời gian còn lại
             clearTimeout(room.timer);
-            const timeElapsed = Date.now() - room.turnStartTime;
-            const totalDuration = (room.countdownDuration || 30) * 1000;
-            room.remainingTime = Math.max(0, totalDuration - timeElapsed);
+            room.remainingTime = Math.max(0, room.countdownEndTime - Date.now());
 
             room.paused = true;
             broadcastRoomState(roomId);
@@ -201,9 +199,7 @@ function handleDisconnect(io, socket) {
             clearTimeout(room.timer); // Hủy timeout khi người chơi thoát
 
             // TÍNH TOÁN VÀ LƯU LẠI THỜI GIAN CÒN LẠI (FIX)
-            const timeElapsed = Date.now() - room.turnStartTime;
-            const totalDuration = (room.countdownDuration || 30) * 1000;
-            room.remainingTime = Math.max(0, totalDuration - timeElapsed);
+            room.remainingTime = Math.max(0, room.countdownEndTime - Date.now());
             room.paused = true;
 
         }
