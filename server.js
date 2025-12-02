@@ -15,11 +15,6 @@ const PORT = process.env.PORT || 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 1. Logging for assets to debug deployment issues (First!)
-app.use('/assets', (req, res, next) => {
-  console.log(`[Asset Request] ${req.method} ${req.url}`);
-  next();
-});
 
 // 2. Serve large static files (images) BEFORE compression to avoid conflicts/overhead
 // This ensures that images are served directly by express.static without any compression logic touching them.
