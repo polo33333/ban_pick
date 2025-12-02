@@ -97,7 +97,7 @@ async function loadComponents() {
 
 async function preloadCriticalImages() {
     const criticalImages = [
-        '/assets/background.png',
+        // '/assets/background.png', // Removed in favor of CSS background
         '/assets/vs.png'
     ];
 
@@ -118,7 +118,7 @@ async function preloadCriticalImages() {
     // Apply background image after loading
     const bgElement = document.getElementById('main-background');
     if (bgElement) {
-        bgElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(/assets/background.png)`;
+        // bgElement.style.backgroundImage = ... // Removed in favor of CSS background
     }
 }
 
