@@ -675,7 +675,7 @@ div#selected-champ-rank-container {
 
 .glass-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(255, 53, 122, 0.6);
+  /* box-shadow: 0 6px 20px rgba(255, 53, 122, 0.6); */
   color: white;
 }
 

@@ -29,11 +29,18 @@ app.use(
 // Phục vụ các tệp tĩnh từ thư mục 'public'
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Phục vụ thư mục icon và background
-// Cấu hình để phục vụ các tệp tĩnh từ thư mục 'assets'
-app.use('/assets', express.static(path.join(__dirname, 'assets')));
-app.use('/icon', express.static(path.join(process.cwd(), 'icon')));
-app.use('/background', express.static(path.join(process.cwd(), 'background')));
+// Logging middleware for assets to debug deployment issues
+app.use('/assets', (req, res, next) => {
+  console.log(`[Asset Request] ${req.method} ${req.url}`);
+  next();
+});
+
+// Fallback for assets if they are not found in public/assets (though express.static above should catch them if they exist)
+// This might be needed if the folder structure is different on the server, but standardizing on 'public' is best.
+// We keep the specific route but point it to the correct location inside public just in case.
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
+app.use('/icon', express.static(path.join(__dirname, 'public', 'icon')));
+app.use('/background', express.static(path.join(__dirname, 'public', 'background')));
 
 // ---- Khi client kết nối ----
 io.on("connection", socket => {
