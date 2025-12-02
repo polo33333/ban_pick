@@ -6,9 +6,9 @@ function lazyLoadMainBackground() {
     if (!bgElement) return;
 
     const img = new Image();
-    const imageUrl = '/assets/background.webp';
-    
-    img.onload = function() {
+    const imageUrl = '/assets/background.png';
+
+    img.onload = function () {
         // Giữ lại gradient đã có và thêm ảnh nền vào
         bgElement.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${imageUrl})`;
     };
@@ -20,7 +20,7 @@ export async function loadCharacters() {
     try {
         const response = await fetch('/characters');
         const rawCharacters = await response.json();
-        
+
         const seen = new Set();
         state.uniqueCharacters = Object.values(rawCharacters).filter(char => {
             const duplicate = seen.has(char.en);
