@@ -15,6 +15,19 @@ const PORT = process.env.PORT || 4000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 1. Logging for assets to debug deployment issues (First!)
+app.use('/assets', (req, res, next) => {
+  console.log(`[Asset Request] ${req.method} ${req.url}`);
+  next();
+});
+
+// 2. Serve large static files (images) BEFORE compression to avoid conflicts/overhead
+// This ensures that images are served directly by express.static without any compression logic touching them.
+app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
+app.use('/icon', express.static(path.join(__dirname, 'public', 'icon')));
+app.use('/background', express.static(path.join(__dirname, 'public', 'background')));
+
+// 3. Compression middleware (now only affects things below it)
 // 🛠️ Chỉ nén JSON/HTML, không nén ảnh
 app.use(
   compression({
@@ -26,21 +39,8 @@ app.use(
   })
 );
 
-// Phục vụ các tệp tĩnh từ thư mục 'public'
+// 4. Serve the rest of public (CSS, JS, HTML) - these WILL be compressed
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Logging middleware for assets to debug deployment issues
-app.use('/assets', (req, res, next) => {
-  console.log(`[Asset Request] ${req.method} ${req.url}`);
-  next();
-});
-
-// Fallback for assets if they are not found in public/assets (though express.static above should catch them if they exist)
-// This might be needed if the folder structure is different on the server, but standardizing on 'public' is best.
-// We keep the specific route but point it to the correct location inside public just in case.
-app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
-app.use('/icon', express.static(path.join(__dirname, 'public', 'icon')));
-app.use('/background', express.static(path.join(__dirname, 'public', 'background')));
 
 // ---- Khi client kết nối ----
 io.on("connection", socket => {
