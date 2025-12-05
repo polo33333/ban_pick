@@ -181,6 +181,20 @@
     "ja": "ガルブレーナ",
     "isActive": true
   },
+  "1209":{
+    "icon": "/icon/Mornye.webp",
+    "background": "/background/Mornye.webp",
+    "rank": 5,
+    "weapon": 1,
+    "element": 2,
+    "en": "Mornye",
+    "nickname": "",
+    "desc": "Coming Soon",
+    "ko": "모니에",
+    "zh-Hans": "莫宁",
+    "ja": "モーニエ",
+    "isActive": false
+},
   "1301": {
     "icon": "/icon/Calcharo.webp",
     "background": "/background/Calcharo.webp",
@@ -502,6 +516,20 @@
     "zh-Hans": "千咲",
     "ja": "千咲",
     "isActive": true
+  },
+  "1509":{
+    "icon": "/icon/Lynae.webp",
+    "background": "/background/Lynae.webp",
+    "rank": 5,
+    "weapon": 3,
+    "element": 5,
+    "en": "Lynae",
+    "nickname": "",
+    "desc": "Coming Soon",
+    "ko": "린네",
+    "zh-Hans": "琳奈",
+    "ja": "リンネー",
+    "isActive": false
   },
   "1601": {
     "icon": "/icon/Taoqi.webp",
