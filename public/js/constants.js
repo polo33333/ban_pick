@@ -48,6 +48,7 @@ export const DOM = {
     get firstPickStatusEl() { return document.getElementById("first-pick-status"); },
     get player1NameEl() { return document.querySelector('#player1-container h3'); },
     get player2NameEl() { return document.querySelector('#player2-container h3'); },
+    get spinePlayerContainer() { return document.getElementById('spine-player-container'); },
 };
 
 export const CONSTANTS = {
@@ -70,4 +71,10 @@ export const CONSTANTS = {
         5: 'Spectro',
         6: 'Havoc'
     }
+};
+
+// Config có thể bật/tắt các tính năng
+export const CONFIG = {
+    // Bật/tắt Live2D (Spine animations) khi chọn champion
+    ENABLE_LIVE2D: false,
 };

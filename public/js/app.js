@@ -3,43 +3,59 @@ import { loadCharacters } from './services/api.js';
 import { initializeLoginView } from './ui/loginView.js';
 import { initializeDraftView } from './ui/draftView.js';
 import { initializePreDraftView } from './ui/preDraftView.js';
-import { DOM } from './constants.js';
+import { DOM, CONFIG } from './constants.js';
+import { preloadAllSpineAnimations } from './ui/components.js';
 
 // Điểm khởi đầu của ứng dụng phía client
 document.addEventListener('DOMContentLoaded', async () => {
     const loadingScreen = document.getElementById('loading-screen');
     const loadingProgress = document.getElementById('loading-progress');
     const loadingPercentage = document.getElementById('loading-percentage');
+    const loadingText = document.querySelector('.loading-text');
 
     let totalSteps = 0;
     let completedSteps = 0;
 
-    function updateProgress() {
+    function updateProgress(text = null) {
         const percentage = Math.round((completedSteps / totalSteps) * 100);
         loadingProgress.style.width = percentage + '%';
         loadingPercentage.textContent = percentage + '%';
+        if (text && loadingText) {
+            loadingText.textContent = text;
+        }
     }
 
     try {
-        // Calculate total steps
-        totalSteps = 3; // components + characters + critical images
+        // Calculate total steps (Live2D là optional)
+        totalSteps = CONFIG.ENABLE_LIVE2D ? 4 : 3;
 
         // Step 1: Load components
+        updateProgress('Đang tải giao diện...');
         await loadComponents();
         completedSteps++;
         updateProgress();
 
         // Step 2: Load characters data
+        updateProgress('Đang tải dữ liệu tướng...');
         await loadCharacters();
         completedSteps++;
         updateProgress();
 
         // Step 3: Preload critical images
+        updateProgress('Đang tải hình ảnh...');
         await preloadCriticalImages();
         completedSteps++;
         updateProgress();
 
-        // Tải lại tên người chơi đã sử dụng lần cuối từ localStorage
+        // Step 4: Preload spine animations (Live2D) - chỉ khi bật
+        if (CONFIG.ENABLE_LIVE2D) {
+            updateProgress('Đang tải hiệu ứng Live2D...');
+            await preloadAllSpineAnimations((current, total) => {
+                loadingText.textContent = `Đang tải Live2D (${current}/${total})...`;
+            });
+            completedSteps++;
+        }
+        updateProgress('Hoàn tất!');
         const lastPlayerName = localStorage.getItem('lastPlayerName');
         if (lastPlayerName && DOM.playerNameInput) {
             DOM.playerNameInput.value = lastPlayerName;

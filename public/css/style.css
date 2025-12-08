@@ -344,7 +344,7 @@ div#blue-bans {
 }
 
 div#splash-art-name {
-  background: rgb(65 65 65 / 50%);
+  background: rgb(0 0 0 / 70%);
   padding: 2px 8px;
   border-radius: 15px;
   z-index: 3;
@@ -872,4 +872,34 @@ div#selected-champ-rank-container {
   50% {
     opacity: 0.7;
   }
+}
+
+/* Spine WebGL Canvas Container */
+#spine-player-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 700px;
+  background: transparent;
+  z-index: -1;
+  pointer-events: none;
+  /* Let clicks pass through to stuff behind if needed */
+}
+
+/* Spine WebGL Canvas */
+#spine-player-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  background: transparent;
+}
+
+div#selected-champ-name {
+  justify-content: center;
+  color: white;
+  z-index: 3;
+  transform: translate(-60%, 50%) !important;
+  padding: 2px 5px !important;
+  border-radius: 15px !important;
 }

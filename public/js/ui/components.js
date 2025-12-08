@@ -1,8 +1,131 @@
-import { DOM, CONSTANTS } from '../constants.js';
+import { DOM, CONSTANTS, CONFIG } from '../constants.js';
 import { state } from '../state.js';
 import { emitPreSelectChamp, emitSelectChamp } from '../services/socket.js';
 
 // Chứa các hàm render các thành phần UI nhỏ, tái sử dụng được
+
+// ==================== Spine WebGL Management (Single Context) ====================
+import { getSpineManager } from '../spine/spineWebGL.js';
+
+let spineManagerInitialized = false;
+
+// Initialize spine manager (gọi 1 lần khi app start)
+function ensureSpineManagerInit() {
+    if (spineManagerInitialized) return;
+
+    const container = DOM.spinePlayerContainer;
+    if (!container) return;
+
+    const manager = getSpineManager();
+    manager.init(container);
+    spineManagerInitialized = true;
+}
+
+// ==================== Public Preload Functions ====================
+export function preloadSpinePlayer() {
+    console.log('SpineWebGL: Single context mode - preloading skeletons');
+}
+
+// Preload all spine skeleton data (during loading screen)
+export function preloadAllSpineAnimations(onProgress = null) {
+    return new Promise(async (resolve) => {
+        // Ensure manager is initialized
+        ensureSpineManagerInit();
+
+        const manager = getSpineManager();
+        const charsWithSpine = Object.values(state.characters || {}).filter(
+            char => char.atlasUrl && char.binaryUrl && char.textureUrl
+        );
+
+        if (charsWithSpine.length === 0) {
+            console.log('No spine animations to preload');
+            resolve();
+            return;
+        }
+
+        console.log(`SpineWebGL: Preloading ${charsWithSpine.length} skeletons (single WebGL context)...`);
+
+        let completedCount = 0;
+        const total = charsWithSpine.length;
+
+        // Preload all skeletons sequentially (để không block UI)
+        // Preload skeletons in batches (parallel)
+        const BATCH_SIZE = 8;
+        for (let i = 0; i < total; i += BATCH_SIZE) {
+            const batch = charsWithSpine.slice(i, i + BATCH_SIZE);
+
+            await Promise.all(batch.map(async (char) => {
+                try {
+                    await manager.preloadSkeleton({
+                        atlasUrl: char.atlasUrl,
+                        binaryUrl: char.binaryUrl,
+                        textureUrl: char.textureUrl
+                    });
+                } catch (error) {
+                    console.warn(`Failed to preload skeleton for ${char.en}:`, error);
+                }
+            }));
+
+            completedCount += batch.length;
+            if (completedCount > total) completedCount = total;
+            if (onProgress) onProgress(completedCount, total);
+        }
+
+        console.log(`SpineWebGL: Preload complete - ${manager.getCacheSize()} skeletons cached`);
+        resolve();
+    });
+}
+
+// Show spine animation for character
+export function initSpinePlayer(charData = null) {
+    const container = DOM.spinePlayerContainer;
+    if (!container) return;
+
+    // Ensure manager is initialized
+    ensureSpineManagerInit();
+
+    // Check if Live2D is enabled
+    if (!CONFIG.ENABLE_LIVE2D) {
+        destroySpinePlayer();
+        return;
+    }
+
+    // Check if character has spine URLs
+    const hasSpineUrls = charData && charData.atlasUrl && charData.binaryUrl && charData.textureUrl;
+
+    if (!hasSpineUrls) {
+        destroySpinePlayer();
+        return;
+    }
+
+    // Show container and hide splash art
+    container.style.display = 'block';
+    if (DOM.splashArtImg) DOM.splashArtImg.style.display = 'none';
+
+    // Show skeleton
+    const manager = getSpineManager();
+    manager.showSkeleton({
+        atlasUrl: charData.atlasUrl,
+        binaryUrl: charData.binaryUrl,
+        textureUrl: charData.textureUrl
+    });
+}
+
+// Hide spine player
+export function destroySpinePlayer() {
+    const manager = getSpineManager();
+    manager.hideSkeleton();
+
+    const container = DOM.spinePlayerContainer;
+    if (container) {
+        container.style.display = 'none';
+    }
+
+    // Show splash art if it has a valid src
+    if (DOM.splashArtImg && DOM.splashArtImg.src && !DOM.splashArtImg.src.endsWith('/')) {
+        DOM.splashArtImg.style.display = 'block';
+    }
+}
 
 export function truncateName(name, maxLength = 6) {
     if (name && name.length > maxLength) {
@@ -53,6 +176,9 @@ export function updateSplashArt(champName) {
         DOM.splashArtImg.style.display = 'block';
         DOM.splashArtImg.src = charData.background || '';
 
+        // Hiển thị SpinePlayer animation với URL từ character (nếu có)
+        initSpinePlayer(charData);
+
         let turnText = '';
         if (turn) {
             const playerName = room.players[turn.team]?.name || '???';
@@ -65,6 +191,8 @@ export function updateSplashArt(champName) {
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = charData.en;
+            DOM.selectedChampNameEl.classList.remove('d-none');
+            DOM.selectedChampNameEl.classList.add('d-flex');
         }
 
         if (DOM.selectedChampElementContainer) {
@@ -94,6 +222,9 @@ export function updateSplashArt(champName) {
         DOM.splashArtContainer.style.display = 'block'; // Luôn hiển thị container
         DOM.splashArtImg.src = '';
         DOM.splashArtImg.style.display = 'none';
+
+        // Ẩn SpinePlayer animation
+        destroySpinePlayer();
 
         let text = '';
         if (turn) {
@@ -127,6 +258,8 @@ export function updateSplashArt(champName) {
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = '';
+            DOM.selectedChampNameEl.classList.add('d-none');
+            DOM.selectedChampNameEl.classList.remove('d-flex');
         }
 
         if (DOM.selectedChampElementContainer) {

@@ -83,6 +83,8 @@ export function handleRoomStateUpdate(room) {
     DOM.loginViewEl.style.display = 'none';
     DOM.draftViewEl.style.display = 'block';
 
+    // Spine animations đã được preload trong loading screen
+
     // Hide developer footer when in draft view
     const developerFooter = document.getElementById('developer-footer');
     if (developerFooter) {
