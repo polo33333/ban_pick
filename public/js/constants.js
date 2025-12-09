@@ -76,5 +76,5 @@ export const CONSTANTS = {
 // Config có thể bật/tắt các tính năng
 export const CONFIG = {
     // Bật/tắt Live2D (Spine animations) khi chọn champion
-    ENABLE_LIVE2D: false,
+    ENABLE_LIVE2D: true,
 };
