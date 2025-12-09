@@ -141,96 +141,15 @@ class SpineWebGLManager {
             checkLoaded();
         });
 
-        let rawBinary = this.assetManager.require(urls.binaryUrl);
-
-        // Debug: Check what we actually got
-        if (!rawBinary) {
-            throw new Error(`Failed to retrieve loaded binary for ${urls.binaryUrl}`);
-        }
-
-        // Validate if we got HTML instead of binary (common 404 behavior on some servers)
-        // If it's a string starting with '<', it's definitely HTML.
-        // If it's a buffer, we can check the first few bytes, but usually strings are the issue if loader behaves oddly.
-        // However, AssetManager with loadBinary usually returns ArrayBuffer or Uint8Array.
-
-        let binaryData;
-        if (rawBinary instanceof Uint8Array) {
-            binaryData = rawBinary;
-        } else if (rawBinary instanceof ArrayBuffer) {
-            binaryData = new Uint8Array(rawBinary);
-        } else {
-            // Try to handle unexpected types
-            console.warn(`Spine: Unexpected binary type for ${urls.binaryUrl}:`, typeof rawBinary, rawBinary);
-            if (rawBinary.buffer) {
-                binaryData = new Uint8Array(rawBinary.buffer);
-            } else {
-                throw new Error(`Invalid binary data type for ${urls.binaryUrl}: ${typeof rawBinary}`);
-            }
-        }
-
-        // --- Deep Inspection for Debugging ---
-
-        // 0. Check for Empty File
-        if (binaryData.length === 0) {
-            console.error(`Spine: FATAL - Loaded binary is empty (0 bytes) for ${urls.binaryUrl}`);
-
-            // Attempt to fetch manually to see response headers/status
-            fetch(urls.binaryUrl).then(async response => {
-                console.error(`Spine: Debug Fetch Status for ${urls.binaryUrl}: ${response.status} ${response.statusText}`);
-                const headers = {};
-                response.headers.forEach((value, key) => headers[key] = value);
-                console.error(`Spine: Debug Fetch Headers:`, headers);
-                console.error(`Spine: Debug Fetch Content-Length: ${response.headers.get('content-length')}`);
-            }).catch(e => console.error("Spine: Debug Fetch Failed", e));
-
-            throw new Error(`Loaded binary file is empty (0 bytes): ${urls.binaryUrl}. Check server file integrity and upload.`);
-        }
-
-        // 1. Check for Git LFS pointer
-        if (binaryData.length < 500) {
-            const textDecoder = new TextDecoder('utf-8');
-            try {
-                const text = textDecoder.decode(binaryData).trim();
-                // Check for Git LFS signature "version https://git-lfs..." or even just "version https"
-                if (text.includes('git-lfs') || text.startsWith('version https')) {
-                    console.error(`Spine: FATAL - Received Git LFS pointer instead of binary for ${urls.binaryUrl}`);
-                    console.error('Spine: Content:', text);
-                    throw new Error(`Git LFS pointer detected for ${urls.binaryUrl}. Please verify LFS storage.`);
-                }
-                // Check for HTML
-                if (text.startsWith('<!DOCTYPE html') || text.startsWith('<html')) {
-                    console.error(`Spine: FATAL - Received HTML instead of binary for ${urls.binaryUrl}`);
-                    throw new Error(`HTML response detected for ${urls.binaryUrl}. Likely 404 or auth page.`);
-                }
-            } catch (e) {
-                // Ignore decode errors if it's real binary
-            }
-        }
-
-        console.log(`Spine: Inspecting binary for ${urls.binaryUrl}. Size: ${binaryData.length} bytes.`);
-        // Log first 16 bytes hex for sanity check
-        const headerHex = Array.from(binaryData.slice(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
-        console.log(`Spine: Header hex: ${headerHex}`);
-        // -------------------------------------
-
         const atlas = this.assetManager.require(urls.atlasUrl);
         const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
         const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
         skeletonBinary.scale = 1.0;
         skeletonBinary.premultipliedAlpha = false;
 
-        let skeletonData;
-        try {
-            skeletonData = skeletonBinary.readSkeletonData(binaryData);
-        } catch (error) {
-            console.error(`Spine: Error reading skeleton data for ${urls.binaryUrl}`, error);
-            console.error(`Spine: Binary data size: ${binaryData ? binaryData.length : 'null'}`);
-            // Check for HTML signature (first few bytes: 60 = '<')
-            if (binaryData && binaryData.length > 0 && binaryData[0] === 60) {
-                console.error("Spine: Binary data appears to be HTML (likely 404 Not Found served as HTML)");
-            }
-            throw error;
-        }
+        const skeletonData = skeletonBinary.readSkeletonData(
+            this.assetManager.require(urls.binaryUrl)
+        );
 
         this.skeletonDataCache.set(key, skeletonData);
         console.log(`Spine: Loaded skeleton - ${key.split('/').pop()}`);
