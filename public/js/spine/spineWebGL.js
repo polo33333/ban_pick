@@ -168,6 +168,34 @@ class SpineWebGLManager {
             }
         }
 
+        // --- Deep Inspection for Debugging ---
+        // 1. Check for Git LFS pointer
+        if (binaryData.length < 500) {
+            const textDecoder = new TextDecoder('utf-8');
+            try {
+                const text = textDecoder.decode(binaryData).trim();
+                // Check for Git LFS signature "version https://git-lfs..." or even just "version https"
+                if (text.includes('git-lfs') || text.startsWith('version https')) {
+                    console.error(`Spine: FATAL - Received Git LFS pointer instead of binary for ${urls.binaryUrl}`);
+                    console.error('Spine: Content:', text);
+                    throw new Error(`Git LFS pointer detected for ${urls.binaryUrl}. Please verify LFS storage.`);
+                }
+                // Check for HTML
+                if (text.startsWith('<!DOCTYPE html') || text.startsWith('<html')) {
+                    console.error(`Spine: FATAL - Received HTML instead of binary for ${urls.binaryUrl}`);
+                    throw new Error(`HTML response detected for ${urls.binaryUrl}. Likely 404 or auth page.`);
+                }
+            } catch (e) {
+                // Ignore decode errors if it's real binary
+            }
+        }
+
+        console.log(`Spine: Inspecting binary for ${urls.binaryUrl}. Size: ${binaryData.length} bytes.`);
+        // Log first 16 bytes hex for sanity check
+        const headerHex = Array.from(binaryData.slice(0, 16)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+        console.log(`Spine: Header hex: ${headerHex}`);
+        // -------------------------------------
+
         const atlas = this.assetManager.require(urls.atlasUrl);
         const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
         const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
