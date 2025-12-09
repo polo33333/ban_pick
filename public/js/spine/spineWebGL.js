@@ -169,6 +169,23 @@ class SpineWebGLManager {
         }
 
         // --- Deep Inspection for Debugging ---
+
+        // 0. Check for Empty File
+        if (binaryData.length === 0) {
+            console.error(`Spine: FATAL - Loaded binary is empty (0 bytes) for ${urls.binaryUrl}`);
+
+            // Attempt to fetch manually to see response headers/status
+            fetch(urls.binaryUrl).then(async response => {
+                console.error(`Spine: Debug Fetch Status for ${urls.binaryUrl}: ${response.status} ${response.statusText}`);
+                const headers = {};
+                response.headers.forEach((value, key) => headers[key] = value);
+                console.error(`Spine: Debug Fetch Headers:`, headers);
+                console.error(`Spine: Debug Fetch Content-Length: ${response.headers.get('content-length')}`);
+            }).catch(e => console.error("Spine: Debug Fetch Failed", e));
+
+            throw new Error(`Loaded binary file is empty (0 bytes): ${urls.binaryUrl}. Check server file integrity and upload.`);
+        }
+
         // 1. Check for Git LFS pointer
         if (binaryData.length < 500) {
             const textDecoder = new TextDecoder('utf-8');
