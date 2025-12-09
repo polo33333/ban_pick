@@ -21,6 +21,7 @@ const __dirname = path.dirname(__filename);
 app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
 app.use('/icon', express.static(path.join(__dirname, 'public', 'icon')));
 app.use('/background', express.static(path.join(__dirname, 'public', 'background')));
+app.use('/live2d', express.static(path.join(__dirname, 'public', 'live2d')));
 
 // 3. Compression middleware (now only affects things below it)
 // 🛠️ Chỉ nén JSON/HTML, không nén ảnh
