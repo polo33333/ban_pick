@@ -37,7 +37,7 @@ class SpineWebGLManager {
     init(container) {
         if (this.initialized) return;
         if (!container) {
-            console.warn('SpineWebGLManager: No container provided');
+            console.warn('Spine: No container provided');
             return;
         }
 
@@ -79,11 +79,11 @@ class SpineWebGLManager {
             this.mvp.ortho2d(0, 0, this.fixedWidth, this.fixedHeight);
 
             this.initialized = true;
-            console.log(`SpineWebGLManager: Initialized with fixed size ${this.fixedWidth}x${this.fixedHeight}`);
+            console.log(`Spine: Initialized with fixed size ${this.fixedWidth}x${this.fixedHeight}`);
 
             this.startRenderLoop();
         } catch (error) {
-            console.error('SpineWebGLManager: Initialization failed', error);
+            console.error('Spine: Initialization failed', error);
         }
     }
 
@@ -141,18 +141,54 @@ class SpineWebGLManager {
             checkLoaded();
         });
 
+        let rawBinary = this.assetManager.require(urls.binaryUrl);
+
+        // Debug: Check what we actually got
+        if (!rawBinary) {
+            throw new Error(`Failed to retrieve loaded binary for ${urls.binaryUrl}`);
+        }
+
+        // Validate if we got HTML instead of binary (common 404 behavior on some servers)
+        // If it's a string starting with '<', it's definitely HTML.
+        // If it's a buffer, we can check the first few bytes, but usually strings are the issue if loader behaves oddly.
+        // However, AssetManager with loadBinary usually returns ArrayBuffer or Uint8Array.
+
+        let binaryData;
+        if (rawBinary instanceof Uint8Array) {
+            binaryData = rawBinary;
+        } else if (rawBinary instanceof ArrayBuffer) {
+            binaryData = new Uint8Array(rawBinary);
+        } else {
+            // Try to handle unexpected types
+            console.warn(`Spine: Unexpected binary type for ${urls.binaryUrl}:`, typeof rawBinary, rawBinary);
+            if (rawBinary.buffer) {
+                binaryData = new Uint8Array(rawBinary.buffer);
+            } else {
+                throw new Error(`Invalid binary data type for ${urls.binaryUrl}: ${typeof rawBinary}`);
+            }
+        }
+
         const atlas = this.assetManager.require(urls.atlasUrl);
         const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
         const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
         skeletonBinary.scale = 1.0;
         skeletonBinary.premultipliedAlpha = false;
 
-        const skeletonData = skeletonBinary.readSkeletonData(
-            this.assetManager.require(urls.binaryUrl)
-        );
+        let skeletonData;
+        try {
+            skeletonData = skeletonBinary.readSkeletonData(binaryData);
+        } catch (error) {
+            console.error(`Spine: Error reading skeleton data for ${urls.binaryUrl}`, error);
+            console.error(`Spine: Binary data size: ${binaryData ? binaryData.length : 'null'}`);
+            // Check for HTML signature (first few bytes: 60 = '<')
+            if (binaryData && binaryData.length > 0 && binaryData[0] === 60) {
+                console.error("Spine: Binary data appears to be HTML (likely 404 Not Found served as HTML)");
+            }
+            throw error;
+        }
 
         this.skeletonDataCache.set(key, skeletonData);
-        console.log(`SpineWebGLManager: Loaded skeleton - ${key.split('/').pop()}`);
+        console.log(`Spine: Loaded skeleton - ${key.split('/').pop()}`);
 
         return skeletonData;
     }
@@ -192,7 +228,7 @@ class SpineWebGLManager {
      */
     async showSkeleton(urls) {
         if (!this.initialized) {
-            console.warn('SpineWebGLManager: Not initialized');
+            console.warn('Spine: Not initialized');
             return;
         }
 
@@ -252,10 +288,10 @@ class SpineWebGLManager {
 
             this.currentKey = key;
             this.canvas.style.display = 'block';
-            console.log(`SpineWebGLManager: Showing ${key} with scale ${scale.toFixed(2)}`);
+            console.log(`Spine: Showing ${key} with scale ${scale.toFixed(2)}`);
 
         } catch (error) {
-            console.error('SpineWebGLManager: Failed to show skeleton', error);
+            console.error('Spine: Failed to show skeleton', error);
             this.hideSkeleton();
         }
     }
@@ -334,14 +370,14 @@ class SpineWebGLManager {
             try {
                 this.context.gl.getExtension('WEBGL_lose_context')?.loseContext();
             } catch (e) {
-                console.warn('SpineWebGLManager: Error disposing', e);
+                console.warn('Spine: Error disposing', e);
             }
         }
 
         this.skeletonDataCache.clear();
         this.loadingPromises.clear();
         this.initialized = false;
-        console.log('SpineWebGLManager: Disposed');
+        console.log('Spine: Disposed');
     }
 }
 
