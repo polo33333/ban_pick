@@ -26,54 +26,10 @@ export function preloadSpinePlayer() {
     console.log('SpineWebGL: Single context mode - preloading skeletons');
 }
 
-// Preload all spine skeleton data (during loading screen)
+// Preload function - now a no-op since we use pure on-demand loading
+// Kept for backward compatibility
 export function preloadAllSpineAnimations(onProgress = null) {
-    return new Promise(async (resolve) => {
-        // Ensure manager is initialized
-        ensureSpineManagerInit();
-
-        const manager = getSpineManager();
-        const charsWithSpine = Object.values(state.characters || {}).filter(
-            char => char.atlasUrl && char.binaryUrl && char.textureUrl
-        );
-
-        if (charsWithSpine.length === 0) {
-            console.log('No spine animations to preload');
-            resolve();
-            return;
-        }
-
-        console.log(`SpineWebGL: Preloading ${charsWithSpine.length} skeletons (single WebGL context)...`);
-
-        let completedCount = 0;
-        const total = charsWithSpine.length;
-
-        // Preload all skeletons sequentially (để không block UI)
-        // Preload skeletons in batches (parallel)
-        const BATCH_SIZE = 8;
-        for (let i = 0; i < total; i += BATCH_SIZE) {
-            const batch = charsWithSpine.slice(i, i + BATCH_SIZE);
-
-            await Promise.all(batch.map(async (char) => {
-                try {
-                    await manager.preloadSkeleton({
-                        atlasUrl: char.atlasUrl,
-                        binaryUrl: char.binaryUrl,
-                        textureUrl: char.textureUrl
-                    });
-                } catch (error) {
-                    console.warn(`Failed to preload skeleton for ${char.en}:`, error);
-                }
-            }));
-
-            completedCount += batch.length;
-            if (completedCount > total) completedCount = total;
-            if (onProgress) onProgress(completedCount, total);
-        }
-
-        console.log(`SpineWebGL: Preload complete - ${manager.getCacheSize()} skeletons cached`);
-        resolve();
-    });
+    return Promise.resolve();
 }
 
 // Show spine animation for character
@@ -98,32 +54,64 @@ export function initSpinePlayer(charData = null) {
         return;
     }
 
-    // Show container and hide splash art
+    // Fade out container initially
+    container.style.opacity = '0';
     container.style.display = 'block';
-    if (DOM.splashArtImg) DOM.splashArtImg.style.display = 'none';
 
-    // Show skeleton
+    // Show skeleton (will create on-demand if not cached)
     const manager = getSpineManager();
     manager.showSkeleton({
         atlasUrl: charData.atlasUrl,
         binaryUrl: charData.binaryUrl,
         textureUrl: charData.textureUrl
+    }).then(() => {
+        // Add delay before transition for smoother effect
+        setTimeout(() => {
+            // Spine loaded successfully - fade in Spine
+            container.style.transition = 'opacity 0.3s ease-in-out';
+            container.style.opacity = '1';
+
+            // Hide background image when Spine is shown
+            if (DOM.splashArtImg) {
+                DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
+                DOM.splashArtImg.style.opacity = '0';
+                setTimeout(() => {
+                    DOM.splashArtImg.style.display = 'none';
+                }, 300);
+            }
+        }, 200); // Delay 200ms for smoother transition
+    }).catch(() => {
+        // On error, just show container without fade
+        container.style.opacity = '1';
     });
 }
 
 // Hide spine player
 export function destroySpinePlayer() {
     const manager = getSpineManager();
-    manager.hideSkeleton();
-
     const container = DOM.spinePlayerContainer;
-    if (container) {
-        container.style.display = 'none';
+
+    if (container && container.style.display !== 'none') {
+        // Fade out Spine
+        container.style.transition = 'opacity 0.3s ease-in-out';
+        container.style.opacity = '0';
+
+        setTimeout(() => {
+            manager.hideSkeleton();
+            container.style.display = 'none';
+        }, 300);
+    } else {
+        manager.hideSkeleton();
+        if (container) container.style.display = 'none';
     }
 
-    // Show splash art if it has a valid src
+    // Show background image again with fade in
     if (DOM.splashArtImg && DOM.splashArtImg.src && !DOM.splashArtImg.src.endsWith('/')) {
         DOM.splashArtImg.style.display = 'block';
+        DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
+        // Force reflow to ensure transition works
+        void DOM.splashArtImg.offsetWidth;
+        DOM.splashArtImg.style.opacity = '1';
     }
 }
 
@@ -173,10 +161,15 @@ export function updateSplashArt(champName) {
 
     if (charData) {
         DOM.splashArtContainer.style.display = 'block';
+
+        // Always show background immediately with full opacity
+        // Spine will load on-demand in initSpinePlayer
         DOM.splashArtImg.style.display = 'block';
+        DOM.splashArtImg.style.opacity = '1'; // Ensure full visibility
         DOM.splashArtImg.src = charData.background || '';
 
         // Hiển thị SpinePlayer animation với URL từ character (nếu có)
+        // This will create skeleton on-demand if not cached
         initSpinePlayer(charData);
 
         let turnText = '';

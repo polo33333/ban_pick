@@ -365,7 +365,7 @@ div#splash-art-name {
   height: 10px;
   background-color: #e3e2e2;
   border-radius: 5px;
-  margin-top: 10px;
+  margin-top: 5px;
   overflow: hidden;
 }
 
@@ -877,7 +877,7 @@ div#selected-champ-rank-container {
 /* Spine WebGL Canvas Container */
 #spine-player-container {
   position: absolute;
-  top: 50%;
+  top: 40%;
   left: 50%;
   transform: translate(-50%, -50%);
   width: 600px;
@@ -886,6 +886,7 @@ div#selected-champ-rank-container {
   z-index: -1;
   pointer-events: none;
   /* Let clicks pass through to stuff behind if needed */
+  transition: opacity 0.3s ease-in-out;
 }
 
 /* Spine WebGL Canvas */
@@ -893,6 +894,14 @@ div#selected-champ-rank-container {
   width: 100% !important;
   height: 100% !important;
   background: transparent;
+}
+
+#splash-art-img {
+  transition: opacity 0.3s ease-in-out;
+}
+
+#selected-champ-element-container {
+  transition: opacity 0.3s ease-in-out;
 }
 
 div#selected-champ-name {

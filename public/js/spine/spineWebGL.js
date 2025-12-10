@@ -17,8 +17,8 @@ class SpineWebGLManager {
         this.mvp = null;
 
         // Fixed size config
-        this.fixedWidth = options.fixedWidth || 600;  // Độ rộng cố định (px)
-        this.fixedHeight = options.fixedHeight || 700; // Độ cao cố định (px)
+        this.fixedWidth = options.fixedWidth || 650;  // Độ rộng cố định (px)
+        this.fixedHeight = options.fixedHeight || 750; // Độ cao cố định (px)
 
         this.skeletonDataCache = new Map();
         this.currentSkeleton = null;
@@ -88,6 +88,40 @@ class SpineWebGLManager {
     }
 
     /**
+     * Preload only resources (files) without creating skeleton data
+     */
+    async preloadResources(urls) {
+        const key = urls.atlasUrl;
+
+        // Check if already loaded into AssetManager
+        if (this.assetManager.isLoadingComplete() && this.assetManager.get(urls.atlasUrl)) {
+            return;
+        }
+
+        // Load files into AssetManager only
+        this.assetManager.loadTextureAtlas(urls.atlasUrl);
+        this.assetManager.loadBinary(urls.binaryUrl);
+
+        await new Promise((resolve, reject) => {
+            const startTime = Date.now();
+            const timeout = 30000;
+
+            const checkLoaded = () => {
+                if (this.assetManager.isLoadingComplete()) {
+                    resolve();
+                } else if (this.assetManager.hasErrors()) {
+                    reject(new Error(`Failed to load spine resources: ${urls.atlasUrl}`));
+                } else if (Date.now() - startTime > timeout) {
+                    reject(new Error(`Timeout loading spine resources: ${urls.atlasUrl}`));
+                } else {
+                    requestAnimationFrame(checkLoaded);
+                }
+            };
+            checkLoaded();
+        });
+    }
+
+    /**
      * Preload skeleton data
      */
     async preloadSkeleton(urls) {
@@ -141,18 +175,24 @@ class SpineWebGLManager {
             checkLoaded();
         });
 
-        const atlas = this.assetManager.require(urls.atlasUrl);
-        const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
-        const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
-        skeletonBinary.scale = 1.0;
-        skeletonBinary.premultipliedAlpha = false;
+        // Wrap heavy parsing in setTimeout to avoid blocking UI
+        const skeletonData = await new Promise((resolve) => {
+            setTimeout(() => {
+                const atlas = this.assetManager.require(urls.atlasUrl);
+                const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
+                const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
+                skeletonBinary.scale = 1.0;
+                skeletonBinary.premultipliedAlpha = false;
 
-        const skeletonData = skeletonBinary.readSkeletonData(
-            this.assetManager.require(urls.binaryUrl)
-        );
+                const data = skeletonBinary.readSkeletonData(
+                    this.assetManager.require(urls.binaryUrl)
+                );
+
+                resolve(data);
+            }, 0); // Defer to next tick to let UI update
+        });
 
         this.skeletonDataCache.set(key, skeletonData);
-        console.log(`Spine: Loaded skeleton - ${key.split('/').pop()}`);
 
         return skeletonData;
     }
@@ -310,6 +350,15 @@ class SpineWebGLManager {
         };
 
         this.animationFrameId = requestAnimationFrame(render);
+    }
+
+    /**
+     * Check if skeleton is loaded and ready
+     */
+    isSkeletonLoaded(urls) {
+        if (!urls?.atlasUrl) return false;
+        const key = urls.atlasUrl;
+        return this.skeletonDataCache.has(key);
     }
 
     /**

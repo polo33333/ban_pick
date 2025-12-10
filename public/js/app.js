@@ -26,8 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     try {
-        // Calculate total steps (Live2D là optional)
-        totalSteps = CONFIG.ENABLE_LIVE2D ? 4 : 3;
+        // Calculate total steps
+        totalSteps = 3;
 
         // Step 1: Load components
         updateProgress('Đang tải giao diện...');
@@ -48,13 +48,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateProgress();
 
         // Step 4: Preload spine animations (Live2D) - chỉ khi bật
-        if (CONFIG.ENABLE_LIVE2D) {
-            updateProgress('Đang tải hiệu ứng Live2D...');
-            await preloadAllSpineAnimations((current, total) => {
-                loadingText.textContent = `Đang tải Live2D (${current}/${total})...`;
-            });
-            completedSteps++;
-        }
+        // Removed Spine preload step from loading screen
+
         updateProgress('Hoàn tất!');
         const lastPlayerName = localStorage.getItem('lastPlayerName');
         if (lastPlayerName && DOM.playerNameInput) {

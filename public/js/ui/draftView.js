@@ -4,7 +4,8 @@ import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSe
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
 
-let clientCountdownInterval = null;
+
+// Web Worker will handle countdown timing
 
 // Notification sound function using Web Audio API
 function playNotificationSound() {
@@ -296,41 +297,63 @@ function updateTeamNames(room) {
     }
 }
 
+// Web Worker for countdown
+let countdownWorker = null;
+
+function initCountdownWorker() {
+    if (!countdownWorker) {
+        countdownWorker = new Worker('/js/workers/countdownWorker.js');
+
+        // Listen for messages from worker
+        countdownWorker.onmessage = function (e) {
+            const { type, data } = e.data;
+
+            switch (type) {
+                case 'update':
+                    // Update UI with countdown data from worker
+                    DOM.countdownText.innerText = Math.floor(data.remaining);
+                    DOM.countdownText.style.fontSize = '48px';
+                    DOM.countdownBar.style.transform = `scaleX(${data.scale})`;
+                    DOM.countdownText.classList.toggle('time-warning', data.isWarning);
+                    break;
+
+                case 'paused':
+                    DOM.countdownText.innerText = "PAUSED";
+                    DOM.countdownText.style.fontSize = '20px';
+                    DOM.countdownBar.style.transform = 'scaleX(1)';
+                    DOM.countdownText.classList.remove('time-warning');
+                    break;
+
+                case 'complete':
+                    // Countdown finished
+                    break;
+            }
+        };
+    }
+}
+
 function updateCountdown(room, forceRestart = false) {
-    clearInterval(clientCountdownInterval);
+    // Initialize worker if needed
+    initCountdownWorker();
 
     if (room.paused) {
         DOM.countdownText.style.display = 'block';
-        DOM.countdownText.innerText = "PAUSED";
-        DOM.countdownBar.style.transform = `scaleX(1)`;
-        DOM.countdownText.style.fontSize = '20px';
-        DOM.countdownText.classList.remove('time-warning');
+        countdownWorker.postMessage({ type: 'pause' });
     } else if (room.countdownEndTime != null && room.nextTurn) {
         DOM.countdownText.style.display = 'block';
 
-        const updateDisplay = () => {
-            // Tính toán thời gian còn lại dựa trên timestamp từ server
-            const remaining = Math.max(0, (room.countdownEndTime - Date.now()) / 1000);
-            DOM.countdownText.innerText = Math.max(0, Math.floor(remaining));
-            DOM.countdownText.style.fontSize = '48px';
-            const scale = Math.max(0, remaining) / (room.countdownDuration || 30);
-            DOM.countdownBar.style.transform = `scaleX(${scale})`;
-            DOM.countdownText.classList.toggle('time-warning', remaining <= 10);
-        };
-
-        updateDisplay(); // Cập nhật ngay lập tức
-
-        // Cập nhật mỗi 100ms để hiển thị mượt mà và đồng bộ chính xác
-        clientCountdownInterval = setInterval(() => {
-            updateDisplay();
-            // Dừng interval khi hết thời gian
-            if (room.countdownEndTime - Date.now() < 0) {
-                clearInterval(clientCountdownInterval);
+        // Send countdown data to worker
+        countdownWorker.postMessage({
+            type: 'start',
+            data: {
+                endTime: room.countdownEndTime,
+                duration: room.countdownDuration || 30
             }
-        }, 100);
+        });
     } else {
         DOM.countdownText.style.display = 'none';
         DOM.countdownBar.style.transform = 'scaleX(1)';
+        countdownWorker.postMessage({ type: 'stop' });
     }
 }
 
