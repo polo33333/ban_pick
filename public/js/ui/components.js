@@ -77,9 +77,9 @@ export function initSpinePlayer(charData = null) {
                 DOM.splashArtImg.style.opacity = '0';
                 setTimeout(() => {
                     DOM.splashArtImg.style.display = 'none';
-                }, 300);
+                }, 500);
             }
-        }, 200); // Delay 200ms for smoother transition
+        }, 300); // Delay 200ms for smoother transition
     }).catch(() => {
         // On error, just show container without fade
         container.style.opacity = '1';
