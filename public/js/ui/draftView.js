@@ -3,6 +3,7 @@ import { state } from '../state.js';
 import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
+import { updateWheelNames } from './settings.js';
 import { showChatButton } from './chat.js';
 
 
@@ -39,17 +40,93 @@ function playNotificationSound() {
 export function initializeDraftView() {
     setupInitialSlots();
 
-    // Search logic
-    DOM.champSearchInput.oninput = () => {
-        const query = DOM.champSearchInput.value.toLowerCase();
-        DOM.clearSearchBtn.style.display = query.length > 0 ? 'block' : 'none';
-        const filtered = state.uniqueCharacters.filter(char => char.en.toLowerCase().includes(query));
+    // Advanced Search & Filter Logic
+    let currentFilters = {
+        query: '',
+        rank: 'all',
+        element: 'all',
+        weapon: 'all'
+    };
+
+    function applyFilters() {
+        // If no characters loaded yet, do nothing
+        if (!state.uniqueCharacters || state.uniqueCharacters.length === 0) return;
+
+        const filtered = state.uniqueCharacters.filter(char => {
+            const matchesQuery = !currentFilters.query ||
+                char.en.toLowerCase().includes(currentFilters.query) ||
+                (char.nickname && char.nickname.toLowerCase().includes(currentFilters.query));
+
+            const matchesRank = currentFilters.rank === 'all' || char.rank == currentFilters.rank;
+            const matchesElement = currentFilters.element === 'all' || char.element == currentFilters.element;
+            const matchesWeapon = currentFilters.weapon === 'all' || char.weapon == currentFilters.weapon;
+
+            return matchesQuery && matchesRank && matchesElement && matchesWeapon;
+        });
+
         renderChampionGrid(filtered);
-    };
-    DOM.clearSearchBtn.onclick = () => {
-        DOM.champSearchInput.value = '';
-        DOM.champSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
-    };
+
+        // Re-apply disabled state after filtering/rendering
+        if (state.currentRoomState) {
+            updateDisabledChamps(state.currentRoomState);
+        }
+    }
+
+    // Search Input
+    if (DOM.champSearchInput) {
+        DOM.champSearchInput.oninput = () => {
+            currentFilters.query = DOM.champSearchInput.value.trim().toLowerCase();
+            if (DOM.clearSearchBtn) {
+                DOM.clearSearchBtn.style.display = currentFilters.query.length > 0 ? 'block' : 'none';
+            }
+            applyFilters();
+        };
+    }
+
+    if (DOM.clearSearchBtn) {
+        DOM.clearSearchBtn.onclick = () => {
+            if (DOM.champSearchInput) DOM.champSearchInput.value = '';
+            currentFilters.query = '';
+            DOM.clearSearchBtn.style.display = 'none';
+            applyFilters();
+        };
+    }
+
+    // Filter Buttons
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.onclick = () => {
+            const filterType = btn.dataset.filter;
+            const value = btn.dataset.value;
+
+            // Update Active State UI
+            btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            // Update Filter State
+            currentFilters[filterType] = value;
+            applyFilters();
+        };
+    });
+
+    // Reset Button
+    const resetBtn = document.getElementById('reset-filters-btn');
+    if (resetBtn) {
+        resetBtn.onclick = () => {
+            // Reset State
+            currentFilters = { query: '', rank: 'all', element: 'all', weapon: 'all' };
+
+            // Reset UI
+            if (DOM.champSearchInput) DOM.champSearchInput.value = '';
+            if (DOM.clearSearchBtn) DOM.clearSearchBtn.style.display = 'none';
+
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                const isDefault = btn.dataset.value === 'all';
+                btn.classList.toggle('active', isDefault);
+            });
+
+            applyFilters();
+        };
+    }
 
     // Lock-in logic
     DOM.lockInButton.onclick = () => {
@@ -138,8 +215,13 @@ export function handleRoomStateUpdate(room) {
     if (showChampSelect) state.hasLoadedFromStorage = false;
 
     // Ẩn các nút không cần thiết cho Host
+    // Ẩn các nút không cần thiết cho Host
     const isHost = state.myRole === 'host';
-    if (DOM.champSearchInput.parentElement) {
+    const advancedSearchContainer = document.querySelector('.advanced-search-container');
+    if (advancedSearchContainer) {
+        advancedSearchContainer.style.display = isHost ? 'none' : 'block';
+    } else if (DOM.champSearchInput && DOM.champSearchInput.parentElement) {
+        // Fallback if container not found
         DOM.champSearchInput.parentElement.style.display = isHost ? 'none' : 'block';
     }
 
@@ -154,6 +236,9 @@ export function handleRoomStateUpdate(room) {
     updateSplashOnTurnChange(turnChanged);
     updateSplashArt(state.preSelectedChamp?.en || state.remotePreSelectedChamp); // Phải chạy trước updateCountdown
     updateCountdown(room, turnChanged || wasPaused); // Chuyển xuống cuối để ghi đè các thuộc tính hiển thị khác
+
+    // Update Lucky Wheel names
+    updateWheelNames();
 
     // Centralized logic for Lock-in button visibility and state
     const lockInContainer = DOM.lockInButton.parentElement;

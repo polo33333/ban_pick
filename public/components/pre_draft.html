@@ -1,33 +1,56 @@
-<div class="glass-panel p-4 animate-fade-in-up">
-    <h4 class="text-center glass-title mb-4" style="font-size: 1.8rem;">CHỌN TƯỚNG KHÔNG SỞ HỮU</h4>
+```
+<div id="pre-draft-container" class="animate-fade-in-up">
+    <!-- Header -->
+    <div class="pre-draft-header mb-4">
+        <i class="bi bi-grid-fill me-2 text-primary"></i>
+        <h4 class="m-0 fw-bold text-white">CHỌN TƯỚNG KHÔNG SỞ HỮU</h4>
+    </div>
 
     <div class="row justify-content-center">
-        <!-- Player's Own Selection Area -->
-        <div class="col-12 col-md-8">
-            <div class="pre-draft-player-card glass-panel border-0" style="background: rgba(0,0,0,0.2);">
-                <h5 id="pre-draft-player-name" class="text-center text-white mb-3 fw-bold text-uppercase"
-                    style="letter-spacing: 2px;">Tên người chơi</h5>
+        <div class="col-10 col-lg-8">
+            <div class="pre-draft-card">
+                <!-- Player Info Section -->
+                <div class="pre-draft-section-header mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-person-circle text-info"></i>
+                        <span id="pre-draft-player-name" class="text-uppercase fw-bold text-white">Tên người chơi</span>
+                    </div>
+                </div>
 
+                <!-- Selections -->
+                <div id="pre-draft-my-selections" class="pre-draft-selections-grid mb-4"></div>
 
+                <!-- Search & Grid Section -->
+                <div class="pre-draft-section-header mb-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="bi bi-search text-warning"></i>
+                        <span class="fw-bold text-white-50" style="font-size: 0.9rem;">Danh Sách Tướng</span>
+                    </div>
+                </div>
 
-                <div id="pre-draft-my-selections" class="pre-draft-selections-grid mb-3"></div>
-                <div class="position-relative">
-                    <input id="pre-draft-search" class="form-control glass-input" placeholder="Tìm kiếm tướng..."
+                <div class="position-relative mb-3">
+                    <input id="pre-draft-search" class="form-control pre-draft-input" placeholder="Tìm kiếm tướng..."
                         autocomplete="off">
                     <i id="pre-draft-search-clear"
-                        class="bi bi-x-lg position-absolute top-50 end-0 translate-middle-y me-3"
-                        style="cursor: pointer; color: rgba(255,255,255,0.5); display: none;"></i>
+                        class="bi bi-x-circle-fill position-absolute top-50 end-0 translate-middle-y me-3 text-secondary"
+                        style="cursor: pointer; display: none;"></i>
                 </div>
+
                 <div id="pre-draft-my-champ-grid-container" class="pre-draft-champ-grid-container custom-scrollbar">
                     <div id="pre-draft-my-champ-grid" class="champ-grid"></div>
+                </div>
+
+                <!-- Actions -->
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
+                    <button id="confirm-pre-draft-button"
+                        class="btn pre-draft-btn-primary w-100 py-2 text-uppercase fw-bold">
+                        <i class="bi bi-check2-circle me-2"></i>Xác Nhận
+                    </button>
+                    <div id="pre-draft-wait-status" class="text-center text-warning fw-bold mt-2"
+                        style="font-size: 0.9rem; min-height: 1.5rem;"></div>
                 </div>
             </div>
         </div>
     </div>
-
-    <div class="d-grid gap-3 col-4 mx-auto mt-4">
-        <button id="confirm-pre-draft-button" class="btn btn-lg glass-btn">XÁC NHẬN</button>
-        <div id="pre-draft-wait-status" class="text-center text-warning fw-bold mt-2"
-            style="text-shadow: 0 0 10px rgba(255, 193, 7, 0.5);"></div>
-    </div>
 </div>
+```

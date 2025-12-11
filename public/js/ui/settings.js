@@ -334,7 +334,7 @@ function initLuckyWheel() {
     }
 }
 
-async function updateWheelNames() {
+export async function updateWheelNames() {
     const p1El = document.getElementById('wheel-p1-name');
     const p2El = document.getElementById('wheel-p2-name');
 

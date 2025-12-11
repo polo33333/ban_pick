@@ -54,19 +54,86 @@
                 <span id="selected-champ-rank" class="text-warning fw-bold" style="font-size: 0.9rem;"></span>
             </div>
         </div>
-        <div id="splash-art-name" class="text-center fw-bold fs-5" style="color: white;"></div>
+        <div id="splash-art-name" class="text-center fw-bold" style="color: white;"></div>
         <div id="countdown-bar-container">
             <div id="countdown-bar"></div>
         </div>
 
     </div>
-    <div id="champ-selection-controls" class="mt-4" style="display: none;">
-        <div class="position-relative">
-            <input id="champ-search" class="form-control mb-3" placeholder="Tìm kiếm..." autocomplete="off">
-            <span id="clear-search-btn" class="position-absolute top-50 translate-middle-y"
-                style="display: none; cursor: pointer; right: 15px; z-index: 100;">
-                <i class="bi bi-x-circle-fill text-secondary"></i>
-            </span>
+    <div id="champ-selection-controls" style="display: none;">
+        <div class="advanced-search-container">
+            <div class="d-flex mb-2 gap-2">
+                <div class="position-relative flex-grow-1">
+                    <input id="champ-search" class="form-control" placeholder="Tìm kiếm..." autocomplete="off"
+                        style="background: #2b2b2b; border: 1px solid #444; color: white;">
+                    <span id="clear-search-btn" class="position-absolute top-50 end-0 translate-middle-y me-2"
+                        title="Reset" style="display: none; cursor: pointer; color: #888;">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </span>
+
+                </div>
+
+                <!-- Filters -->
+                <div class="filter-groups d-flex gap-2">
+                    <!-- Rarity -->
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-dark filter-btn active" data-filter="rank"
+                            data-value="all">
+                            <i class="bi bi-asterisk"></i>
+                        </button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="rank"
+                            data-value="4">4★</button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="rank"
+                            data-value="5">5★</button>
+                    </div>
+
+                    <!-- Elements -->
+                    <div class="btn-group btn-group-sm" role="group">
+                        <button type="button" class="btn btn-dark filter-btn active" data-filter="element"
+                            data-value="all">
+                            <i class="bi bi-asterisk"></i>
+                        </button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="1"
+                            title="Glacio"><img src="/element/Glacio.webp" class="element-icon" alt="Glacio"></button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="2"
+                            title="Fusion"><img src="/element/Fusion.webp" class="element-icon" alt="Fusion"></button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="3"
+                            title="Electro"><img src="/element/Electro.webp" class="element-icon"
+                                alt="Electro"></button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="4"
+                            title="Aero"><img src="/element/Aero.webp" class="element-icon" alt="Aero"></button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="5"
+                            title="Spectro"><img src="/element/Spectro.webp" class="element-icon"
+                                alt="Spectro"></button>
+                        <button type="button" class="btn btn-dark filter-btn" data-filter="element" data-value="6"
+                            title="Havoc"><img src="/element/Havoc.webp" class="element-icon" alt="Havoc"></button>
+                    </div>
+
+                    <!-- Weapons -->
+                    <!-- <div class="btn-group btn-group-sm" role="group">
+                    <button type="button" class="btn btn-dark filter-btn active" data-filter="weapon" data-value="all">
+                        <i class="bi bi-asterisk"></i>
+                    </button>
+                    <button type="button" class="btn btn-dark filter-btn" data-filter="weapon" data-value="2"
+                        title="Sword"><i class="bi bi-slash-lg"></i></button>
+                    <button type="button" class="btn btn-dark filter-btn" data-filter="weapon" data-value="1"
+                        title="Broadblade"><i class="bi bi-hammer"></i></button>
+                    <button type="button" class="btn btn-dark filter-btn" data-filter="weapon" data-value="3"
+                        title="Pistols"><i class="bi bi-crosshair"></i></button>
+                    <button type="button" class="btn btn-dark filter-btn" data-filter="weapon" data-value="4"
+                        title="Gauntlets"><i class="bi bi-hand-index-thumb"></i></button>
+                    <button type="button" class="btn btn-dark filter-btn" data-filter="weapon" data-value="5"
+                        title="Rectifier"><i class="bi bi-book"></i></button>
+                </div> -->
+                </div>
+
+                <button id="reset-filters-btn" class="btn btn-secondary btn-sm d-flex align-items-center"
+                    style="background: #333; border-color: #444;">
+                    <i class="bi bi-x me-1"></i>
+                </button>
+            </div>
+
+
         </div>
         <div id="champ-grid-container">
             <div id="champ-grid" class="champ-grid"></div>
