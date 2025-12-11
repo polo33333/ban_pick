@@ -448,7 +448,7 @@
     "ko": "복링",
     "zh-Hans": "卜灵",
     "ja": "卜霊",
-    "isActive": false
+    "isActive": true
   },
   "1411": {
     "icon": "/icon/Qiuyuan.webp",
