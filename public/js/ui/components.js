@@ -115,7 +115,7 @@ export function destroySpinePlayer() {
     }
 }
 
-export function truncateName(name, maxLength = 6) {
+export function truncateName(name, maxLength = 18) {
     if (name && name.length > maxLength) {
         return name.substring(0, maxLength) + '...';
     }
@@ -180,7 +180,7 @@ export function updateSplashArt(champName) {
         }
         DOM.splashArtNameEl.innerText = turnText;
         const playerOrder = room.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
+        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : '#fb6969') : 'white';
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = charData.en;
@@ -247,7 +247,7 @@ export function updateSplashArt(champName) {
         }
         DOM.splashArtNameEl.innerText = text;
         const playerOrder = room?.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : 'red') : 'white';
+        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : '#fb6969') : 'white';
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = '';

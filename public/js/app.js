@@ -6,6 +6,7 @@ import { initializePreDraftView } from './ui/preDraftView.js';
 import { DOM, CONFIG } from './constants.js';
 import { preloadAllSpineAnimations } from './ui/components.js';
 import { initSettingsPanel } from './ui/settings.js';
+import { initChat } from './ui/chat.js';
 
 // Điểm khởi đầu của ứng dụng phía client
 document.addEventListener('DOMContentLoaded', async () => {
@@ -63,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeDraftView();
         initializePreDraftView();
         initSettingsPanel();
+        initChat();
 
         // Hide loading screen and show login view
         setTimeout(() => {

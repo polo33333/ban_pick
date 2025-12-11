@@ -27,6 +27,7 @@ export function initializeSocketHandlers(io, socket) {
     socket.on('toggle-pause', (data) => handleTogglePause(socket, data));
     socket.on('set-countdown', (data) => handleSetCountdown(socket, data));
     socket.on('kick-player', (data) => handleKickPlayer(io, socket, data));
+    socket.on('chat-message', (data) => handleChatMessage(io, socket, data));
     socket.on("disconnect", () => handleDisconnect(io, socket));
 }
 
@@ -35,10 +36,14 @@ export function initializeSocketHandlers(io, socket) {
 function handleJoinRoom(io, socket, { roomId, role, playerName }) {
     if (role === 'host' && !rooms[roomId]) {
         createRoom(roomId, socket.id);
+        if (rooms[roomId]) rooms[roomId].chatHistory = []; // Initialize chat history
     }
 
     const room = rooms[roomId];
     if (!room) return socket.emit("draft-error", { message: "Room not found." });
+
+    // Initialize chatHistory if missing (for existing rooms)
+    if (!room.chatHistory) room.chatHistory = [];
 
     room.io = io; // Gán io instance vào room để các module khác dùng
     socket.join(roomId);
@@ -55,7 +60,12 @@ function handleJoinRoom(io, socket, { roomId, role, playerName }) {
     }
 
     broadcastRoomState(roomId);
+
+    // Send chat history to the joining user
+    socket.emit('chat-history', room.chatHistory);
 }
+
+// ... (other functions)
 
 function handlePlayerJoin(socket, room, playerName) {
     const oldPlayerEntry = Object.entries(room.playerHistory).find(([id, data]) => data.name === playerName && !room.players[id]);
@@ -183,6 +193,24 @@ function handleKickPlayer(io, socket, { roomId, playerIdToKick }) {
         kickedSocket.leave(roomId);
         kickedSocket.disconnect(true);
     }
+}
+
+function handleChatMessage(io, socket, { roomId, message, sender }) {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    const msgData = { sender, message, timestamp: Date.now() };
+
+    // Store in history
+    if (!room.chatHistory) room.chatHistory = [];
+    room.chatHistory.push(msgData);
+
+    // Limit history length (e.g., 50 messages)
+    if (room.chatHistory.length > 50) {
+        room.chatHistory.shift();
+    }
+
+    io.to(roomId).emit('chat-message', msgData);
 }
 
 function handleDisconnect(io, socket) {

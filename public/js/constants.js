@@ -46,8 +46,8 @@ export const DOM = {
     get preDraftClearSearchBtn() { return document.getElementById("pre-draft-search-clear"); },
     get playerStatusEl() { return document.getElementById("player-status"); },
     get firstPickStatusEl() { return document.getElementById("first-pick-status"); },
-    get player1NameEl() { return document.querySelector('#player1-container h3'); },
-    get player2NameEl() { return document.querySelector('#player2-container h3'); },
+    get player1NameEl() { return document.querySelector('#player1-container span'); },
+    get player2NameEl() { return document.querySelector('#player2-container span'); },
     get spinePlayerContainer() { return document.getElementById('spine-player-container'); },
 };
 

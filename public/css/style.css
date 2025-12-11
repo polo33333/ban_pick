@@ -251,11 +251,12 @@ body {
   border-color: transparent;
 }
 
-h3.text-center {
-  padding: 5px;
+span.text-center {
+  display: block;
+  width: 100%;
+  padding: 8px;
   background: #e3e3e3;
   color: white;
-  margin: 5px 19px;
   border-radius: 10px;
 }
 
@@ -798,6 +799,226 @@ div#selected-champ-rank-container {
   border-top: 4px solid #fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Chat Widget Styles */
+/* Chat Widget */
+.chat-widget {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 350px;
+  max-width: 90%;
+  height: 400px;
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  z-index: 2000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.chat-header {
+  padding: 10px 15px;
+  background: rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.chat-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}
+
+.chat-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.chat-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.chat-body::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.chat-message {
+  max-width: 85%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+}
+
+.chat-message.self {
+  align-self: flex-end;
+  background: linear-gradient(45deg, #7e9cc7, #277c8d);
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-message.other {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-bottom-left-radius: 2px;
+}
+
+/* Base Host Style */
+.chat-message.host {
+  border: 1px solid #ffd700;
+  box-shadow: 0 0 5px rgba(255, 215, 0, 0.3);
+}
+
+/* Host + Self: Keep blue background, add gold border */
+.chat-message.host.self {
+  background: linear-gradient(45deg, #7e9cc7, #277c8d);
+  border: 2px solid #ffd700;
+}
+
+/* Host + Other: Yellow tint */
+.chat-message.host.other {
+  background: rgba(255, 215, 0, 0.1);
+}
+
+.chat-message.host .chat-message-sender {
+  color: #ffd700;
+  font-weight: bold;
+}
+
+.chat-message-sender {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chat-timestamp {
+  font-size: 0.65rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-left: 8px;
+}
+
+.chat-footer {
+  padding: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chat-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: white;
+  border-radius: 20px;
+  padding: 6px 12px;
+  outline: none;
+  font-size: 0.9rem;
+}
+
+.chat-input::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.chat-input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.chat-send-btn {
+  background: transparent;
+  border: none;
+  color: #0d6efd;
+  font-size: 1.2rem;
+  padding: 0 5px;
+  transition: transform 0.2s;
+}
+
+.chat-send-btn:hover {
+  transform: scale(1.1);
+  color: #0dcaf0;
+}
+
+.chat-toggle-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #0d6efd, #0dcaf0);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.4);
+  z-index: 2000;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.chat-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.6);
+}
+
+.chat-notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #dc3545;
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  font-size: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid #0a0e27;
+}
+
+/* Responsive adjustment */
+@media (max-width: 576px) {
+  .chat-widget {
+    width: 90%;
+    right: 5%;
+    bottom: 80px;
+  }
 }
 
 @keyframes spin {
@@ -1421,7 +1642,7 @@ div#selected-champ-name {
 /* Player Selection Group */
 .player-selection-group {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.3rem;
   margin: 5px 0px;
   flex-wrap: wrap;
 }
@@ -1434,7 +1655,7 @@ div#selected-champ-name {
   border: 1px solid rgba(148, 163, 184, 0.2);
   border-radius: 50px;
   color: rgba(255, 255, 255, 0.8);
-  font-size: 0.9375rem;
+  font-size: 0.8rem;
   font-weight: 500;
   transition: all 0.2s ease;
   display: flex;
@@ -1448,7 +1669,6 @@ div#selected-champ-name {
   font-size: 1.1rem;
   background: rgba(255, 255, 255, 0.1);
   width: 28px;
-  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1485,7 +1705,6 @@ div#selected-champ-name {
   color: white;
   font-size: 0.9375rem;
   font-weight: 600;
-  padding: 0.875rem 1.25rem;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);
 }
@@ -1508,7 +1727,7 @@ div#selected-champ-name {
   color: white;
   font-size: 0.9375rem;
   font-weight: 600;
-  padding: 0.875rem 1.25rem;
+  padding: 10px;
   transition: all 0.2s ease;
   box-shadow: 0 2px 8px rgba(239, 68, 68, 0.2);
 }
@@ -1783,7 +2002,7 @@ div#selected-champ-name {
   position: absolute;
   color: white;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1rem;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   top: 25%;
   left: 50%;

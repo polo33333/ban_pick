@@ -3,6 +3,7 @@ import { state } from '../state.js';
 import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
+import { showChatButton } from './chat.js';
 
 
 // Web Worker will handle countdown timing
@@ -98,6 +99,9 @@ export function handleRoomStateUpdate(room) {
 
     DOM.loginViewEl.style.display = 'none';
     DOM.draftViewEl.style.display = 'block';
+
+    // Show chat button
+    showChatButton();
 
     // Spine animations đã được preload trong loading screen
 
@@ -239,7 +243,7 @@ function updateHostControls(room) {
             if (player && room.players[id]) {
                 const btn = document.createElement('button');
                 btn.className = `btn ${index === 0 ? 'btn-primary' : 'btn-danger'} w-100`;
-                btn.innerText = `Kick ${truncateName(player.name)}`;
+                btn.innerText = `Đuối: ${truncateName(player.name)}`;
                 btn.onclick = () => {
                     if (confirm(`Bạn có chắc muốn kick ${truncateName(player.name)}?`)) {
                         emitKickPlayer(id);
@@ -248,6 +252,13 @@ function updateHostControls(room) {
                 DOM.kickButtonsContainer.appendChild(btn);
             }
         });
+
+        if (DOM.kickButtonsContainer.children.length === 0) {
+            const emptyState = document.createElement('div');
+            emptyState.className = 'tools-empty-state';
+            emptyState.innerText = 'Chưa có người chơi nào. Vui lòng đợi';
+            DOM.kickButtonsContainer.appendChild(emptyState);
+        }
 
         // Choose first player buttons
         const canChooseFirst = room.playerOrder.length === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
@@ -276,12 +287,18 @@ function updateHostControls(room) {
 
             const btn1 = document.createElement('button');
             btn1.className = "btn"; // Use inherited styles from .player-selection-group .btn
+            btn1.style.backgroundColor = '#317bf1ff';
+            btn1.style.color = '#ffffffff';
+            btn1.style.border = 'none';
             btn1.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p1_name)}`;
             btn1.onclick = () => emitChooseFirst(p1_id);
             DOM.preDraftControls.appendChild(btn1);
 
             const btn2 = document.createElement('button');
             btn2.className = "btn"; // Use inherited styles from .player-selection-group .btn
+            btn2.style.backgroundColor = '#da3b3bff';
+            btn2.style.color = '#ffffffff';
+            btn2.style.border = 'none';
             btn2.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p2_name)}`;
             btn2.onclick = () => emitChooseFirst(p2_id);
             DOM.preDraftControls.appendChild(btn2);

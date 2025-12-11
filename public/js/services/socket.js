@@ -1,5 +1,6 @@
 import { state } from '../state.js';
 import { handleRoomStateUpdate, handlePreSelectUpdate, handleDraftError, handleHostLeft, handleKicked, handleDraftFinished } from '../ui/draftView.js';
+import { handleIncomingMessage, loadChatHistory } from '../ui/chat.js';
 
 // Quản lý kết nối và các sự kiện socket.io
 export function initializeSocket() {
@@ -12,6 +13,8 @@ export function initializeSocket() {
     state.socket.on("draft-error", handleDraftError);
     state.socket.on("host-left", handleHostLeft);
     state.socket.on('kicked', handleKicked);
+    state.socket.on('chat-message', handleIncomingMessage);
+    state.socket.on('chat-history', loadChatHistory);
 }
 
 // Các hàm để emit sự kiện lên server
@@ -61,4 +64,8 @@ export function emitSetCountdown(time) {
 
 export function emitKickPlayer(playerId) {
     state.socket.emit('kick-player', { roomId: state.myRoom, playerIdToKick: playerId });
+}
+
+export function emitChatMessage(message, sender) {
+    state.socket.emit('chat-message', { roomId: state.myRoom, message, sender });
 }

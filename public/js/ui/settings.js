@@ -171,7 +171,7 @@ function loadSettings() {
                 live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
             }
 
-            console.log('Settings loaded:', settings);
+            //console.log('Settings loaded:', settings);
         } catch (error) {
             console.error('Error loading settings:', error);
         }
@@ -316,7 +316,7 @@ function initLuckyWheel() {
                 color = '#f87171'; // Red
             }
 
-            resultEl.textContent = `Người được chọn: ${truncateName(winner)}`;
+            resultEl.textContent = `Chọn: ${truncateName(winner)}`;
             resultEl.style.color = color;
 
             // Fire confetti or visual effect?
@@ -358,7 +358,7 @@ async function updateWheelNames() {
 }
 
 // Helper to truncate name if imported one fails
-function truncateName(name, maxLength = 10) {
+function truncateName(name, maxLength = 18) {
     if (!name) return '';
     return name.length > maxLength ? name.substring(0, maxLength) + '...' : name;
 }
