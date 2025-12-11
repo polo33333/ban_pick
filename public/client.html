@@ -42,29 +42,327 @@
       <i class="bi bi-gear-fill fs-5 text-white"></i>
     </button>
 
-    <div class="offcanvas offcanvas-end glass-offcanvas" tabindex="-1" id="host-controls-panel"
+    <div class="offcanvas offcanvas-end settings-offcanvas" tabindex="-1" id="host-controls-panel"
       aria-labelledby="host-controls-panel-label">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title glass-title mb-0" id="host-controls-panel-label" style="font-size: 1.5rem;">Bảng điều
-          khiển</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      <div class="offcanvas-header settings-header">
+        <div>
+          <h5 class="offcanvas-title settings-title mb-0" id="host-controls-panel-label">Bảng điều khiển</h5>
+          <p class="settings-subtitle mb-0">Cài đặt và quản lý phòng</p>
+        </div>
+        <button type="button" class="btn-close settings-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body">
-        <div id="draft-controls" class="d-flex flex-column gap-3">
-          <div id="pre-draft-controls" class="btn-group w-100" role="group">
-            <!-- Nút chọn player đi trước sẽ được tạo động bằng JS -->
+
+      <!-- Tab Navigation -->
+      <div class="settings-tabs">
+        <button class="settings-tab active" data-tab="tools">
+          <i class="bi bi-tools"></i>
+          <span>Thiết lập phòng</span>
+        </button>
+
+        <button class="settings-tab" data-tab="utilities">
+          <i class="bi bi-magic"></i>
+          <span>Công Cụ</span>
+        </button>
+
+        <button class="settings-tab" data-tab="settings">
+          <i class="bi bi-gear"></i>
+          <span>Cài Đặt</span>
+        </button>
+        <button class="settings-tab" data-tab="info">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>Thông Tin</span>
+        </button>
+
+        <button class="settings-tab" data-tab="exit" id="settings-exit-btn">
+          <i class="bi bi-box-arrow-right"></i>
+          <span>Thoát</span>
+        </button>
+      </div>
+
+      <div class="offcanvas-body settings-body">
+
+        <!-- Tab: Công Cụ (New) -->
+        <div class="settings-tab-content" data-tab-content="utilities">
+          <!-- Đồng Hồ Đếm Ngược -->
+          <div class="tools-card" id="utility-timer-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-alarm-fill"></i>
+                <span>Đồng Hồ Đếm Ngược (phút:giây)</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div class="utility-timer-container">
+                <div class="utility-timer-display" id="utility-timer-display">10:00</div>
+
+                <div class="utility-timer-settings">
+                  <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
+                    <input type="number" id="utility-timer-input-min" class="tools-number-input timer-input" value="10"
+                      min="0" placeholder="Phút">
+                    <span class="fw-bold">:</span>
+                    <input type="number" id="utility-timer-input-sec" class="tools-number-input timer-input" value="00"
+                      min="0" max="59" placeholder="Giây">
+                  </div>
+                </div>
+
+                <div class="utility-timer-actions d-flex gap-2">
+                  <button class="btn tools-btn-primary flex-grow-1" id="utility-timer-toggle-btn">
+                    <i class="bi bi-play-fill"></i> Bắt Đầu
+                  </button>
+                  <button class="btn tools-btn-danger" id="utility-timer-reset-btn" title="Đặt lại">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
-          <button onclick="togglePause()" class="btn glass-btn w-100">Pause/Resume</button>
-          <div class="input-group">
-            <input id="countdown-input" type="number" value="30" class="form-control glass-input">
-            <button onclick="setCountdown()" class="btn btn-outline-light">Set Countdown</button>
+
+          <!-- Vòng Quay May Mắn -->
+          <div class="tools-card" id="random-wheel-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-pie-chart-fill"></i>
+                <span>Vòng Quay May Mắn</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body d-flex flex-column align-items-center">
+              <div class="wheel-container">
+                <div class="wheel-pointer"></div>
+                <div class="wheel" id="random-wheel">
+                  <div class="wheel-segment segment-1">
+                    <span class="segment-text" id="wheel-p1-name">P1</span>
+                  </div>
+                  <div class="wheel-segment segment-2">
+                    <span class="segment-text" id="wheel-p2-name">P2</span>
+                  </div>
+                </div>
+                <div class="wheel-center"></div>
+              </div>
+              <div id="wheel-result" class="mt-3 text-center fw-bold" style="min-height: 1.5rem; color: #fbbf24;"></div>
+              <button class="btn tools-btn-primary w-100 mt-3" id="spin-wheel-btn">
+                <i class="bi bi-arrow-repeat me-2"></i>Quay Ngẫu Nhiên
+              </button>
+            </div>
           </div>
-          <!-- Container cho các nút kick, sẽ được tạo động bằng JS -->
-          <div id="kick-buttons-container" class="d-flex flex-column gap-3"></div>
-          <button onclick="closeRoom()" class="btn btn-danger w-100 mt-auto shadow-sm">Xóa phòng</button>
+
+        </div>
+
+
+        <!-- Tab: Cài Đặt -->
+        <div class="settings-tab-content" data-tab-content="settings">
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="bi bi-volume-up-fill"></i>
+              <span>Âm Thanh</span>
+            </div>
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <div class="settings-item-label">Thông báo âm thanh khi tới lượt chọn</div>
+                <div class="settings-item-desc">Phát âm thanh để nhắc nhở khi đến lượt của bạn</div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-sound" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-section">
+            <div class="settings-section-title">
+              <i class="bi bi-stars"></i>
+              <span>Hiệu Ứng Hình Ảnh</span>
+            </div>
+            <div class="settings-item">
+              <div class="settings-item-info">
+                <div class="settings-item-label">Hiển thị Live2D Animation</div>
+                <div class="settings-item-desc">Bật/tắt hiệu ứng Live2D khi chọn tướng (có thể cải thiện hiệu suất)
+                </div>
+              </div>
+              <label class="toggle-switch">
+                <input type="checkbox" id="toggle-live2d" checked>
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Thiết Lập Phòng -->
+        <div class="settings-tab-content active" data-tab-content="tools">
+          <!-- ID Phòng -->
+          <div class="tools-card room-id-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-door-closed-fill"></i>
+                <span>ID Phòng</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div class="room-id-display">
+                <div class="room-id-value" id="settings-room-id">******</div>
+                <div class="room-id-actions">
+                  <button class="btn room-id-btn" id="toggle-room-id-visibility" title="Hiện/Ẩn ID">
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                  <button class="btn room-id-btn" id="copy-room-id-btn" title="Copy ID">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Chọn Người Đi Trước -->
+          <div class="tools-card" id="choose-first-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill"></i>
+                <span>Chọn Người Đi Trước</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div id="pre-draft-controls" class="player-selection-group">
+                <!-- Nút chọn player đi trước sẽ được tạo động bằng JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Điều Khiển Game -->
+          <div class="tools-card" id="game-control-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-controller"></i>
+                <span>Điều Khiển Game</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <button onclick="togglePause()" class="btn tools-btn-primary w-100">
+                Tạm Dừng/Tiếp Tục
+              </button>
+            </div>
+          </div>
+
+          <!-- Thời Gian Đếm Ngược -->
+          <div class="tools-card" id="countdown-control-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clock-fill"></i>
+                <span>Thời Gian Đếm Ngược (giây)</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div class="tools-input-group">
+                <input id="countdown-input" type="number" value="30" min="1" class="tools-number-input">
+                <div class="tools-input-controls">
+                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepUp()">
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepDown()">
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+                <button onclick="setCountdown()" class="btn tools-btn-apply">
+                  Áp Dụng
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quản Lý Người Chơi -->
+          <div class="tools-card" id="player-management-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-people"></i>
+                <span>Quản Lý Người Chơi</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div id="kick-buttons-container" class="d-flex flex-column gap-2">
+                <!-- Nút kick sẽ được tạo động bằng JS -->
+                <div class="tools-empty-state">
+                  Chưa có người chơi nào được chọn. Vui lòng thêm người chơi.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quản Lý Phòng -->
+          <div class="tools-card" id="room-management-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-door-open-fill"></i>
+                <span>Quản Lý Phòng</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <button onclick="closeRoom()" class="btn tools-btn-danger w-100">
+                <i class="bi bi-trash-fill me-2"></i>Xóa Phòng
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Thông Tin -->
+        <div class="settings-tab-content" data-tab-content="info">
+          <div class="settings-info-card">
+            <div class="settings-info-header">
+              <i class="bi bi-controller"></i>
+              <h6>Cấm-Chọn Wuwa</h6>
+            </div>
+            <div class="settings-info-item">
+              <span class="settings-info-label">Phiên bản</span>
+              <span class="settings-info-value">1.1.0</span>
+            </div>
+            <div class="settings-info-item">
+              <span class="settings-info-label">Nhà phát triển</span>
+              <span class="settings-info-value">KDONE</span>
+            </div>
+            <div class="settings-info-item">
+              <span class="settings-info-label">Ngày cập nhật</span>
+              <span class="settings-info-value">11/12/2025</span>
+            </div>
+          </div>
+
+          <div class="settings-info-card mt-3">
+            <div class="settings-info-header">
+              <i class="bi bi-heart-fill text-danger"></i>
+              <h6>Hỗ Trợ</h6>
+            </div>
+            <p class="settings-info-text">
+              Cảm ơn bạn đã sử dụng ứng dụng! Nếu bạn gặp vấn đề hoặc có đề xuất, vui lòng liên hệ với chúng tôi.
+            </p>
+            <button class="btn btn-outline-light w-100"
+              onclick="window.open('https://github.com/polo33333/ban_pick', '_blank')">
+              <i class="bi bi-github me-2"></i>GitHub Repository
+            </button>
+          </div>
         </div>
       </div>
     </div>
+
 
     <div id="player-status" class="text-center" role="alert"></div>
 

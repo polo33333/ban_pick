@@ -1,4 +1,4 @@
-import { DOM, CONSTANTS } from '../constants.js';
+import { DOM, CONSTANTS, CONFIG } from '../constants.js';
 import { state } from '../state.js';
 import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
@@ -9,6 +9,11 @@ import { handlePreDraftPhase } from './preDraftView.js';
 
 // Notification sound function using Web Audio API
 function playNotificationSound() {
+    // Check if sound is enabled in settings
+    if (!CONFIG.ENABLE_SOUND) {
+        return;
+    }
+
     try {
         const audioContext = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioContext.createOscillator();
@@ -57,8 +62,18 @@ export function initializeDraftView() {
     window.closeRoom = emitCloseRoom;
     window.togglePause = emitTogglePause;
     window.setCountdown = () => {
-        const time = document.getElementById('countdown-input').value;
-        emitSetCountdown(parseInt(time, 10));
+        const input = document.getElementById('countdown-input');
+        let time = parseInt(input.value, 10);
+
+        // Validate: must be at least 1
+        if (isNaN(time) || time < 1) {
+            time = 1;
+            input.value = 1;
+            alert('Thời gian đếm ngược phải ít nhất 1 giây');
+            return;
+        }
+
+        emitSetCountdown(time);
     };
     window.kickPlayer = emitKickPlayer;
     window.chooseFirst = emitChooseFirst;
@@ -236,7 +251,23 @@ function updateHostControls(room) {
 
         // Choose first player buttons
         const canChooseFirst = room.playerOrder.length === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
+        const hasChosenFirst = room.draftOrder.length > 0;
+
+        // Hide/show the entire card in settings panel
+        const chooseFirstCard = document.getElementById('choose-first-card');
+        if (chooseFirstCard) {
+            chooseFirstCard.style.display = canChooseFirst ? 'block' : 'none';
+        }
+
+        // Hide/show game control card - only show after first player is chosen
+        const gameControlCard = document.getElementById('game-control-card');
+        if (gameControlCard) {
+            gameControlCard.style.display = hasChosenFirst ? 'block' : 'none';
+        }
+
+        // Also update the controls container for backward compatibility
         DOM.preDraftControls.style.display = canChooseFirst ? "flex" : "none";
+
         if (canChooseFirst) {
             DOM.preDraftControls.innerHTML = "";
             const [p1_id, p2_id] = room.playerOrder;
@@ -244,14 +275,14 @@ function updateHostControls(room) {
             const p2_name = room.playerHistory[p2_id]?.name;
 
             const btn1 = document.createElement('button');
-            btn1.className = "btn btn-outline-primary";
-            btn1.innerText = `${truncateName(p1_name)} đi trước`;
+            btn1.className = "btn"; // Use inherited styles from .player-selection-group .btn
+            btn1.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p1_name)}`;
             btn1.onclick = () => emitChooseFirst(p1_id);
             DOM.preDraftControls.appendChild(btn1);
 
             const btn2 = document.createElement('button');
-            btn2.className = "btn btn-outline-danger";
-            btn2.innerText = `${truncateName(p2_name)} đi trước`;
+            btn2.className = "btn"; // Use inherited styles from .player-selection-group .btn
+            btn2.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p2_name)}`;
             btn2.onclick = () => emitChooseFirst(p2_id);
             DOM.preDraftControls.appendChild(btn2);
         }

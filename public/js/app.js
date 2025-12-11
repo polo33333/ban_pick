@@ -5,6 +5,7 @@ import { initializeDraftView } from './ui/draftView.js';
 import { initializePreDraftView } from './ui/preDraftView.js';
 import { DOM, CONFIG } from './constants.js';
 import { preloadAllSpineAnimations } from './ui/components.js';
+import { initSettingsPanel } from './ui/settings.js';
 
 // Điểm khởi đầu của ứng dụng phía client
 document.addEventListener('DOMContentLoaded', async () => {
@@ -61,6 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         initializeLoginView();
         initializeDraftView();
         initializePreDraftView();
+        initSettingsPanel();
 
         // Hide loading screen and show login view
         setTimeout(() => {
