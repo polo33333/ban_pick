@@ -200,9 +200,14 @@ body {
   padding: 10px;
   margin-top: 5px;
   min-height: 390px;
-  max-height: 490px;
+  max-height: 425px;
   overflow-y: auto;
   border-radius: 5px;
+}
+
+/* Host has larger champion grid */
+body.host #champ-grid-container {
+  max-height: 470px;
 }
 
 .champ-grid {
@@ -709,88 +714,192 @@ div#selected-champ-rank-container {
   color: white;
 }
 
-#login-view>.glass-panel {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 20px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+/* ==================== Modern Login Panel Styles ==================== */
+
+/* Login Panel Container */
+.login-panel {
+  /* background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 20px 60px rgb(26 14 14 / 50%);
   color: white;
+  max-width: 480px;
+  margin: 0 auto;
 }
 
-.glass-input {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: white;
-  border-radius: 10px;
-  padding: 12px;
-  transition: all 0.3s ease;
+/* Login Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 0.5rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 }
 
-.glass-input:focus {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: rgba(255, 255, 255, 0.5);
-  box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-  color: white;
-  outline: none;
+.login-logo-container {
+  margin-bottom: 0.5rem;
+  animation: float 3s ease-in-out infinite;
 }
 
-.glass-input::placeholder {
-  color: rgba(255, 255, 255, 0.6);
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
 }
 
-.glass-input option {
-  background: #333;
-  color: white;
+.login-logo {
+  width: 100px;
+  height: 100px;
+  filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.5));
+  transition: transform 0.3s ease;
 }
 
-.glass-btn {
-  background: linear-gradient(45deg, #638165, #32cf0b);
-  border: none;
-  border-radius: 10px;
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  z-index: 1;
+.login-logo:hover {
+  transform: scale(1.1);
 }
 
-.glass-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(45deg, #638165, #32cf0b);
-  z-index: -1;
-  transition: opacity 0.3s ease;
-  opacity: 0;
-}
-
-.glass-btn:hover::before {
-  opacity: 1;
-}
-
-.glass-btn:hover {
-  transform: translateY(-2px);
-  /* box-shadow: 0 6px 20px rgba(255, 53, 122, 0.6); */
-  color: white;
-}
-
-.glass-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  background: linear-gradient(to right, #fff, #a0e9ff);
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 0%, #60a5fa 50%, #a0e9ff 100%);
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 20px rgba(160, 233, 255, 0.5);
-  margin-bottom: 1.5rem;
+  letter-spacing: 1px;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 30px rgba(96, 165, 250, 0.3);
+}
+
+.login-subtitle {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 400;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+/* Login Form */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.login-form-group {
+  /* display: flex; */
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.login-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 5px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.login-label i {
+  font-size: 1rem;
+  color: #60a5fa;
+}
+
+/* Login Inputs */
+.login-input,
+.login-select {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  border-radius: 12px;
+  padding: 0.875rem 1.125rem;
+  font-size: 1rem;
+  color: white;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.login-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.login-input:focus,
+.login-select:focus {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.1);
+}
+
+.login-select {
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2360a5fa' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  padding-right: 2.5rem;
+}
+
+.login-select option {
+  background: #1e293b;
+  color: white;
+  padding: 0.5rem;
+}
+
+/* Login Button */
+.login-btn {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.login-btn:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.login-btn:active {
+  transform: translateY(0);
+}
+
+.login-btn i {
+  font-size: 1.125rem;
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+  .login-panel {
+    padding: 2rem 1.5rem;
+  }
+
+  .login-title {
+    font-size: 1.75rem;
+  }
 }
 
 /* Animation */
@@ -2244,4 +2353,24 @@ button#reset-filters-btn {
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+
+/* Scroll 1: Gradient Modern */
+.scroll-1::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scroll-1::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.scroll-1::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d4ff 0%, #0099ff 100%);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+}
+
+.scroll-1::-webkit-scrollbar-thumb:hover {
+  box-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
 }

@@ -3,7 +3,7 @@ import { state } from '../state.js';
 import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
-import { updateWheelNames } from './settings.js';
+import { updateWheelNames, enterFullscreen } from './settings.js';
 import { showChatButton } from './chat.js';
 
 
@@ -217,6 +217,11 @@ export function handleRoomStateUpdate(room) {
     // Ẩn các nút không cần thiết cho Host
     // Ẩn các nút không cần thiết cho Host
     const isHost = state.myRole === 'host';
+
+    // Add class to body for CSS differentiation
+    document.body.classList.toggle('host', isHost);
+    document.body.classList.toggle('player', !isHost);
+
     const advancedSearchContainer = document.querySelector('.advanced-search-container');
     if (advancedSearchContainer) {
         advancedSearchContainer.style.display = isHost ? 'none' : 'block';
@@ -389,7 +394,12 @@ function updateHostControls(room) {
             btn1.style.color = '#ffffffff';
             btn1.style.border = 'none';
             btn1.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p1_name)}`;
-            btn1.onclick = () => emitChooseFirst(p1_id);
+            btn1.onclick = () => {
+                emitChooseFirst(p1_id);
+                if (CONFIG.AUTO_FULLSCREEN) {
+                    enterFullscreen();
+                }
+            };
             DOM.preDraftControls.appendChild(btn1);
 
             const btn2 = document.createElement('button');
@@ -398,7 +408,12 @@ function updateHostControls(room) {
             btn2.style.color = '#ffffffff';
             btn2.style.border = 'none';
             btn2.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p2_name)}`;
-            btn2.onclick = () => emitChooseFirst(p2_id);
+            btn2.onclick = () => {
+                emitChooseFirst(p2_id);
+                if (CONFIG.AUTO_FULLSCREEN) {
+                    enterFullscreen();
+                }
+            };
             DOM.preDraftControls.appendChild(btn2);
         }
     }

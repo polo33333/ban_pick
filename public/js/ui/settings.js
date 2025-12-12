@@ -96,6 +96,7 @@ export function initSettingsPanel() {
 function initToggleSwitches() {
     const soundToggle = document.getElementById('toggle-sound');
     const live2dToggle = document.getElementById('toggle-live2d');
+    const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
 
     if (soundToggle) {
         soundToggle.addEventListener('change', (e) => {
@@ -113,6 +114,17 @@ function initToggleSwitches() {
             CONFIG.ENABLE_LIVE2D = e.target.checked;
             saveSettings();
             console.log('Live2D animations:', CONFIG.ENABLE_LIVE2D ? 'Enabled' : 'Disabled');
+
+            // Animation feedback
+            animateToggle(e.target);
+        });
+    }
+
+    if (fullscreenToggle) {
+        fullscreenToggle.addEventListener('change', (e) => {
+            CONFIG.AUTO_FULLSCREEN = e.target.checked;
+            saveSettings();
+            console.log('Auto fullscreen:', CONFIG.AUTO_FULLSCREEN ? 'Enabled' : 'Disabled');
 
             // Animation feedback
             animateToggle(e.target);
@@ -140,6 +152,7 @@ function saveSettings() {
     const settings = {
         enableSound: CONFIG.ENABLE_SOUND,
         enableLive2D: CONFIG.ENABLE_LIVE2D,
+        autoFullscreen: CONFIG.AUTO_FULLSCREEN,
     };
     localStorage.setItem('app-settings', JSON.stringify(settings));
 
@@ -165,16 +178,23 @@ function loadSettings() {
             if (settings.enableLive2D !== undefined) {
                 CONFIG.ENABLE_LIVE2D = settings.enableLive2D;
             }
+            if (settings.autoFullscreen !== undefined) {
+                CONFIG.AUTO_FULLSCREEN = settings.autoFullscreen;
+            }
 
             // Update UI toggles
             const soundToggle = document.getElementById('toggle-sound');
             const live2dToggle = document.getElementById('toggle-live2d');
+            const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
 
             if (soundToggle) {
                 soundToggle.checked = CONFIG.ENABLE_SOUND;
             }
             if (live2dToggle) {
                 live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
+            }
+            if (fullscreenToggle) {
+                fullscreenToggle.checked = CONFIG.AUTO_FULLSCREEN;
             }
 
             //console.log('Settings loaded:', settings);
@@ -193,20 +213,24 @@ export function handleSettingsUpdate(settings) {
     // Update CONFIG
     if (typeof settings.enableSound === 'boolean') CONFIG.ENABLE_SOUND = settings.enableSound;
     if (typeof settings.enableLive2D === 'boolean') CONFIG.ENABLE_LIVE2D = settings.enableLive2D;
+    if (typeof settings.autoFullscreen === 'boolean') CONFIG.AUTO_FULLSCREEN = settings.autoFullscreen;
 
     // Save to local storage
     const storageSettings = {
         enableSound: CONFIG.ENABLE_SOUND,
         enableLive2D: CONFIG.ENABLE_LIVE2D,
+        autoFullscreen: CONFIG.AUTO_FULLSCREEN,
     };
     localStorage.setItem('app-settings', JSON.stringify(storageSettings));
 
     // Update UI (silent update)
     const soundToggle = document.getElementById('toggle-sound');
     const live2dToggle = document.getElementById('toggle-live2d');
+    const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
 
     if (soundToggle) soundToggle.checked = CONFIG.ENABLE_SOUND;
     if (live2dToggle) live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
+    if (fullscreenToggle) fullscreenToggle.checked = CONFIG.AUTO_FULLSCREEN;
 
     console.log('Settings synced from host:', settings);
 }
@@ -544,4 +568,21 @@ function initUtilityTimer() {
 
     // Initial Display
     updatedFromInputs();
+}
+
+/**
+ * Enter fullscreen mode
+ */
+export function enterFullscreen() {
+    const elem = document.documentElement;
+
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(err => {
+            console.error('Error attempting to enable fullscreen:', err);
+        });
+    } else if (elem.webkitRequestFullscreen) { // Safari
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) { // IE11
+        elem.msRequestFullscreen();
+    }
 }
