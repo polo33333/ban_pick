@@ -195,6 +195,7 @@ body {
 }
 
 #champ-grid-container {
+  background: #182939;
   border: 1px solid #ccc;
   padding: 10px;
   margin-top: 5px;
@@ -313,13 +314,14 @@ div#blue-bans {
   background: rgb(169 168 168 /10%);
   /* Giảm độ mờ của nền */
   border-radius: 10px;
-  padding: 10px 15px;
+  /* padding: 10px 15px; */
   display: flex;
   /* Bật Flexbox */
   flex-direction: column;
   /* Xếp các mục theo chiều dọc */
   justify-content: center;
   /* Căn giữa các mục theo chiều dọc */
+  align-items: center;
 }
 
 #splash-art-img {
@@ -348,7 +350,7 @@ div#blue-bans {
 div#splash-art-name {
   background: rgb(0 0 0 / 70%);
   padding: 2px 8px;
-  border-radius: 15px;
+  /* border-radius: 15px; */
   z-index: 3;
 }
 
@@ -2173,12 +2175,12 @@ span.sub-title {
 }
 
 button#reset-filters-btn {
-  height: 39px;
+  height: 38px;
   width: 33px;
 }
 
 .filter-groups.d-flex.gap-2 {
-  height: 39px;
+  height: 38px;
 }
 
 .timer-input {
@@ -2197,7 +2199,7 @@ button#reset-filters-btn {
 
 .advanced-search-container {
   margin-top: 5px;
-  margin-bottom: 5px;
+  margin-bottom: 0px;
 }
 
 .advanced-search-container input#champ-search:focus {
