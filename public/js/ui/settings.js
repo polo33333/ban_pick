@@ -1,6 +1,7 @@
 // Settings Panel Tab Management
 
 import { CONFIG } from '../constants.js';
+import { state } from '../state.js';
 
 /**
  * Initialize Tools Card Toggles
@@ -141,6 +142,11 @@ function saveSettings() {
         enableLive2D: CONFIG.ENABLE_LIVE2D,
     };
     localStorage.setItem('app-settings', JSON.stringify(settings));
+
+    // If host, sync to clients
+    if (state.myRole === 'host' && state.socket) {
+        state.socket.emit('update-settings', { roomId: state.myRoom, settings });
+    }
 }
 
 /**
@@ -176,6 +182,33 @@ function loadSettings() {
             console.error('Error loading settings:', error);
         }
     }
+}
+
+/**
+ * Handle settings update from host
+ */
+export function handleSettingsUpdate(settings) {
+    if (!settings) return;
+
+    // Update CONFIG
+    if (typeof settings.enableSound === 'boolean') CONFIG.ENABLE_SOUND = settings.enableSound;
+    if (typeof settings.enableLive2D === 'boolean') CONFIG.ENABLE_LIVE2D = settings.enableLive2D;
+
+    // Save to local storage
+    const storageSettings = {
+        enableSound: CONFIG.ENABLE_SOUND,
+        enableLive2D: CONFIG.ENABLE_LIVE2D,
+    };
+    localStorage.setItem('app-settings', JSON.stringify(storageSettings));
+
+    // Update UI (silent update)
+    const soundToggle = document.getElementById('toggle-sound');
+    const live2dToggle = document.getElementById('toggle-live2d');
+
+    if (soundToggle) soundToggle.checked = CONFIG.ENABLE_SOUND;
+    if (live2dToggle) live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
+
+    console.log('Settings synced from host:', settings);
 }
 
 /**
@@ -370,46 +403,51 @@ function initUtilityTimer() {
     const displayEl = document.getElementById('utility-timer-display');
     const inputMin = document.getElementById('utility-timer-input-min');
     const inputSec = document.getElementById('utility-timer-input-sec');
+    const inputMs = document.getElementById('utility-timer-input-ms');
     const toggleBtn = document.getElementById('utility-timer-toggle-btn');
     const resetBtn = document.getElementById('utility-timer-reset-btn');
 
-    if (!displayEl || !inputMin || !inputSec || !toggleBtn || !resetBtn) return;
+    if (!displayEl || !inputMin || !inputSec || !inputMs || !toggleBtn || !resetBtn) return;
 
     let timerInterval = null;
-    let remainingTime = 600; // Default 10 minutes
+    let remainingMs = 600000; // Default 10 minutes in ms
     let isRunning = false;
+    let lastTime = 0;
 
     // Helper to format time
-    const formatTime = (seconds) => {
-        const m = Math.floor(seconds / 60).toString().padStart(2, '0');
-        const s = (seconds % 60).toString().padStart(2, '0');
-        return `${m}:${s}`;
+    const formatTime = (totalMs) => {
+        const m = Math.floor(totalMs / 60000).toString().padStart(2, '0');
+        const s = Math.floor((totalMs % 60000) / 1000).toString().padStart(2, '0');
+        const ms = Math.floor((totalMs % 1000) / 10).toString().padStart(2, '0');
+        return `${m}:${s}.${ms}`;
     };
 
     // Helper to update state from inputs
     const updatedFromInputs = () => {
         let m = parseInt(inputMin.value, 10) || 0;
         let s = parseInt(inputSec.value, 10) || 0;
+        let ms = parseInt(inputMs.value, 10) || 0;
         if (m < 0) m = 0;
         if (s < 0) s = 0;
         if (s > 59) s = 59;
+        if (ms < 0) ms = 0;
+        if (ms > 99) ms = 99;
 
         // Update inputs just in case
         inputMin.value = m;
         inputSec.value = s;
+        inputMs.value = ms;
 
-        remainingTime = m * 60 + s;
-        displayEl.textContent = formatTime(remainingTime);
+        // input ms is in centiseconds (1cs = 10ms)
+        remainingMs = (m * 60 * 1000) + (s * 1000) + (ms * 10);
+        displayEl.textContent = formatTime(remainingMs);
         displayEl.classList.remove('finished');
     };
 
     // Listen to input changes
-    inputMin.addEventListener('change', () => {
-        if (!isRunning) updatedFromInputs();
-    });
-    inputSec.addEventListener('change', () => {
-        if (!isRunning) updatedFromInputs();
-    });
+    inputMin.addEventListener('change', () => { if (!isRunning) updatedFromInputs(); });
+    inputSec.addEventListener('change', () => { if (!isRunning) updatedFromInputs(); });
+    inputMs.addEventListener('change', () => { if (!isRunning) updatedFromInputs(); });
 
     // Toggle Button
     toggleBtn.addEventListener('click', () => {
@@ -427,17 +465,19 @@ function initUtilityTimer() {
             // Enable inputs
             inputMin.disabled = false;
             inputSec.disabled = false;
+            inputMs.disabled = false;
         } else {
             // Start
-            if (remainingTime <= 0) {
+            if (remainingMs <= 0) {
                 updatedFromInputs(); // Reset if 0
-                if (remainingTime <= 0) return; // Still 0
+                if (remainingMs <= 0) return; // Still 0
             }
 
             isRunning = true;
+            lastTime = Date.now();
 
             toggleBtn.innerHTML = '<i class="bi bi-pause-fill"></i> Tạm Dừng';
-            toggleBtn.className = 'btn btn-warning flex-grow-1'; // Yellow for pause
+            toggleBtn.className = 'btn btn-warning flex-grow-1';
 
             displayEl.classList.add('active');
             displayEl.classList.remove('paused');
@@ -446,17 +486,21 @@ function initUtilityTimer() {
             // Disable inputs
             inputMin.disabled = true;
             inputSec.disabled = true;
+            inputMs.disabled = true;
 
             timerInterval = setInterval(() => {
-                remainingTime--;
-                displayEl.textContent = formatTime(remainingTime);
+                const now = Date.now();
+                const delta = now - lastTime;
+                lastTime = now;
 
-                if (remainingTime <= 0) {
+                remainingMs -= delta;
+
+                if (remainingMs <= 0) {
+                    remainingMs = 0;
                     clearInterval(timerInterval);
                     isRunning = false;
-                    remainingTime = 0;
 
-                    displayEl.textContent = "00:00";
+                    displayEl.textContent = "00:00.00";
                     displayEl.classList.remove('active');
                     displayEl.classList.add('finished');
 
@@ -466,13 +510,16 @@ function initUtilityTimer() {
                     // Enable inputs
                     inputMin.disabled = false;
                     inputSec.disabled = false;
+                    inputMs.disabled = false;
 
                     // Optional: Play alert sound if enabled
                     if (window.CONFIG?.ENABLE_SOUND) {
                         // reuse notification sound logic or just beep
                     }
+                } else {
+                    displayEl.textContent = formatTime(remainingMs);
                 }
-            }, 1000);
+            }, 10); // Update every 10ms for smoothness
         }
     });
 
@@ -492,6 +539,7 @@ function initUtilityTimer() {
 
         inputMin.disabled = false;
         inputSec.disabled = false;
+        inputMs.disabled = false;
     });
 
     // Initial Display

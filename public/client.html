@@ -56,7 +56,7 @@
       <div class="settings-tabs">
         <button class="settings-tab active" data-tab="tools">
           <i class="bi bi-tools"></i>
-          <span>Thiết lập phòng</span>
+          <span>Điều Khiển</span>
         </button>
 
         <button class="settings-tab" data-tab="utilities">
@@ -81,6 +81,141 @@
 
       <div class="offcanvas-body settings-body">
 
+        <!-- Tab: Thiết Lập Phòng -->
+        <div class="settings-tab-content active" data-tab-content="tools">
+
+          <!-- Chọn Người Đi Trước -->
+          <div class="tools-card" id="choose-first-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-people-fill"></i>
+                <span>Chọn Người Đi Trước</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div id="pre-draft-controls" class="player-selection-group">
+                <!-- Nút chọn player đi trước sẽ được tạo động bằng JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Điều Khiển Game -->
+          <div class="tools-card" id="game-control-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-controller"></i>
+                <span>Điều Khiển Game</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <button onclick="togglePause()" class="btn tools-btn-primary w-100">
+                Tạm Dừng/Tiếp Tục
+              </button>
+            </div>
+          </div>
+
+          <!-- Thời Gian Đếm Ngược -->
+          <div class="tools-card" id="countdown-control-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-clock-fill"></i>
+                <span>Thời Gian Đếm Ngược (s)</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div class="tools-input-group">
+                <input id="countdown-input" type="number" value="30" min="1" class="tools-number-input">
+                <div class="tools-input-controls">
+                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepUp()">
+                    <i class="bi bi-chevron-up"></i>
+                  </button>
+                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepDown()">
+                    <i class="bi bi-chevron-down"></i>
+                  </button>
+                </div>
+                <button onclick="setCountdown()" class="btn tools-btn-apply">
+                  Áp Dụng
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quản Lý Người Chơi -->
+          <div class="tools-card" id="player-management-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-people"></i>
+                <span>Quản Lý Người Chơi (đuổi)</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <div id="kick-buttons-container" class="player-selection-group">
+                <!-- Nút kick sẽ được tạo động bằng JS -->
+              </div>
+            </div>
+          </div>
+
+          <!-- ID Phòng -->
+          <!-- <div class="tools-card room-id-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-door-closed-fill"></i>
+                <span>ID Phòng</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+
+            </div>
+          </div> -->
+
+          <!-- Quản Lý Phòng -->
+          <div class="tools-card" id="room-management-card">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-door-open-fill"></i>
+                <span>Quản Lý Phòng</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <span class="sub-title">ID Phòng</span>
+              <div class="room-id-display">
+                <div class="room-id-value" id="settings-room-id">******</div>
+                <div class="room-id-actions">
+                  <button class="btn room-id-btn" id="toggle-room-id-visibility" title="Hiện/Ẩn ID">
+                    <i class="bi bi-eye-slash-fill"></i>
+                  </button>
+                  <button class="btn room-id-btn" id="copy-room-id-btn" title="Copy ID">
+                    <i class="bi bi-clipboard"></i>
+                  </button>
+                </div>
+              </div>
+              <span class="sub-line"></span>
+              <button onclick="closeRoom()" class="btn tools-btn-danger w-100">
+                <i class="bi bi-trash-fill me-2"></i>Xóa Phòng
+              </button>
+            </div>
+          </div>
+        </div>
+
+
         <!-- Tab: Công Cụ (New) -->
         <div class="settings-tab-content" data-tab-content="utilities">
           <!-- Đồng Hồ Đếm Ngược -->
@@ -88,7 +223,7 @@
             <div class="tools-card-header">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-alarm-fill"></i>
-                <span>Đồng Hồ Đếm Ngược (phút:giây)</span>
+                <span>Đồng Hồ Đếm Ngược (mm:ss.SS)</span>
               </div>
               <button class="btn btn-link text-white p-0 tools-card-toggle">
                 <i class="bi bi-chevron-down"></i>
@@ -96,7 +231,7 @@
             </div>
             <div class="tools-card-body">
               <div class="utility-timer-container">
-                <div class="utility-timer-display" id="utility-timer-display">10:00</div>
+                <div class="utility-timer-display" id="utility-timer-display">10:00.00</div>
 
                 <div class="utility-timer-settings">
                   <div class="d-flex align-items-center justify-content-center gap-2 mb-3">
@@ -105,6 +240,9 @@
                     <span class="fw-bold">:</span>
                     <input type="number" id="utility-timer-input-sec" class="tools-number-input timer-input" value="00"
                       min="0" max="59" placeholder="Giây">
+                    <span class="fw-bold">.</span>
+                    <input type="number" id="utility-timer-input-ms" class="tools-number-input timer-input" value="00"
+                      min="0" max="99" placeholder="ms">
                   </div>
                 </div>
 
@@ -144,7 +282,8 @@
                 </div>
                 <div class="wheel-center"></div>
               </div>
-              <div id="wheel-result" class="mt-3 text-center fw-bold" style="min-height: 1.5rem; color: #fbbf24;"></div>
+              <div id="wheel-result" class="mt-3 text-center fw-bold" style="min-height: 1.5rem; color: #fbbf24;">
+              </div>
               <button class="btn tools-btn-primary w-100 mt-3" id="spin-wheel-btn">
                 <i class="bi bi-arrow-repeat me-2"></i>Quay Ngẫu Nhiên
               </button>
@@ -192,139 +331,6 @@
           </div>
         </div>
 
-        <!-- Tab: Thiết Lập Phòng -->
-        <div class="settings-tab-content active" data-tab-content="tools">
-          <!-- ID Phòng -->
-          <div class="tools-card room-id-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-door-closed-fill"></i>
-                <span>ID Phòng</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <div class="room-id-display">
-                <div class="room-id-value" id="settings-room-id">******</div>
-                <div class="room-id-actions">
-                  <button class="btn room-id-btn" id="toggle-room-id-visibility" title="Hiện/Ẩn ID">
-                    <i class="bi bi-eye-slash-fill"></i>
-                  </button>
-                  <button class="btn room-id-btn" id="copy-room-id-btn" title="Copy ID">
-                    <i class="bi bi-clipboard"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Chọn Người Đi Trước -->
-          <div class="tools-card" id="choose-first-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-people-fill"></i>
-                <span>Chọn Người Đi Trước</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <div id="pre-draft-controls" class="player-selection-group">
-                <!-- Nút chọn player đi trước sẽ được tạo động bằng JS -->
-              </div>
-            </div>
-          </div>
-
-          <!-- Điều Khiển Game -->
-          <div class="tools-card" id="game-control-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-controller"></i>
-                <span>Điều Khiển Game</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <button onclick="togglePause()" class="btn tools-btn-primary w-100">
-                Tạm Dừng/Tiếp Tục
-              </button>
-            </div>
-          </div>
-
-          <!-- Thời Gian Đếm Ngược -->
-          <div class="tools-card" id="countdown-control-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-clock-fill"></i>
-                <span>Thời Gian Đếm Ngược (giây)</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <div class="tools-input-group">
-                <input id="countdown-input" type="number" value="30" min="1" class="tools-number-input">
-                <div class="tools-input-controls">
-                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepUp()">
-                    <i class="bi bi-chevron-up"></i>
-                  </button>
-                  <button class="tools-input-btn" onclick="document.getElementById('countdown-input').stepDown()">
-                    <i class="bi bi-chevron-down"></i>
-                  </button>
-                </div>
-                <button onclick="setCountdown()" class="btn tools-btn-apply">
-                  Áp Dụng
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quản Lý Người Chơi -->
-          <div class="tools-card" id="player-management-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-people"></i>
-                <span>Quản Lý Người Chơi</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <div id="kick-buttons-container" class="d-flex flex-column gap-2">
-                <!-- Nút kick sẽ được tạo động bằng JS -->
-                <div class="tools-empty-state">
-                  Chưa có người chơi nào. Vui lòng đợi
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quản Lý Phòng -->
-          <div class="tools-card" id="room-management-card">
-            <div class="tools-card-header">
-              <div class="d-flex align-items-center gap-2">
-                <i class="bi bi-door-open-fill"></i>
-                <span>Quản Lý Phòng</span>
-              </div>
-              <button class="btn btn-link text-white p-0 tools-card-toggle">
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
-            <div class="tools-card-body">
-              <button onclick="closeRoom()" class="btn tools-btn-danger w-100">
-                <i class="bi bi-trash-fill me-2"></i>Xóa Phòng
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- Tab: Thông Tin -->
         <div class="settings-tab-content" data-tab-content="info">
           <div class="settings-info-card">
@@ -342,7 +348,7 @@
             </div>
             <div class="settings-info-item">
               <span class="settings-info-label">Ngày cập nhật</span>
-              <span class="settings-info-value">11/12/2025</span>
+              <span class="settings-info-value">12/12/2025</span>
             </div>
           </div>
 

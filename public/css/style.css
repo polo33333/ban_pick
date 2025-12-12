@@ -258,6 +258,7 @@ span.text-center {
   background: #e3e3e3;
   color: white;
   border-radius: 50px;
+  font-weight: 600;
 }
 
 div#vs-bans {
@@ -1756,14 +1757,14 @@ div#selected-champ-name {
 
 .player-selection-group .btn:hover {
   background: rgba(59, 130, 246, 0.15);
-  border-color: #3b82f6;
+  /* border-color: #3b82f6; */
   color: #fff;
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
 }
 
 .player-selection-group .btn:hover i {
-  background: #3b82f6;
+  /* background: #3b82f6; */
   color: white;
 }
 
@@ -1959,11 +1960,24 @@ div#selected-champ-name {
   border: 1px solid rgba(59, 130, 246, 0.3);
 }
 
+span.sub-title {
+  font-size: 14px;
+  margin: 5px;
+}
+
+.sub-line {
+  display: block;
+  border-bottom: 1px solid #3e3d3d;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
 .room-id-display {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  margin-bottom: 10px;
 }
 
 .room-id-value {

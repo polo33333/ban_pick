@@ -28,6 +28,7 @@ export function initializeSocketHandlers(io, socket) {
     socket.on('set-countdown', (data) => handleSetCountdown(socket, data));
     socket.on('kick-player', (data) => handleKickPlayer(io, socket, data));
     socket.on('chat-message', (data) => handleChatMessage(io, socket, data));
+    socket.on('update-settings', (data) => handleUpdateSettings(socket, data));
     socket.on("disconnect", () => handleDisconnect(io, socket));
 }
 
@@ -49,10 +50,16 @@ function handleJoinRoom(io, socket, { roomId, role, playerName }) {
     socket.join(roomId);
     socket.data = { roomId, role };
 
+    let joinSuccess = true;
     if (role === 'player') {
-        handlePlayerJoin(socket, room, playerName);
+        joinSuccess = handlePlayerJoin(socket, room, playerName);
     } else if (role === 'host') {
         room.hostId = socket.id;
+    }
+
+    if (!joinSuccess) {
+        socket.leave(roomId);
+        return;
     }
 
     if (room.playerOrder.length >= 1 && room.state === 'waiting') {
@@ -63,6 +70,11 @@ function handleJoinRoom(io, socket, { roomId, role, playerName }) {
 
     // Send chat history to the joining user
     socket.emit('chat-history', room.chatHistory);
+
+    // Send current settings to the joining user
+    if (room.settings) {
+        socket.emit('room-settings-update', room.settings);
+    }
 }
 
 // ... (other functions)
@@ -92,14 +104,17 @@ function handlePlayerJoin(socket, room, playerName) {
             room.preDraftReady[newSocketId] = room.preDraftReady[oldSocketId];
             delete room.preDraftReady[oldSocketId];
         }
-    } else if (Object.keys(room.players).length >= 2) {
-        socket.emit("draft-error", { message: "Room is full." });
+        return true;
+    } else if (room.playerOrder.length >= 2) {
+        socket.emit("draft-error", { message: "Phòng đã đầy" });
+        return false;
     } else { // New player logic
         const playerData = { name: playerName };
         room.players[socket.id] = playerData;
         room.playerHistory[socket.id] = playerData;
         room.playerOrder.push(socket.id);
         console.log(`Player ${playerName} (${socket.id}) joined room ${room.id}`);
+        return true;
     }
 }
 
@@ -189,7 +204,7 @@ function handleKickPlayer(io, socket, { roomId, playerIdToKick }) {
     if (!room || room.hostId !== socket.id) return;
     const kickedSocket = io.sockets.sockets.get(playerIdToKick);
     if (kickedSocket) {
-        kickedSocket.emit('kicked', { reason: 'Kicked by host' });
+        kickedSocket.emit('kicked', { reason: 'Bị đuổi bởi Host' });
         kickedSocket.leave(roomId);
         kickedSocket.disconnect(true);
     }
@@ -211,6 +226,17 @@ function handleChatMessage(io, socket, { roomId, message, sender }) {
     }
 
     io.to(roomId).emit('chat-message', msgData);
+}
+
+function handleUpdateSettings(socket, { roomId, settings }) {
+    const room = rooms[roomId];
+    if (!room || room.hostId !== socket.id) return;
+
+    // Store settings in the room object
+    room.settings = { ...room.settings, ...settings };
+
+    // Broadcast to all other clients in the room
+    socket.to(roomId).emit('room-settings-update', settings);
 }
 
 function handleDisconnect(io, socket) {

@@ -325,10 +325,22 @@ function updateHostControls(room) {
         DOM.kickButtonsContainer.innerHTML = "";
         room.playerOrder.forEach((id, index) => {
             const player = room.playerHistory[id];
+            // Only show kick button if player is currently connected
             if (player && room.players[id]) {
                 const btn = document.createElement('button');
-                btn.className = `btn ${index === 0 ? 'btn-primary' : 'btn-danger'} w-100`;
-                btn.innerText = `Đuối: ${truncateName(player.name)}`;
+                btn.className = "btn"; // Use inherited styles from .player-selection-group .btn
+                // Match colors: Player 1 (Blue), Player 2 (Red)
+                if (index === 0) {
+                    btn.style.backgroundColor = '#317bf1ff';
+                } else {
+                    btn.style.backgroundColor = '#da3b3bff';
+                }
+                btn.style.color = '#ffffffff';
+                btn.style.border = 'none';
+
+                btn.innerHTML = `<i class="bi bi-person-x-fill"></i>${truncateName(player.name)}`;
+                btn.title = `Kick ${player.name}`;
+
                 btn.onclick = () => {
                     if (confirm(`Bạn có chắc muốn kick ${truncateName(player.name)}?`)) {
                         emitKickPlayer(id);
@@ -341,12 +353,13 @@ function updateHostControls(room) {
         if (DOM.kickButtonsContainer.children.length === 0) {
             const emptyState = document.createElement('div');
             emptyState.className = 'tools-empty-state';
-            emptyState.innerText = 'Chưa có người chơi nào. Vui lòng đợi';
+            emptyState.innerText = 'Chưa có người chơi nào.';
             DOM.kickButtonsContainer.appendChild(emptyState);
         }
 
         // Choose first player buttons
-        const canChooseFirst = room.playerOrder.length === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
+        const connectedPlayersCount = Object.keys(room.players).length;
+        const canChooseFirst = room.playerOrder.length === 2 && connectedPlayersCount === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
         const hasChosenFirst = room.draftOrder.length > 0;
 
         // Hide/show the entire card in settings panel
@@ -355,10 +368,10 @@ function updateHostControls(room) {
             chooseFirstCard.style.display = canChooseFirst ? 'block' : 'none';
         }
 
-        // Hide/show game control card - only show after first player is chosen
+        // Hide/show game control card - only show after first player is chosen AND 2 players connected
         const gameControlCard = document.getElementById('game-control-card');
         if (gameControlCard) {
-            gameControlCard.style.display = hasChosenFirst ? 'block' : 'none';
+            gameControlCard.style.display = (hasChosenFirst && connectedPlayersCount === 2) ? 'block' : 'none';
         }
 
         // Also update the controls container for backward compatibility

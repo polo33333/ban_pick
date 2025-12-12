@@ -60,30 +60,34 @@ export function initSpinePlayer(charData = null) {
 
     // Show skeleton (will create on-demand if not cached)
     const manager = getSpineManager();
-    manager.showSkeleton({
-        atlasUrl: charData.atlasUrl,
-        binaryUrl: charData.binaryUrl,
-        textureUrl: charData.textureUrl
-    }).then(() => {
-        // Add delay before transition for smoother effect
-        setTimeout(() => {
-            // Spine loaded successfully - fade in Spine
-            container.style.transition = 'opacity 0.3s ease-in-out';
-            container.style.opacity = '1';
 
-            // Hide background image when Spine is shown
-            if (DOM.splashArtImg) {
-                DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
-                DOM.splashArtImg.style.opacity = '0';
-                setTimeout(() => {
-                    DOM.splashArtImg.style.display = 'none';
-                }, 500);
-            }
-        }, 300); // Delay 200ms for smoother transition
-    }).catch(() => {
-        // On error, just show container without fade
-        container.style.opacity = '1';
-    });
+    // Delay Spine loading slightly to allow static background to render first
+    setTimeout(() => {
+        manager.showSkeleton({
+            atlasUrl: charData.atlasUrl,
+            binaryUrl: charData.binaryUrl,
+            textureUrl: charData.textureUrl
+        }).then(() => {
+            // Add delay before transition for smoother effect
+            setTimeout(() => {
+                // Spine loaded successfully - fade in Spine
+                container.style.transition = 'opacity 0.3s ease-in-out';
+                container.style.opacity = '1';
+
+                // Hide background image when Spine is shown
+                if (DOM.splashArtImg) {
+                    DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
+                    DOM.splashArtImg.style.opacity = '0';
+                    setTimeout(() => {
+                        DOM.splashArtImg.style.display = 'none';
+                    }, 500);
+                }
+            }, 300); // Delay 200ms for smoother transition
+        }).catch(() => {
+            // On error, just show container without fade
+            container.style.opacity = '1';
+        });
+    }, 50); // Small 50ms delay
 }
 
 // Hide spine player
