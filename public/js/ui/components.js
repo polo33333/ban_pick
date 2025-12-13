@@ -82,7 +82,7 @@ export function initSpinePlayer(charData = null) {
                         DOM.splashArtImg.style.display = 'none';
                     }, 500);
                 }
-            }, 300); // Delay 200ms for smoother transition
+            }, 500); // Delay 500ms for smoother transition
         }).catch(() => {
             // On error, just show container without fade
             container.style.opacity = '1';

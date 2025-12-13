@@ -80,5 +80,5 @@ export const CONFIG = {
     // Bật/tắt âm thanh thông báo khi tới lượt
     ENABLE_SOUND: true,
     // Tự động fullscreen khi chọn người đi đầu
-    AUTO_FULLSCREEN: true,
+    AUTO_FULLSCREEN: false,
 };
