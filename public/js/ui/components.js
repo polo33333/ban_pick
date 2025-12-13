@@ -81,7 +81,7 @@ export function initSpinePlayer(charData = null) {
 
     // Track when skeleton loading started
     const loadStartTime = Date.now();
-    const MIN_DISPLAY_DELAY = 1000; // Minimum 1s delay before showing Live2D
+    const MIN_DISPLAY_DELAY = 800; // Minimum 1s delay before showing Live2D
 
     manager.showSkeleton({
         atlasUrl: charData.atlasUrl,

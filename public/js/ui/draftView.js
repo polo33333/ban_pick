@@ -273,7 +273,7 @@ export function handlePreSelectUpdate({ champ }) {
 
 export function handleDraftFinished(data) {
     DOM.lockInButton.disabled = true;
-    console.log("DRAFT COMPLETE", data);
+    //console.log("DRAFT COMPLETE", data);
 }
 
 export function handleDraftError({ message }) {
@@ -358,7 +358,7 @@ function updateHostControls(room) {
         if (DOM.kickButtonsContainer.children.length === 0) {
             const emptyState = document.createElement('div');
             emptyState.className = 'tools-empty-state';
-            emptyState.innerText = 'Chưa có người chơi nào.';
+            emptyState.innerText = 'Chưa có người chơi nào. Vui lòng đợi thêm.';
             DOM.kickButtonsContainer.appendChild(emptyState);
         }
 

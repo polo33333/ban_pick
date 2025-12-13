@@ -232,7 +232,7 @@ export function handleSettingsUpdate(settings) {
     if (live2dToggle) live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
     if (fullscreenToggle) fullscreenToggle.checked = CONFIG.AUTO_FULLSCREEN;
 
-    console.log('Settings synced from host:', settings);
+    //console.log('Settings synced from host:', settings);
 }
 
 /**
