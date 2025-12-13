@@ -200,7 +200,7 @@ body {
   padding: 10px;
   margin-top: 5px;
   min-height: 390px;
-  max-height: 425px;
+  max-height: 445px;
   overflow-y: auto;
   border-radius: 5px;
 }
@@ -213,19 +213,22 @@ body.host #champ-grid-container {
 .champ-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
-  gap: 5px;
+  gap: 2px;
 }
 
 .champ-item {
   text-align: center;
   cursor: pointer;
+  padding: 4px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: all 0.2s;
 }
 
 .champ-item img {
   width: 64px;
   height: 64px;
   border-radius: 4px;
-  border: 2px solid transparent;
   transition: transform 0.2s;
   cursor: pointer;
 }
@@ -236,25 +239,47 @@ body.host #champ-grid-container {
   gap: .5rem !important;
 }
 
-.champ-item img:hover {
-  transform: scale(1.1);
+.champ-item:hover {
+  display: inline-table;
   border-color: #fff;
 }
 
-.champ-item.pre-selected img {
+.champ-item:hover img {
+  transform: scale(1);
+}
+
+.champ-item.pre-selected {
+  display: inline-table;
   border-color: #ffd700;
-  /* Màu vàng gold cho viền */
-  transform: scale(1.1);
+  /* Màu vàng gold cho viền bao cả icon + tên */
+  background: rgba(255, 215, 0, 0.1);
+  /* Nền vàng nhạt */
+}
+
+.champ-item.pre-selected img {
+  transform: scale(1);
+}
+
+.champ-item.pre-selected .grid-champ-name {
+  /* color: #ffd700; */
+  /* Màu vàng gold cho tên */
+  font-weight: bold;
+}
+
+.champ-item.disabled {
+  cursor: not-allowed;
 }
 
 .champ-item.disabled img {
   filter: grayscale(100%) brightness(0.5);
-  cursor: not-allowed;
 }
 
-.champ-item.disabled img:hover {
-  transform: none;
+.champ-item.disabled:hover {
   border-color: transparent;
+}
+
+.champ-item.disabled:hover img {
+  transform: none;
 }
 
 span.text-center {
@@ -641,10 +666,29 @@ div#selected-champ-rank-container {
   transform: translate(-90%, -50%);
 }
 
-.champ-item.pre-draft-selected img {
+
+div#pre-draft-my-champ-grid {
+  gap: 11px;
+  padding: 5px 10px;
+}
+
+.champ-item.pre-draft-selected {
+  display: inline-table;
   border: 3px solid #0D6EFD;
-  /* Bootstrap primary blue */
+  /* Bootstrap primary blue - bao cả icon + tên */
   box-shadow: 0 0 10px #0D6EFD;
+  background: rgba(13, 110, 253, 0.1);
+  /* Nền xanh nhạt */
+}
+
+.champ-item.pre-draft-selected img {
+  transform: scale(1.05);
+}
+
+.champ-item.pre-draft-selected .grid-champ-name {
+  color: #0D6EFD;
+  /* Màu xanh blue cho tên */
+  font-weight: bold;
 }
 
 /* Pre-Draft Display on Main Screen */

@@ -24,6 +24,7 @@ class SpineWebGLManager {
         this.currentSkeleton = null;
         this.currentAnimationState = null;
         this.currentKey = null;
+        this.currentCharacterName = null; // Track character name for verification
 
         this.lastFrameTime = 0;
         this.animationFrameId = null;
@@ -230,7 +231,7 @@ class SpineWebGLManager {
     /**
      * Switch to display a specific skeleton
      */
-    async showSkeleton(urls) {
+    async showSkeleton(urls, characterName = null) {
         if (!this.initialized) {
             console.warn('Spine: Not initialized');
             return;
@@ -240,6 +241,9 @@ class SpineWebGLManager {
             this.hideSkeleton();
             return;
         }
+
+        // Track character name
+        this.currentCharacterName = characterName;
 
         const key = urls.atlasUrl;
 
@@ -252,6 +256,12 @@ class SpineWebGLManager {
             let skeletonData = this.skeletonDataCache.get(key);
             if (!skeletonData) {
                 skeletonData = await this.preloadSkeleton(urls);
+            }
+
+            // CRITICAL: Check if character changed during async loading
+            if (this.currentCharacterName !== characterName && characterName !== null) {
+                //console.log(`Spine: Aborted showing ${characterName} - switched to ${this.currentCharacterName}`);
+                return;
             }
 
             // Create skeleton instance
@@ -292,7 +302,7 @@ class SpineWebGLManager {
 
             this.currentKey = key;
             this.canvas.style.display = 'block';
-            console.log(`Spine: Showing ${key} with scale ${scale.toFixed(2)}`);
+            //console.log(`Spine: Showing ${key} with scale ${scale.toFixed(2)}`);
 
         } catch (error) {
             console.error('Spine: Failed to show skeleton', error);
@@ -307,6 +317,7 @@ class SpineWebGLManager {
         this.currentSkeleton = null;
         this.currentAnimationState = null;
         this.currentKey = null;
+        this.currentCharacterName = null;
         if (this.canvas) {
             this.canvas.style.display = 'none';
         }

@@ -32,10 +32,19 @@ export function preloadAllSpineAnimations(onProgress = null) {
     return Promise.resolve();
 }
 
+// Track pending timeouts to cancel them when switching characters
+let pendingSpineTimeouts = [];
+// Track current character to prevent old animations from showing
+let currentSpineCharacter = null;
+
 // Show spine animation for character
 export function initSpinePlayer(charData = null) {
     const container = DOM.spinePlayerContainer;
     if (!container) return;
+
+    // CRITICAL: Cancel all pending timeouts from previous character selections
+    pendingSpineTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    pendingSpineTimeouts = [];
 
     // Ensure manager is initialized
     ensureSpineManagerInit();
@@ -54,44 +63,119 @@ export function initSpinePlayer(charData = null) {
         return;
     }
 
-    // Fade out container initially
+    // Track this character by its name (most reliable - always matches displayed name)
+    const characterKey = charData.en;
+    currentSpineCharacter = characterKey;
+
+    // IMPORTANT: Hide container immediately to prevent old Live2D from flashing
+    // when switching between characters with Live2D
+    container.style.transition = 'none'; // Disable transition for instant hide
     container.style.opacity = '0';
-    container.style.display = 'block';
+    container.style.display = 'none';
+
+    // Force reflow to ensure the hide takes effect immediately
+    void container.offsetWidth;
 
     // Show skeleton (will create on-demand if not cached)
     const manager = getSpineManager();
 
-    // Delay Spine loading slightly to allow static background to render first
-    setTimeout(() => {
-        manager.showSkeleton({
-            atlasUrl: charData.atlasUrl,
-            binaryUrl: charData.binaryUrl,
-            textureUrl: charData.textureUrl
-        }).then(() => {
-            // Add delay before transition for smoother effect
-            setTimeout(() => {
-                // Spine loaded successfully - fade in Spine
+    // Track when skeleton loading started
+    const loadStartTime = Date.now();
+    const MIN_DISPLAY_DELAY = 1000; // Minimum 1s delay before showing Live2D
+
+    manager.showSkeleton({
+        atlasUrl: charData.atlasUrl,
+        binaryUrl: charData.binaryUrl,
+        textureUrl: charData.textureUrl
+    }, characterKey).then(() => { // Pass character name to manager
+        // Calculate how long the loading took
+        const loadDuration = Date.now() - loadStartTime;
+
+        // Ensure minimum delay is met (even if cached and loaded instantly)
+        const remainingDelay = Math.max(0, MIN_DISPLAY_DELAY - loadDuration);
+
+        const timeout1 = setTimeout(() => {
+            // CRITICAL: Check if character is still current before showing
+            if (currentSpineCharacter !== characterKey) {
+                //console.log(`Spine: Skipping animation - character changed`);
+                return;
+            }
+
+            // EXTRA CHECK: Verify against manager's current character
+            if (manager.currentCharacterName !== characterKey) {
+                //console.log(`Spine: Skipping animation - manager character mismatch (expected: ${characterKey}, got: ${manager.currentCharacterName})`);
+                return;
+            }
+
+            // EXTRA CHECK: Verify against actual displayed champion name
+            const displayedChampName = DOM.selectedChampNameEl?.innerText || '';
+            if (displayedChampName !== characterKey) {
+                //console.log(`Spine: Skipping animation - name mismatch (expected: ${characterKey}, got: ${displayedChampName})`);
+                return;
+            }
+
+            // First: Hide background image completely
+            if (DOM.splashArtImg) {
+                DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
+                DOM.splashArtImg.style.opacity = '0';
+
+                // Wait for background to fully fade out before showing Spine
+                const timeout2 = setTimeout(() => {
+                    // CRITICAL: Double-check character is still current
+                    if (currentSpineCharacter !== characterKey) {
+                        //console.log(`Spine: Skipping animation (inner) - character changed`);
+                        return;
+                    }
+
+                    // EXTRA CHECK: Verify against manager's current character again
+                    if (manager.currentCharacterName !== characterKey) {
+                        //console.log(`Spine: Skipping animation (inner) - manager character mismatch (expected: ${characterKey}, got: ${manager.currentCharacterName})`);
+                        return;
+                    }
+
+                    // EXTRA CHECK: Verify against actual displayed champion name again
+                    const displayedChampName2 = DOM.selectedChampNameEl?.innerText || '';
+                    if (displayedChampName2 !== characterKey) {
+                        //console.log(`Spine: Skipping animation (inner) - name mismatch (expected: ${characterKey}, got: ${displayedChampName2})`);
+                        return;
+                    }
+
+                    DOM.splashArtImg.style.display = 'none';
+
+                    // Now show and fade in Spine after background is hidden
+                    container.style.display = 'block';
+                    container.style.transition = 'opacity 0.3s ease-in-out';
+                    // Force reflow to ensure transition works
+                    void container.offsetWidth;
+                    container.style.opacity = '1';
+                }, 300); // Wait for background fade-out to complete
+
+                pendingSpineTimeouts.push(timeout2);
+            } else {
+                // No background, just show Spine directly
+                container.style.display = 'block';
                 container.style.transition = 'opacity 0.3s ease-in-out';
                 container.style.opacity = '1';
+            }
+        }, remainingDelay);
 
-                // Hide background image when Spine is shown
-                if (DOM.splashArtImg) {
-                    DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
-                    DOM.splashArtImg.style.opacity = '0';
-                    setTimeout(() => {
-                        DOM.splashArtImg.style.display = 'none';
-                    }, 500);
-                }
-            }, 500); // Delay 500ms for smoother transition
-        }).catch(() => {
-            // On error, just show container without fade
-            container.style.opacity = '1';
-        });
-    }, 50); // Small 50ms delay
+        pendingSpineTimeouts.push(timeout1);
+    }).catch(() => {
+        // On error, just show container without fade
+        container.style.display = 'block';
+        container.style.opacity = '1';
+    });
 }
 
 // Hide spine player
 export function destroySpinePlayer() {
+    // CRITICAL: Cancel all pending timeouts to prevent interference
+    pendingSpineTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
+    pendingSpineTimeouts = [];
+
+    // Reset current character tracking
+    currentSpineCharacter = null;
+
     const manager = getSpineManager();
     const container = DOM.spinePlayerContainer;
 
@@ -109,12 +193,11 @@ export function destroySpinePlayer() {
         if (container) container.style.display = 'none';
     }
 
-    // Show background image again with fade in
+    // Show background image again immediately (no fade needed since Spine is being destroyed)
     if (DOM.splashArtImg && DOM.splashArtImg.src && !DOM.splashArtImg.src.endsWith('/')) {
+        // Reset any pending transitions
+        DOM.splashArtImg.style.transition = 'none';
         DOM.splashArtImg.style.display = 'block';
-        DOM.splashArtImg.style.transition = 'opacity 0.3s ease-in-out';
-        // Force reflow to ensure transition works
-        void DOM.splashArtImg.offsetWidth;
         DOM.splashArtImg.style.opacity = '1';
     }
 }
