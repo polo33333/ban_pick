@@ -209,6 +209,13 @@ export function truncateName(name, maxLength = 18) {
     return name;
 }
 
+export function truncateNameNoDot(name, maxLength = 18) {
+    if (name && name.length > maxLength) {
+        return name.substring(0, maxLength);
+    }
+    return name;
+}
+
 export function preloadSplashArts(charList) {
     charList.forEach(char => {
         if (char.background) {
@@ -224,7 +231,7 @@ export function renderChampionGrid(charList) {
         const item = document.createElement('div');
         item.className = 'champ-item';
         item.dataset.name = char.en;
-        item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${char.en}</div>`;
+        item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${truncateName(char.en, 13)}</div>`;
 
         item.onclick = () => {
             const room = state.currentRoomState;

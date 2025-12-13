@@ -3,6 +3,12 @@ import { state } from '../state.js';
 import { emitConfirmPreDraft, emitPreDraftSelect } from '../services/socket.js';
 
 // Logic cho màn hình chọn tướng không sở hữu
+function truncateNameNoDot(name, maxLength = 18) {
+    if (name && name.length > maxLength) {
+        return name.substring(0, maxLength) + '..';
+    }
+    return name;
+}
 
 function renderPreDraftChampionGrid(filterText = "") {
     DOM.preDraftMyGridEl.innerHTML = "";
@@ -16,7 +22,7 @@ function renderPreDraftChampionGrid(filterText = "") {
         const item = document.createElement('div');
         item.className = 'champ-item';
         item.dataset.name = char.en;
-        item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${char.en}</div>`;
+        item.innerHTML = `<img src="${char.icon}" alt="${char.en}" title="${char.en}"><div class="grid-champ-name">${truncateNameNoDot(char.en, 13)}</div>`;
 
         if (localSelections.includes(char.en)) {
             item.classList.add('pre-draft-selected');
