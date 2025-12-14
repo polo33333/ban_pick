@@ -112,8 +112,8 @@ async function loadComponents() {
 
 async function preloadCriticalImages() {
     const criticalImages = [
-        // '/assets/background.png', // Removed in favor of CSS background
-        '/assets/vs.png'
+        '/assets/background.webp', // Removed in favor of CSS background
+        // '/assets/vs.png'
     ];
 
     const imagePromises = criticalImages.map(src => {

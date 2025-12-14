@@ -157,14 +157,28 @@ div#player-status {
   height: 100%;
   z-index: -1;
   background-color: #0a0e27;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url('../assets/background.webp');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+
+/* #main-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background-color: #0a0e27;
   background-image:
     radial-gradient(at 0% 0%, hsl(0, 0%, 0%) 0, transparent 70%),
     radial-gradient(at 30% 0%, hsl(225.4, 64.4%, 37.5%) 0, transparent 60%),
     radial-gradient(at 100% 0%, hsl(339.2, 91.1%, 31%) 0, transparent 60%)
-    /* Thêm một lớp gradient động đè lên */
-}
+} */
 
-#main-background::before {
+/* #main-background::before {
   content: "";
   position: absolute;
   top: 0;
@@ -182,7 +196,7 @@ div#player-status {
   background-size: 200% 200%;
   animation: gradientShift 15s ease infinite;
   opacity: 0.8;
-}
+} */
 
 @keyframes gradientShift {
   0% {
@@ -211,6 +225,7 @@ div#player-status {
 
 /* Host has larger champion grid */
 body.host #champ-grid-container {
+  margin-top: 15px;
   max-height: 470px;
 }
 
@@ -437,7 +452,8 @@ div#splash-art-name {
   font-size: 68px;
   font-weight: bold;
   color: white;
-  text-shadow: 2px 2px 4px black;
+  /* -webkit-text-stroke: 1.5px black; */
+  text-shadow: 3px 3px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
 }
 
 #lock-in-button {
@@ -560,7 +576,7 @@ div#splash-art-name {
 
 /* Pre-Draft Card */
 .pre-draft-card {
-  background: rgba(30, 41, 59, 0.4);
+  background: rgba(30, 41, 59, 0.8);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 24px;
@@ -766,7 +782,7 @@ div#pre-draft-my-champ-grid {
 
 /* Login Panel Container */
 .login-panel {
-  /* background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.98) 100%); */
+  background: linear-gradient(135deg, rgb(41 58 85 / 95%) 0%, rgba(15, 23, 42, 0.98) 100%);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.15);
