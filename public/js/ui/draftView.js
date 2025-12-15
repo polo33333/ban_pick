@@ -202,7 +202,9 @@ export function handleRoomStateUpdate(room) {
         // Không làm gì cả, để updateSplashArt xử lý
     } else if (room.state === 'drafting' && !room.nextTurn && state.myRole === 'player') {
         DOM.splashArtNameEl.innerText = 'Đợi host bắt đầu...';
-        DOM.countdownText.style.display = 'none'; // Đảm bảo countdown text bị ẩn
+        if (DOM.countdownNumber) DOM.countdownNumber.innerText = "";
+        if (DOM.countdownRing) DOM.countdownRing.style.display = 'none'; // Hide ring if needed
+        if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none'; // Hide SVG 
     }
 
     // Reset pre-draft flag when draft starts
@@ -472,17 +474,35 @@ function initCountdownWorker() {
             switch (type) {
                 case 'update':
                     // Update UI with countdown data from worker
-                    DOM.countdownText.innerText = Math.floor(data.remaining);
-                    DOM.countdownText.style.fontSize = '48px';
-                    DOM.countdownBar.style.transform = `scaleX(${data.scale})`;
-                    DOM.countdownText.classList.toggle('time-warning', data.isWarning);
+                    if (DOM.countdownNumber) {
+                        DOM.countdownNumber.innerText = Math.floor(data.remaining);
+                        DOM.countdownNumber.classList.remove('paused-text');
+                    }
+
+                    if (DOM.countdownRing) {
+                        // Use strokeDasharray since pathLength="1"
+                        // scale goes from 1 down to 0
+                        DOM.countdownRing.style.strokeDasharray = `${data.scale} 1`;
+                        DOM.countdownRing.classList.toggle('ring-warning', data.isWarning);
+                    }
+
+                    if (DOM.countdownNumber) {
+                        DOM.countdownNumber.classList.toggle('time-warning', data.isWarning);
+                    }
+                    if (DOM.countdownNumber) {
+                        DOM.countdownNumber.classList.toggle('time-warning', data.isWarning);
+                    }
+                    if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'block'; // Ensure visible on update
                     break;
 
                 case 'paused':
-                    DOM.countdownText.innerText = "PAUSED";
-                    DOM.countdownText.style.fontSize = '20px';
-                    DOM.countdownBar.style.transform = 'scaleX(1)';
-                    DOM.countdownText.classList.remove('time-warning');
+                    if (DOM.countdownNumber) {
+                        DOM.countdownNumber.innerText = "PAUSED";
+                        DOM.countdownNumber.classList.add('paused-text');
+                    }
+                    if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
+                    if (DOM.countdownNumber) DOM.countdownNumber.classList.remove('time-warning');
+                    if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none'; // Hide SVG on pause
                     break;
 
                 case 'complete':
@@ -498,10 +518,12 @@ function updateCountdown(room, forceRestart = false) {
     initCountdownWorker();
 
     if (room.paused) {
-        DOM.countdownText.style.display = 'block';
+        if (DOM.countdownNumber) DOM.countdownNumber.style.display = 'block';
         countdownWorker.postMessage({ type: 'pause' });
     } else if (room.countdownEndTime != null && room.nextTurn) {
-        DOM.countdownText.style.display = 'block';
+        if (DOM.countdownNumber) DOM.countdownNumber.style.display = 'block';
+        if (DOM.countdownRing) DOM.countdownRing.style.display = 'block';
+        if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'block'; // Show SVG on start
 
         // Send countdown data to worker
         countdownWorker.postMessage({
@@ -512,8 +534,8 @@ function updateCountdown(room, forceRestart = false) {
             }
         });
     } else {
-        DOM.countdownText.style.display = 'none';
-        DOM.countdownBar.style.transform = 'scaleX(1)';
+        if (DOM.countdownNumber) DOM.countdownNumber.innerText = "";
+        // if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
         countdownWorker.postMessage({ type: 'stop' });
     }
 }
@@ -645,9 +667,11 @@ function updateSplashOnTurnChange(turnChanged) {
             DOM.selectedChampRankContainer.classList.remove('d-flex');
         }
 
-        DOM.countdownBar.style.transition = 'none';
-        DOM.countdownBar.style.transform = 'scaleX(1)';
-        void DOM.countdownBar.offsetWidth; // Trigger reflow
-        DOM.countdownBar.style.transition = 'transform 1s linear';
+        if (DOM.countdownRing) {
+            DOM.countdownRing.style.transition = 'none';
+            DOM.countdownRing.style.strokeDasharray = '1 1';
+            void DOM.countdownRing.offsetWidth; // Trigger reflow
+            DOM.countdownRing.style.transition = 'stroke-dasharray 0.1s linear';
+        }
     }
 }

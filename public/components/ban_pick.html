@@ -24,7 +24,15 @@
         <div class="team mt-2" id="vs-bans">
             <!-- <img src="/assets/vs.png" alt="VS"
                 style="width: 60px; filter: drop-shadow(2px 2px 5px #000);"> -->
-            <div id="countdown-text"></div>
+            <!-- <div id="countdown-text"></div> -->
+            <div id="countdown-circle-container">
+                <svg class="countdown-svg" viewBox="0 0 100 100">
+                    <circle class="countdown-bg-ring" cx="50" cy="50" r="45"></circle>
+                    <circle class="countdown-progress-ring" id="countdown-ring" cx="50" cy="50" r="45" pathLength="1">
+                    </circle>
+                </svg>
+                <div id="countdown-number"></div>
+            </div>
         </div>
         <div class="team mt-2" id="red-bans"></div>
     </div>

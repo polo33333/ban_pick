@@ -218,7 +218,7 @@ div#player-status {
   padding: 10px;
   margin-top: 5px;
   min-height: 390px;
-  max-height: 445px;
+  max-height: 415px;
   overflow-y: auto;
   border-radius: 5px;
 }
@@ -226,7 +226,7 @@ div#player-status {
 /* Host has larger champion grid */
 body.host #champ-grid-container {
   margin-top: 15px;
-  max-height: 470px;
+  max-height: 510px;
 }
 
 .champ-grid {
@@ -822,7 +822,7 @@ div#pre-draft-my-champ-grid {
 .login-logo {
   width: 100px;
   height: 100px;
-  filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.5));
+  /* filter: drop-shadow(0 0 20px rgba(96, 165, 250, 0.5)); */
   transition: transform 0.3s ease;
 }
 
@@ -2451,4 +2451,71 @@ button#reset-filters-btn {
 
 .scroll-1::-webkit-scrollbar-thumb:hover {
   box-shadow: 0 0 15px rgba(0, 212, 255, 0.8);
+}
+
+
+/* Circular Countdown Styles */
+#countdown-circle-container {
+  position: relative;
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.countdown-svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  display: none;
+  /* Start from top */
+}
+
+.countdown-bg-ring {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.1);
+  stroke-width: 8;
+}
+
+.countdown-progress-ring {
+  fill: none;
+  stroke: #4caf50;
+  /* Green for > 10s */
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 1 1;
+  /* Full circle initially */
+  transition: stroke-dasharray 0.1s linear, stroke 0.3s ease;
+}
+
+.countdown-progress-ring.ring-warning {
+  stroke: #ff3b3b;
+  /* Red for <= 10s */
+}
+
+#countdown-number {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  font-family: sans-serif;
+  /* Or your app's font */
+}
+
+.paused-text {
+  font-size: 18px !important;
+}
+
+/* Hide old countdown elements if they still exist or are toggled */
+#countdown-text {
+  display: none !important;
+}
+
+#countdown-bar-container {
+  display: none !important;
 }

@@ -11,6 +11,7 @@
   <script src="/js/lib/socket.io.min.js"></script>
   <!-- Embed spine-webgl runtime (single canvas, single context) -->
   <script src="/js/lib/spine-webgl.min.js"></script>
+  <!-- <script src="https://unpkg.com/@esotericsoftware/spine-player@4.2.43/dist/iife/spine-player.min.js"></script> -->
 </head>
 
 <body class="bg-light">
@@ -28,6 +29,24 @@
       <p id="loading-percentage" class="loading-percentage">0%</p>
     </div>
   </div>
+  <!-- <div id="player" style="width:100%;height:100%;"></div>
+  <script>
+    new spine.SpinePlayer("player", {
+      atlasUrl: "/live2d/Lynae.atlas",
+      jsonUrl: "/live2d/Lynae.json",
+      // textureUrl: "/live2d/Lynae.webp",
+      alpha: true,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
+      fixAtlasScale: true,
+      animation: "idle",
+      loop: true,
+      showControls: false,
+      showLoading: false,
+      backgroundColor: "#00000000",
+      interactive: false,
+    });
+  </script> -->
 
   <!-- Login View -->
   <div id="login-view" class="container mt-5" style="max-width: 500px; display: none;"></div>

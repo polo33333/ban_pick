@@ -17,8 +17,8 @@ class SpineWebGLManager {
         this.mvp = null;
 
         // Fixed size config
-        this.fixedWidth = options.fixedWidth || 650;  // Độ rộng cố định (px)
-        this.fixedHeight = options.fixedHeight || 750; // Độ cao cố định (px)
+        this.fixedWidth = options.fixedWidth || 750;  // Độ rộng cố định (px)
+        this.fixedHeight = options.fixedHeight || 850; // Độ cao cố định (px)
 
         this.skeletonDataCache = new Map();
         this.currentSkeleton = null;
