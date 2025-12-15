@@ -200,7 +200,7 @@
     "atlasUrl": "/live2d/Mornye.atlas",
     "binaryUrl": "/live2d/Mornye.skel",
     "textureUrl": "/live2d/Mornye.webp",
-    "isActive": true
+    "isActive": false
   },
   "1301": {
     "icon": "/icon/Calcharo.webp",
@@ -554,7 +554,7 @@
     "atlasUrl": "/live2d/Lynae.atlas",
     "binaryUrl": "/live2d/Lynae.skel",
     "textureUrl": "/live2d/Lynae.webp",
-    "isActive": true
+    "isActive": false
   },
   "1601": {
     "icon": "/icon/Taoqi.webp",
