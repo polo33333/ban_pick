@@ -40,7 +40,11 @@ let currentSpineCharacter = null;
 // Show spine animation for character
 export function initSpinePlayer(charData = null) {
     const container = DOM.spinePlayerContainer;
-    if (!container) return;
+    if (!container) {
+        console.warn('Spine: initSpinePlayer - No container found');
+        return;
+    }
+    //console.log(`Spine: initSpinePlayer called for ${charData ? charData.en : 'null'}`);
 
     // CRITICAL: Cancel all pending timeouts from previous character selections
     pendingSpineTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
@@ -56,9 +60,10 @@ export function initSpinePlayer(charData = null) {
     }
 
     // Check if character has spine URLs
-    const hasSpineUrls = charData && charData.atlasUrl && charData.binaryUrl && charData.textureUrl;
+    const hasSpineUrls = charData && charData.atlasUrl && charData.jsonUrl && charData.textureUrl;
 
     if (!hasSpineUrls) {
+        //console.log('Spine: No spine URLs for this character, destroying player');
         destroySpinePlayer();
         return;
     }
@@ -85,9 +90,10 @@ export function initSpinePlayer(charData = null) {
 
     manager.showSkeleton({
         atlasUrl: charData.atlasUrl,
-        binaryUrl: charData.binaryUrl,
+        jsonUrl: charData.jsonUrl,
         textureUrl: charData.textureUrl
     }, characterKey).then(() => { // Pass character name to manager
+        //console.log(`Spine: Manager.showSkeleton promise resolved for ${characterKey}`);
         // Calculate how long the loading took
         const loadDuration = Date.now() - loadStartTime;
 
@@ -97,7 +103,7 @@ export function initSpinePlayer(charData = null) {
         const timeout1 = setTimeout(() => {
             // CRITICAL: Check if character is still current before showing
             if (currentSpineCharacter !== characterKey) {
-                //console.log(`Spine: Skipping animation - character changed`);
+                //console.log(`Spine: Skipping animation (timeout1) - character changed. Current: ${currentSpineCharacter}, Target: ${characterKey}`);
                 return;
             }
 
@@ -123,26 +129,27 @@ export function initSpinePlayer(charData = null) {
                 const timeout2 = setTimeout(() => {
                     // CRITICAL: Double-check character is still current
                     if (currentSpineCharacter !== characterKey) {
-                        //console.log(`Spine: Skipping animation (inner) - character changed`);
+                        //console.log(`Spine: Skipping animation (inner timeout) - character changed`);
                         return;
                     }
 
                     // EXTRA CHECK: Verify against manager's current character again
                     if (manager.currentCharacterName !== characterKey) {
-                        //console.log(`Spine: Skipping animation (inner) - manager character mismatch (expected: ${characterKey}, got: ${manager.currentCharacterName})`);
+                        // console.log(`Spine: Skipping animation (inner) - manager character mismatch`);
                         return;
                     }
 
                     // EXTRA CHECK: Verify against actual displayed champion name again
                     const displayedChampName2 = DOM.selectedChampNameEl?.innerText || '';
                     if (displayedChampName2 !== characterKey) {
-                        //console.log(`Spine: Skipping animation (inner) - name mismatch (expected: ${characterKey}, got: ${displayedChampName2})`);
+                        //console.log(`Spine: Skipping animation (inner) - name mismatch`);
                         return;
                     }
 
                     DOM.splashArtImg.style.display = 'none';
 
                     // Now show and fade in Spine after background is hidden
+                    // console.log('Spine: Showing final spine container');
                     container.style.display = 'block';
                     container.style.transition = 'opacity 0.3s ease-in-out';
                     // Force reflow to ensure transition works
@@ -160,7 +167,8 @@ export function initSpinePlayer(charData = null) {
         }, remainingDelay);
 
         pendingSpineTimeouts.push(timeout1);
-    }).catch(() => {
+    }).catch((err) => {
+        console.error('Spine: Failed to show skeleton in initSpinePlayer:', err);
         // On error, just show container without fade
         container.style.display = 'block';
         container.style.opacity = '1';
@@ -169,6 +177,7 @@ export function initSpinePlayer(charData = null) {
 
 // Hide spine player
 export function destroySpinePlayer() {
+    //console.log('Spine: destroySpinePlayer called');
     // CRITICAL: Cancel all pending timeouts to prevent interference
     pendingSpineTimeouts.forEach(timeoutId => clearTimeout(timeoutId));
     pendingSpineTimeouts = [];

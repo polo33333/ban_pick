@@ -49,9 +49,6 @@
     "ko": "절지",
     "zh-Hans": "折枝",
     "ja": "折枝",
-    "atlasUrl": "/live2d/Zhezhi.atlas",
-    "binaryUrl": "/live2d/Zhezhi.skel",
-    "textureUrl": "/live2d/Zhezhi.webp",
     "isActive": true
   },
   "1106": {
@@ -79,7 +76,7 @@
     "zh-Hans": "珂莱塔",
     "ja": "カルロッタ",
     "atlasUrl": "/live2d/Carlotta.atlas",
-    "binaryUrl": "/live2d/Carlotta.skel",
+    "jsonUrl": "/live2d/Carlotta.json",
     "textureUrl": "/live2d/Carlotta.webp",
     "isActive": true
   },
@@ -134,7 +131,7 @@
     "zh-Hans": "长离",
     "ja": "長離",
     "atlasUrl": "/live2d/Changli.atlas",
-    "binaryUrl": "/live2d/Changli.skel",
+    "jsonUrl": "/live2d/Changli.json",
     "textureUrl": "/live2d/Changli.webp",
     "isActive": true
   },
@@ -150,7 +147,7 @@
     "zh-Hans": "布兰特",
     "ja": "ブラント",
     "atlasUrl": "/live2d/Brant.atlas",
-    "binaryUrl": "/live2d/Brant.skel",
+    "jsonUrl": "/live2d/Brant.json",
     "textureUrl": "/live2d/Brant.webp",
     "isActive": true
   },
@@ -166,7 +163,7 @@
     "zh-Hans": "露帕",
     "ja": "ルパ",
     "atlasUrl": "/live2d/Lupa.atlas",
-    "binaryUrl": "/live2d/Lupa.skel",
+    "jsonUrl": "/live2d/Lupa.json",
     "textureUrl": "/live2d/Lupa.webp",
     "isActive": true
   },
@@ -182,7 +179,7 @@
     "zh-Hans": "嘉贝莉娜",
     "ja": "ガルブレーナ",
     "atlasUrl": "/live2d/Galbrena.atlas",
-    "binaryUrl": "/live2d/Galbrena.skel",
+    "jsonUrl": "/live2d/Galbrena.json",
     "textureUrl": "/live2d/Galbrena.webp",
     "isActive": true
   },
@@ -198,7 +195,7 @@
     "zh-Hans": "莫宁",
     "ja": "モーニエ",
     "atlasUrl": "/live2d/Mornye.atlas",
-    "binaryUrl": "/live2d/Mornye.skel",
+    "jsonUrl": "/live2d/Mornye.json",
     "textureUrl": "/live2d/Mornye.webp",
     "isActive": false
   },
@@ -227,7 +224,7 @@
     "zh-Hans": "吟霖",
     "ja": "吟霖",
     "atlasUrl": "/live2d/Yinlin.atlas",
-    "binaryUrl": "/live2d/Yinlin.skel",
+    "jsonUrl": "/live2d/Yinlin.json",
     "textureUrl": "/live2d/Yinlin.webp",
     "isActive": true
   },
@@ -256,7 +253,7 @@
     "zh-Hans": "今汐",
     "ja": "今汐",
     "atlasUrl": "/live2d/Jinhsi.atlas",
-    "binaryUrl": "/live2d/Jinhsi.skel",
+    "jsonUrl": "/live2d/Jinhsi.json",
     "textureUrl": "/live2d/Jinhsi.webp",
     "isActive": true
   },
@@ -272,7 +269,7 @@
     "zh-Hans": "相里要",
     "ja": "相里要",
     "atlasUrl": "/live2d/Xiangli Yao.atlas",
-    "binaryUrl": "/live2d/Xiangli Yao.skel",
+    "jsonUrl": "/live2d/Xiangli Yao.json",
     "textureUrl": "/live2d/Xiangli Yao.webp",
     "isActive": true
   },
@@ -288,7 +285,7 @@
     "zh-Hans": "奥古斯塔",
     "ja": "オーガスタ",
     "atlasUrl": "/live2d/Augusta.atlas",
-    "binaryUrl": "/live2d/Augusta.skel",
+    "jsonUrl": "/live2d/Augusta.json",
     "textureUrl": "/live2d/Augusta.webp",
     "isActive": true
   },
@@ -330,7 +327,7 @@
     "zh-Hans": "忌炎",
     "ja": "忌炎",
     "atlasUrl": "/live2d/Jiyan.atlas",
-    "binaryUrl": "/live2d/Jiyan.skel",
+    "jsonUrl": "/live2d/Jiyan.json",
     "textureUrl": "/live2d/Jiyan.webp",
     "isActive": true
   },
@@ -372,7 +369,7 @@
     "zh-Hans": "夏空",
     "ja": "シャコンヌ",
     "atlasUrl": "/live2d/Ciaccona.atlas",
-    "binaryUrl": "/live2d/Ciaccona.skel",
+    "jsonUrl": "/live2d/Ciaccona.json",
     "textureUrl": "/live2d/Ciaccona.webp",
     "isActive": true
   },
@@ -389,7 +386,7 @@
     "ja": "カルテジア",
     "isActive": true,
     "atlasUrl": "/live2d/Cartethyia.atlas",
-    "binaryUrl": "/live2d/Cartethyia.skel",
+    "jsonUrl": "/live2d/Cartethyia.json",
     "textureUrl": "/live2d/Cartethyia.webp"
   },
   "1410": {
@@ -404,7 +401,7 @@
     "zh-Hans": "尤诺",
     "ja": "ユーノ",
     "atlasUrl": "/live2d/Iuno.atlas",
-    "binaryUrl": "/live2d/Iuno.skel",
+    "jsonUrl": "/live2d/Iuno.json",
     "textureUrl": "/live2d/Iuno.webp",
     "isActive": true
   },
@@ -433,7 +430,7 @@
     "zh-Hans": "仇远",
     "ja": "仇遠",
     "atlasUrl": "/live2d/Qiuyuan.atlas",
-    "binaryUrl": "/live2d/Qiuyuan.skel",
+    "jsonUrl": "/live2d/Qiuyuan.json",
     "textureUrl": "/live2d/Qiuyuan.webp",
     "isActive": true
   },
@@ -488,7 +485,7 @@
     "zh-Hans": "守岸人",
     "ja": "ショアキーパー",
     "atlasUrl": "/live2d/Shorekeeper.atlas",
-    "binaryUrl": "/live2d/Shorekeeper.skel",
+    "jsonUrl": "/live2d/Shorekeeper.json",
     "textureUrl": "/live2d/Shorekeeper.webp",
     "isActive": true
   },
@@ -504,7 +501,7 @@
     "zh-Hans": "菲比",
     "ja": "フィービー",
     "atlasUrl": "/live2d/Phoebe.atlas",
-    "binaryUrl": "/live2d/Phoebe.skel",
+    "jsonUrl": "/live2d/Phoebe.json",
     "textureUrl": "/live2d/Phoebe.webp",
     "isActive": true
   },
@@ -520,7 +517,7 @@
     "zh-Hans": "赞妮",
     "ja": "ザンニー",
     "atlasUrl": "/live2d/Zani.atlas",
-    "binaryUrl": "/live2d/Zani.skel",
+    "jsonUrl": "/live2d/Zani.json",
     "textureUrl": "/live2d/Zani.webp",
     "isActive": true
   },
@@ -536,7 +533,7 @@
     "zh-Hans": "千咲",
     "ja": "千咲",
     "atlasUrl": "/live2d/Chisa.atlas",
-    "binaryUrl": "/live2d/Chisa.skel",
+    "jsonUrl": "/live2d/Chisa.json",
     "textureUrl": "/live2d/Chisa.webp",
     "isActive": true
   },
@@ -552,7 +549,7 @@
     "zh-Hans": "琳奈",
     "ja": "リンネー",
     "atlasUrl": "/live2d/Lynae.atlas",
-    "binaryUrl": "/live2d/Lynae.skel",
+    "jsonUrl": "/live2d/Lynae.json",
     "textureUrl": "/live2d/Lynae.webp",
     "isActive": false
   },
@@ -594,7 +591,7 @@
     "zh-Hans": "椿",
     "ja": "ツバキ",
     "atlasUrl": "/live2d/Camellya.atlas",
-    "binaryUrl": "/live2d/Camellya.skel",
+    "jsonUrl": "/live2d/Camellya.json",
     "textureUrl": "/live2d/Camellya.webp",
     "isActive": true
   },
@@ -623,7 +620,7 @@
     "zh-Hans": "洛可可",
     "ja": "ロココ",
     "atlasUrl": "/live2d/Roccia.atlas",
-    "binaryUrl": "/live2d/Roccia.skel",
+    "jsonUrl": "/live2d/Roccia.json",
     "textureUrl": "/live2d/Roccia.webp",
     "isActive": true
   },
@@ -639,7 +636,7 @@
     "zh-Hans": "坎特蕾拉",
     "ja": "カンタレラ",
     "atlasUrl": "/live2d/Cantarella.atlas",
-    "binaryUrl": "/live2d/Cantarella.skel",
+    "jsonUrl": "/live2d/Cantarella.json",
     "textureUrl": "/live2d/Cantarella.webp",
     "isActive": true
   },
@@ -655,7 +652,7 @@
     "zh-Hans": "弗洛洛",
     "ja": "フローヴァ",
     "atlasUrl": "/live2d/Phrolova.atlas",
-    "binaryUrl": "/live2d/Phrolova.skel",
+    "jsonUrl": "/live2d/Phrolova.json",
     "textureUrl": "/live2d/Phrolova.webp",
     "isActive": true
   }

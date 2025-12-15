@@ -80,7 +80,7 @@ class SpineWebGLManager {
             this.mvp.ortho2d(0, 0, this.fixedWidth, this.fixedHeight);
 
             this.initialized = true;
-            console.log(`Spine: Initialized with fixed size ${this.fixedWidth}x${this.fixedHeight}`);
+            //console.log(`Spine: Initialized with fixed size ${this.fixedWidth}x${this.fixedHeight}`);
 
             this.startRenderLoop();
         } catch (error) {
@@ -92,6 +92,7 @@ class SpineWebGLManager {
      * Preload only resources (files) without creating skeleton data
      */
     async preloadResources(urls) {
+        console.log('Spine: Preloading resources', urls);
         const key = urls.atlasUrl;
 
         // Check if already loaded into AssetManager
@@ -101,7 +102,7 @@ class SpineWebGLManager {
 
         // Load files into AssetManager only
         this.assetManager.loadTextureAtlas(urls.atlasUrl);
-        this.assetManager.loadBinary(urls.binaryUrl);
+        this.assetManager.loadJson(urls.jsonUrl);
 
         await new Promise((resolve, reject) => {
             const startTime = Date.now();
@@ -156,7 +157,7 @@ class SpineWebGLManager {
         const key = urls.atlasUrl;
 
         this.assetManager.loadTextureAtlas(urls.atlasUrl);
-        this.assetManager.loadBinary(urls.binaryUrl);
+        this.assetManager.loadJson(urls.jsonUrl);
 
         await new Promise((resolve, reject) => {
             const startTime = Date.now();
@@ -181,12 +182,11 @@ class SpineWebGLManager {
             setTimeout(() => {
                 const atlas = this.assetManager.require(urls.atlasUrl);
                 const atlasLoader = new spine.AtlasAttachmentLoader(atlas);
-                const skeletonBinary = new spine.SkeletonBinary(atlasLoader);
-                skeletonBinary.scale = 1.0;
-                skeletonBinary.premultipliedAlpha = false;
+                const skeletonJson = new spine.SkeletonJson(atlasLoader);
+                skeletonJson.scale = 1.0;
 
-                const data = skeletonBinary.readSkeletonData(
-                    this.assetManager.require(urls.binaryUrl)
+                const data = skeletonJson.readSkeletonData(
+                    this.assetManager.require(urls.jsonUrl)
                 );
 
                 resolve(data);
@@ -203,7 +203,7 @@ class SpineWebGLManager {
      */
     calculateFitScale(skeleton) {
         skeleton.setToSetupPose();
-        skeleton.updateWorldTransform();
+        skeleton.updateWorldTransform(spine.Physics.update);
 
         const bounds = new spine.Vector2();
         const size = new spine.Vector2();
@@ -236,6 +236,7 @@ class SpineWebGLManager {
             console.warn('Spine: Not initialized');
             return;
         }
+        //console.log(`SpineManager: showSkeleton called for ${characterName}`);
 
         if (!urls?.atlasUrl) {
             this.hideSkeleton();
@@ -274,7 +275,7 @@ class SpineWebGLManager {
             this.currentSkeleton.setToSetupPose();
             this.currentSkeleton.scaleX = scale;
             this.currentSkeleton.scaleY = scale;
-            this.currentSkeleton.updateWorldTransform();
+            this.currentSkeleton.updateWorldTransform(spine.Physics.update);
 
             // Get bounds sau khi scale
             const bounds = new spine.Vector2();
@@ -343,7 +344,7 @@ class SpineWebGLManager {
             if (this.currentSkeleton && this.currentAnimationState) {
                 this.currentAnimationState.update(delta);
                 this.currentAnimationState.apply(this.currentSkeleton);
-                this.currentSkeleton.updateWorldTransform();
+                this.currentSkeleton.updateWorldTransform(spine.Physics.update);
 
                 this.shader.bind();
                 this.shader.setUniformi(spine.Shader.SAMPLER, 0);

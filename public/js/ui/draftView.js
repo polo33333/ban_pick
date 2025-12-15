@@ -536,6 +536,7 @@ function updateCountdown(room, forceRestart = false) {
     } else {
         if (DOM.countdownNumber) DOM.countdownNumber.innerText = "";
         // if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
+        if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none';
         countdownWorker.postMessage({ type: 'stop' });
     }
 }
