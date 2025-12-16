@@ -14,6 +14,14 @@ body {
   margin: 15px 10px;
 }
 
+
+/* div#teams-container {
+  display: flex !important;
+  width: 1800px;
+  align-self: center;
+  justify-self: center;
+} */
+
 .slot {
   width: 130px;
   height: 110px;
@@ -27,6 +35,7 @@ body {
   overflow: hidden;
   border-radius: 10px;
   transform-style: preserve-3d;
+  user-select: none;
 }
 
 .blue {
@@ -56,6 +65,8 @@ body {
 }
 
 div#player-status {
+  text-transform: uppercase;
+  font-size: 10px;
   user-select: none;
 }
 
@@ -250,6 +261,7 @@ body.host #champ-grid-container {
   border-radius: 4px;
   transition: transform 0.2s;
   cursor: pointer;
+  /* user-select: none; */
 }
 
 .gap-2 {
@@ -1245,7 +1257,7 @@ button#confirm-pre-draft-button {
   width: 50px;
   height: 50px;
   border-radius: 50%;
-  background: linear-gradient(45deg, #fd5a0d, #567177);
+  background: linear-gradient(45deg, #b55122, #59696d);
   border: none;
   color: white;
   font-size: 1.5rem;
