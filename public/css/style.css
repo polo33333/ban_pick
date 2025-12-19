@@ -22,84 +22,8 @@ body {
   justify-self: center;
 } */
 
-.slot {
-  width: 130px;
-  height: 110px;
-  border: 1px solid #ccc;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  font-weight: bold;
-  position: relative;
-  overflow: hidden;
-  border-radius: 10px;
-  transform-style: preserve-3d;
-  user-select: none;
-}
+/* Old slot styles removed - see Enhanced Ban/Pick Slots section below */
 
-.blue {
-  background-color: #a0c4ff;
-}
-
-.red {
-  background-color: #ffadad;
-}
-
-.ban,
-.pick {
-  font-size: 12px;
-  width: 100%;
-  text-align: center;
-  padding: 2px;
-}
-
-.ban {
-  background-color: #555;
-  color: #fff;
-}
-
-.pick {
-  background-color: #ddd;
-  color: #000;
-}
-
-div#player-status {
-  text-transform: uppercase;
-  font-size: 10px;
-  user-select: none;
-}
-
-.slot.banned {
-  position: relative;
-}
-
-.slot.banned::after {
-  /* Sử dụng icon từ Bootstrap Icons */
-  font-family: "bootstrap-icons";
-  content: '\F6B6';
-  /* Unicode for bi-no-entry-fill (biển báo cấm) */
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 90px;
-  /* Tăng kích thước icon */
-  color: rgb(220, 53, 69);
-  /* Màu đỏ đậm, không mờ */
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  pointer-events: none;
-  z-index: -1;
-}
-
-.highlight {
-  border: 4px solid #000;
-  animation: blink-border 1s infinite;
-}
 
 #timer {
   font-size: 24px;
@@ -153,7 +77,8 @@ div#player-status {
 }
 
 .slot.skipped {
-  filter: grayscale(1) brightness(0.7);
+  background: rgb(151 151 151 / 80%);
+  /* filter: grayscale(1) brightness(0.9); */
 }
 
 .slot.skipped .slot-name-box {
@@ -224,14 +149,14 @@ div#player-status {
 }
 
 #champ-grid-container {
-  background: #182939;
-  border: 1px solid #ccc;
+  background: #121a2e;
+  border: 1px solid #4f3b3b;
   padding: 10px;
   margin-top: 5px;
   min-height: 390px;
   max-height: 415px;
   overflow-y: auto;
-  border-radius: 5px;
+  border-radius: 12px;
 }
 
 /* Host has larger champion grid */
@@ -344,7 +269,7 @@ div#blue-bans {
   width: 100%;
   padding: 8px;
   box-sizing: border-box;
-  margin-bottom: 10px;
+  /* margin-bottom: 10px; */
   /* Thêm padding-right để văn bản không bị che bởi nút clear */
   padding-right: 40px;
 }
@@ -392,7 +317,7 @@ div#blue-bans {
   z-index: 2;
   /* Căn giữa ảnh trong container */
   position: absolute;
-  top: 20%;
+  top: 35%;
   left: 50%;
   transform: translate(-50%, -50%);
 }
@@ -409,10 +334,12 @@ div#blue-bans {
 }
 
 div#splash-art-name {
+  text-transform: uppercase;
   background: rgb(0 0 0 / 70%);
-  padding: 2px 8px;
+  /* padding: 2px 8px; */
   /* border-radius: 15px; */
   z-index: 3;
+  font-size: 16px !important;
 }
 
 #splash-art-name {
@@ -452,6 +379,7 @@ div#splash-art-name {
   background-color: #198754;
   /* Màu xanh của Bootstrap (btn-success) */
   border-color: #198754;
+  border-radius: 30px;
   transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
 }
 
@@ -481,58 +409,20 @@ div#splash-art-name {
   text-align: center;
 }
 
-@keyframes blink-border {
-  0% {
-    border-color: #ff6600;
-    /* vàng */
-  }
-
-  50% {
-    border-color: #10ee39;
-    /* xanh */
-  }
-
-  100% {
-    border-color: #ff2a00;
-    /* quay lại vàng */
-  }
-}
-
-
+/* Countdown Warning Animation */
 @keyframes flash-warning {
   50% {
-    /* Thay đổi màu chữ và bóng đổ để tạo hiệu ứng nhấp nháy */
     color: #dc3545;
-    /* Màu đỏ cảnh báo */
     text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
   }
 }
 
 .time-warning {
-  /* Áp dụng animation nhấp nháy, lặp lại vô hạn */
   animation: flash-warning 1s infinite;
 }
 
-@keyframes slot-reveal {
-  0% {
-    transform: rotateY(90deg) scale(0.8);
-    box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0);
-  }
+/* Old slot animations removed - see Enhanced Ban/Pick Slots section */
 
-  50% {
-    transform: rotateY(0deg) scale(1.1);
-    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
-  }
-
-  100% {
-    transform: rotateY(0deg) scale(1);
-    box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0);
-  }
-}
-
-.slot-reveal-animation {
-  animation: slot-reveal 0.7s ease-out;
-}
 
 .bg-light {
   align-content: center;
@@ -549,15 +439,483 @@ div#splash-art-name {
   margin-top: 1rem;
 }
 
+/* picks-column styles moved to Enhanced Ban/Pick Slots section */
+
+#player2-container .picks-container {
+  flex-direction: row-reverse;
+}
+
+/* ==================== Player Info Cards ==================== */
+
+.player-info-card {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.player-info-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 16px;
+  padding: 2px;
+  background: linear-gradient(135deg, transparent, transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.player-info-card.blue-team {
+  border-color: rgba(49, 123, 241, 0.3);
+}
+
+.player-info-card.blue-team::before {
+  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+}
+
+.player-info-card.blue-team:hover {
+  border-color: rgba(49, 123, 241, 0.6);
+  box-shadow: 0 8px 32px rgba(49, 123, 241, 0.4);
+}
+
+.player-info-card.red-team {
+  border-color: rgba(218, 59, 59, 0.3);
+}
+
+.player-info-card.red-team::before {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.player-info-card.red-team:hover {
+  border-color: rgba(218, 59, 59, 0.6);
+  box-shadow: 0 8px 32px rgba(218, 59, 59, 0.4);
+}
+
+.player-info-card:hover::before {
+  opacity: 1;
+}
+
+.player-avatar-container {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.player-avatar {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease;
+}
+
+.player-avatar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+}
+
+.blue-avatar {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+}
+
+.red-avatar {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.player-info-card:hover .player-avatar {
+  transform: scale(1.1) rotate(5deg);
+}
+
+.player-status-indicator {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 2px solid rgba(15, 23, 42, 0.95);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+  animation: pulse-status 2s ease-in-out infinite;
+}
+
+.player-status-indicator.online {
+  background: linear-gradient(135deg, #10b981, #059669);
+  box-shadow: 0 0 12px rgba(16, 185, 129, 0.6);
+}
+
+.player-status-indicator.offline {
+  background: linear-gradient(135deg, #6b7280, #4b5563);
+  animation: none;
+}
+
+@keyframes pulse-status {
+
+  0%,
+  100% {
+    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 16px rgba(16, 185, 129, 0.8);
+  }
+}
+
+.player-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.player-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: white;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.player-stats {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 2px 8px;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.stat-item i {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Active Turn - Only Stat Item Animation */
+/* Card styling removed to prevent layout shift */
+
+/* Stat Item Pulse Animation when active */
+.player-info-card.active-turn .stat-item {
+  animation: stat-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes stat-pulse {
+
+  0%,
+  100% {
+    background: rgba(16, 185, 129, 0.2);
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+    transform: scale(1);
+  }
+
+  50% {
+    background: rgba(16, 185, 129, 0.4);
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
+    transform: scale(1.05);
+  }
+}
+
+/* Old card-pulse removed - now using stat-pulse */
+
+/* ==================== Enhanced Ban/Pick Slots ==================== */
+
+.slot {
+  width: 130px;
+  height: 110px;
+  border: 2px solid #444;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  font-weight: bold;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  transform-style: preserve-3d;
+  user-select: none;
+  background: rgb(20, 30, 48, 90%);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* Blue Team Border */
+.slot.blue {
+  border-color: rgba(49, 123, 241, 0.6);
+}
+
+/* Red Team Border */
+.slot.red {
+  border-color: rgba(218, 59, 59, 0.6);
+}
+
+/* Enhanced Slot Reveal Animation with 3D Flip */
+@keyframes slot-reveal-3d {
+  0% {
+    transform: perspective(1000px) rotateY(90deg) scale(0.8);
+    opacity: 0;
+    box-shadow: 0 0 5px 2px rgba(255, 255, 255, 0);
+  }
+
+  50% {
+    transform: perspective(1000px) rotateY(0deg) scale(1.1);
+    box-shadow: 0 0 25px 8px rgba(255, 215, 0, 0.8);
+  }
+
+  100% {
+    transform: perspective(1000px) rotateY(0deg) scale(1);
+    opacity: 1;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.slot-reveal-animation {
+  animation: slot-reveal-3d 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Glow effect for filled slots */
+.slot:not(:empty) {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.slot.blue:not(:empty) {
+  box-shadow: 0 4px 20px rgba(49, 123, 241, 0.4), 0 0 30px rgba(49, 123, 241, 0.2);
+}
+
+.slot.red:not(:empty) {
+  box-shadow: 0 4px 20px rgba(218, 59, 59, 0.3);
+  border-color: rgba(218, 59, 59, 0.8);
+}
+
+/* Enhanced Highlight Animation */
+.highlight {
+  border: 3px solid transparent;
+  animation: blink-border-enhanced 1.5s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes blink-border-enhanced {
+
+  0%,
+  100% {
+    border-color: #10b981;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6), 0 0 40px rgba(16, 185, 129, 0.3);
+  }
+
+  50% {
+    border-color: #34d399;
+    box-shadow: 0 0 30px rgba(16, 185, 129, 0.9), 0 0 60px rgba(16, 185, 129, 0.5);
+  }
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #10b981, #34d399, #10b981);
+  background-size: 200% 200%;
+  animation: gradient-rotate 3s linear infinite;
+  z-index: -1;
+  opacity: 0.3;
+}
+
+@keyframes gradient-rotate {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Phase Labels */
 .picks-column {
+  position: relative;
+  padding-top: 25px;
   display: flex;
   flex-direction: column;
   gap: 5px;
   align-items: center;
 }
 
-#player2-container .picks-container {
-  flex-direction: row-reverse;
+.picks-column.phase-1::before {
+  content: 'PHASE 1';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* background: rgba(255, 255, 255, 0.1); */
+  padding: 3px 5px;
+  border-radius: 8px;
+  text-align: center;
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+  opacity: 0.8;
+}
+
+.picks-column.phase-2::before {
+  content: 'PHASE 2';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  width: 100%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  /* background: rgba(255, 255, 255, 0.1); */
+  padding: 3px 5px;
+  border-radius: 8px;
+  text-align: center;
+  /* border: 1px solid rgba(255, 255, 255, 0.2); */
+  opacity: 0.8;
+}
+
+/* Slot Turn Numbers - Top Left Corner */
+.slot[data-turn-number]::before {
+  content: attr(data-turn-number);
+  position: absolute;
+  top: 4px;
+  left: 3px;
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 2px 6px;
+  border-radius: 4px;
+  line-height: 1;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+/* Different styling for picks vs bans */
+.picks-column>.slot[data-turn-number]::before {
+  color: rgba(255, 255, 255, 0.85);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* Ban/Pick Labels */
+.ban,
+.pick {
+  font-size: 12px;
+  width: 100%;
+  text-align: center;
+  padding: 2px;
+  border-radius: 4px 4px 0 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.ban {
+  background: linear-gradient(135deg, #555, #333);
+  color: #fff;
+}
+
+.pick {
+  background: linear-gradient(135deg, #f0f0f0, #ddd);
+  color: #000;
+}
+
+/* Banned Slot Overlay */
+.slot.banned {
+  position: relative;
+}
+
+.slot.banned::after {
+  font-family: "bootstrap-icons";
+  content: '\F6B6';
+  /* bi-no-entry-fill */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 100px;
+  color: rgb(220, 53, 69);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  z-index: -1;
+  /* animation: banned-pulse 2s ease-in-out infinite; */
+}
+
+@keyframes banned-pulse {
+
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+div#player-status {
+  text-transform: uppercase;
+  font-size: 10px;
+  user-select: none;
 }
 
 #host-controls-toggle.btn.rounded-circle {
@@ -725,27 +1083,28 @@ div#pre-draft-my-champ-grid {
 
 /* Pre-Draft Display on Main Screen */
 .pre-draft-display-container {
-  /* margin: 8px; */
-  background-color: rgba(0, 0, 0, 0.3);
-  border: 1px solid #444;
-  border-radius: 8px;
+  background: #121a2e;
+  border: 1px solid #4f3b3b;
+  border-radius: 12px;
   padding: 2px;
   margin-bottom: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 .pre-draft-display-title {
   color: #e0e0e0;
   text-align: center;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  margin: 2px;
   text-transform: uppercase;
+  /* letter-spacing: 0.5px; */
 }
 
 .pre-draft-display-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(38px, 1fr));
-  gap: 4px;
+  gap: 2px;
 }
 
 .pre-draft-display-grid .champ-item img {
@@ -764,20 +1123,8 @@ div#pre-draft-my-champ-grid {
   text-align: center;
 }
 
-.slot[data-turn-number]::before {
-  content: attr(data-turn-number);
-  position: absolute;
-  top: 2px;
-  left: 4px;
-  font-size: 14px;
-  color: white;
-  z-index: 1;
-}
+/* Old slot numbering removed - see Enhanced Ban/Pick Slots section */
 
-.picks-column>.slot[data-turn-number]::before {
-  color: black;
-
-}
 
 /* Glassmorphism Styles */
 #draft-view>.glass-panel {

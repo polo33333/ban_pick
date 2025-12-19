@@ -201,7 +201,9 @@ export function handleRoomStateUpdate(room) {
     if (draftFinished) {
         // Không làm gì cả, để updateSplashArt xử lý
     } else if (room.state === 'drafting' && !room.nextTurn && state.myRole === 'player') {
-        DOM.splashArtNameEl.innerText = 'Đợi host bắt đầu...';
+        if (DOM.splashArtNameEl) {
+            DOM.splashArtNameEl.innerText = 'Đợi host bắt đầu...';
+        }
         if (DOM.countdownNumber) DOM.countdownNumber.innerText = "";
         if (DOM.countdownRing) DOM.countdownRing.style.display = 'none'; // Hide ring if needed
         if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none'; // Hide SVG 
@@ -432,31 +434,142 @@ function updatePlayerStatus(room) {
         </button>
     `;
 
-    const playerOrder = room.playerOrder || [];
-    const connectedPlayerIds = new Set(Object.keys(room.players));
-    let statusHTML = '';
+    // Player status element is now optional (may be commented out in HTML)
+    if (DOM.playerStatusEl) {
+        const playerOrder = room.playerOrder || [];
+        const connectedPlayerIds = new Set(Object.keys(room.players));
+        let statusHTML = '';
 
-    const createStatusSpan = (playerId, defaultText) => {
-        if (!playerId) return `<span class="me-4" style="color: white;">⏳ <strong>${defaultText}:</strong> Đợi...</span>`;
-        const playerData = room.playerHistory[playerId];
-        const isConnected = connectedPlayerIds.has(playerId);
-        const color = isConnected ? 'white' : 'white';
-        const icon = isConnected ? '✅' : '❌';
-        const style = isConnected ? 'font-weight: bold;' : 'font-weight: bold;';
-        return `<span class="me-4" style="color: ${color}; ${style}">${icon} <strong>${truncateName(playerData.name)}:</strong> ${isConnected ? 'Đã kết nối' : 'Mất kết nối'}</span>`;
-    };
+        const createStatusSpan = (playerId, defaultText) => {
+            if (!playerId) return `<span class="me-4" style="color: white;">⏳ <strong>${defaultText}:</strong> Đợi...</span>`;
+            const playerData = room.playerHistory[playerId];
+            const isConnected = connectedPlayerIds.has(playerId);
+            const color = isConnected ? 'white' : 'white';
+            const icon = isConnected ? '✅' : '❌';
+            const style = isConnected ? 'font-weight: bold;' : 'font-weight: bold;';
+            return `<span class="me-4" style="color: ${color}; ${style}">${icon} <strong>${truncateName(playerData.name)}:</strong> ${isConnected ? 'Đã kết nối' : 'Mất kết nối'}</span>`;
+        };
 
-    statusHTML += createStatusSpan(playerOrder[0], 'Player 1');
-    statusHTML += createStatusSpan(playerOrder[1], 'Player 2');
-    DOM.playerStatusEl.innerHTML = statusHTML;
+        statusHTML += createStatusSpan(playerOrder[0], 'Player 1');
+        statusHTML += createStatusSpan(playerOrder[1], 'Player 2');
+        DOM.playerStatusEl.innerHTML = statusHTML;
+    }
 }
 
 function updateTeamNames(room) {
-    if (room.playerOrder?.[0]) {
-        DOM.player1NameEl.innerText = truncateName(room.playerHistory[room.playerOrder[0]]?.name) || 'Player 1';
+    const playerOrder = room.playerOrder || [];
+    const connectedPlayerIds = new Set(Object.keys(room.players));
+
+    // Update Player 1
+    if (playerOrder[0]) {
+        const p1Name = truncateName(room.playerHistory[playerOrder[0]]?.name) || 'Player 1';
+        const p1Connected = connectedPlayerIds.has(playerOrder[0]);
+
+        // Update old display (for backward compatibility)
+        if (DOM.player1NameEl) {
+            DOM.player1NameEl.innerText = p1Name;
+        }
+
+        // Update new player info card
+        const p1DisplayName = document.getElementById('player1-display-name');
+        if (p1DisplayName) {
+            p1DisplayName.innerText = p1Name;
+        }
+
+        // Update status indicator
+        const p1Card = document.querySelector('#player1-container .player-info-card');
+        const p1StatusIndicator = p1Card?.querySelector('.player-status-indicator');
+        if (p1StatusIndicator) {
+            p1StatusIndicator.classList.toggle('online', p1Connected);
+            p1StatusIndicator.classList.toggle('offline', !p1Connected);
+            p1StatusIndicator.title = p1Connected ? 'Online' : 'Offline';
+        }
+
+        // Update turn info and active state
+        const p1TurnInfo = document.getElementById('player1-turn-info');
+        if (p1TurnInfo) {
+            const turn = room.nextTurn;
+            const isMyTurn = turn && turn.team === playerOrder[0];
+
+            // Toggle active-turn class for card animation
+            if (p1Card) {
+                p1Card.classList.toggle('active-turn', isMyTurn);
+            }
+
+            if (isMyTurn) {
+                const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
+                const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
+                const color = turn.type === 'ban' ? '#ef4444' : '#10b981';
+
+                p1TurnInfo.innerHTML = `
+                    <i class="${icon}" style="color: ${color}"></i>
+                    <span style="color: ${color}; font-weight: 700;">${turnType}</span>
+                `;
+                p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
+            } else {
+                p1TurnInfo.innerHTML = `
+                    <i class="bi bi-unlock2-fill"></i>
+                    <span>Watting...</span>
+                `;
+                p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        }
     }
-    if (room.playerOrder?.[1]) {
-        DOM.player2NameEl.innerText = truncateName(room.playerHistory[room.playerOrder[1]]?.name) || 'Player 2';
+
+    // Update Player 2
+    if (playerOrder[1]) {
+        const p2Name = truncateName(room.playerHistory[playerOrder[1]]?.name) || 'Player 2';
+        const p2Connected = connectedPlayerIds.has(playerOrder[1]);
+
+        // Update old display (for backward compatibility)
+        if (DOM.player2NameEl) {
+            DOM.player2NameEl.innerText = p2Name;
+        }
+
+        // Update new player info card
+        const p2DisplayName = document.getElementById('player2-display-name');
+        if (p2DisplayName) {
+            p2DisplayName.innerText = p2Name;
+        }
+
+        // Update status indicator
+        const p2Card = document.querySelector('#player2-container .player-info-card');
+        const p2StatusIndicator = p2Card?.querySelector('.player-status-indicator');
+        if (p2StatusIndicator) {
+            p2StatusIndicator.classList.toggle('online', p2Connected);
+            p2StatusIndicator.classList.toggle('offline', !p2Connected);
+            p2StatusIndicator.title = p2Connected ? 'Online' : 'Offline';
+        }
+
+        // Update turn info and active state
+        const p2TurnInfo = document.getElementById('player2-turn-info');
+        if (p2TurnInfo) {
+            const turn = room.nextTurn;
+            const isMyTurn = turn && turn.team === playerOrder[1];
+
+            // Toggle active-turn class for card animation
+            if (p2Card) {
+                p2Card.classList.toggle('active-turn', isMyTurn);
+            }
+
+            if (isMyTurn) {
+                const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
+                const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
+                const color = turn.type === 'ban' ? '#ef4444' : '#10b981';
+
+                p2TurnInfo.innerHTML = `
+                    <i class="${icon}" style="color: ${color}"></i>
+                    <span style="color: ${color}; font-weight: 700;">${turnType}</span>
+                `;
+                p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
+            } else {
+                p2TurnInfo.innerHTML = `
+                    <i class="bi bi-unlock2-fill"></i>
+                    <span>Watting...</span>
+                `;
+                p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
+            }
+        }
     }
 }
 

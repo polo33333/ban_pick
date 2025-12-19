@@ -281,14 +281,14 @@ export function updateSplashArt(champName) {
             const actionText = turn.type.toUpperCase() === "PICK" ? "CHỌN" : "CẤM";
             turnText = `${truncateName(playerName).toUpperCase()}: ${actionText}`;
         }
-        DOM.splashArtNameEl.innerText = turnText;
-        const playerOrder = room.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : '#fb6969') : 'white';
+        // Hide splash-art-name when champion is selected (turn info is in player card now)
+        if (DOM.splashArtNameEl) {
+            DOM.splashArtNameEl.style.display = 'none';
+        }
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = charData.en;
-            DOM.selectedChampNameEl.classList.remove('d-none');
-            DOM.selectedChampNameEl.classList.add('d-flex');
+            DOM.selectedChampNameEl.style.display = 'block';
         }
 
         if (DOM.selectedChampElementContainer) {
@@ -348,14 +348,30 @@ export function updateSplashArt(champName) {
         } else {
             text = 'Đợi người chơi...';
         }
-        DOM.splashArtNameEl.innerText = text;
-        const playerOrder = room?.playerOrder || [];
-        DOM.splashArtNameEl.style.color = turn ? (playerOrder[0] === turn.team ? '#0093ff' : '#fb6969') : 'white';
+
+        // Show splash-art-name only:
+        // 1. Before drafting starts (no turn yet)
+        // 2. After drafting completes (no turn but has actions)
+        // Hide as soon as turn exists (host selected first player)
+        if (DOM.splashArtNameEl) {
+            const shouldShow = !turn && (
+                (room?.state === 'pre-draft-selection') ||
+                (room?.state === 'drafting' && room?.actions?.length === 0) ||
+                (room?.actions?.length > 0)
+            );
+
+            if (shouldShow) {
+                DOM.splashArtNameEl.innerText = text;
+                DOM.splashArtNameEl.style.display = 'block';
+                DOM.splashArtNameEl.style.color = 'white';
+            } else {
+                DOM.splashArtNameEl.style.display = 'none';
+            }
+        }
 
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = '';
-            DOM.selectedChampNameEl.classList.add('d-none');
-            DOM.selectedChampNameEl.classList.remove('d-flex');
+            DOM.selectedChampNameEl.style.display = 'none';
         }
 
         if (DOM.selectedChampElementContainer) {

@@ -80,6 +80,16 @@ function handleJoinRoom(io, socket, { roomId, role, playerName }) {
 // ... (other functions)
 
 function handlePlayerJoin(socket, room, playerName) {
+    // Check if name is already in use by a connected player
+    const nameInUse = Object.entries(room.players).some(([id, data]) =>
+        data.name === playerName && id !== socket.id
+    );
+
+    if (nameInUse) {
+        socket.emit("draft-error", { message: "Tên này đã được sử dụng" });
+        return false;
+    }
+
     const oldPlayerEntry = Object.entries(room.playerHistory).find(([id, data]) => data.name === playerName && !room.players[id]);
 
     if (oldPlayerEntry) { // Reconnect logic

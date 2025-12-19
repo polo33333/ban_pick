@@ -8,7 +8,25 @@
 
 <!-- Blue Team Picks (Left Column) -->
 <div id="player1-container" class="col-2">
-    <span style="color: blue;" class="text-center">Player 1</span>
+    <!-- Player 1 Info Card -->
+    <div class="player-info-card blue-team">
+        <div class="player-avatar-container">
+            <div class="player-avatar blue-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="player-status-indicator offline" title="Chờ kết nối"></div>
+        </div>
+        <div class="player-details">
+            <div class="player-name" id="player1-display-name">Player 1</div>
+            <div class="player-stats">
+                <span class="stat-item" id="player1-turn-info">
+                    <i class="bi bi-unlock2-fill"></i>
+                    <span>Watting...</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
     <div class="picks-container">
         <div class="picks-column phase-1" id="blue-picks-p1"></div>
         <div class="picks-column phase-2" id="blue-picks-p2"></div>
@@ -47,7 +65,7 @@
             </div>
             <div id="selected-champ-name"
                 class="position-absolute bottom-0 start-50 translate-middle-x text-center text-white fw-bold"
-                style="background: rgba(0, 0, 0, 0.5);padding: 5px 10px;border-radius: 8px;justify-content: center">
+                style="background: rgba(0, 0, 0, 0.5);padding: 5px 10px;border-radius: 8px;justify-content: center;display: none;">
             </div>
             <div id="selected-champ-element-container"
                 class="position-absolute top-0 start-0 m-3 d-none align-items-center"
@@ -62,7 +80,8 @@
                 <span id="selected-champ-rank" class="text-warning fw-bold" style="font-size: 0.9rem;"></span>
             </div>
         </div>
-        <div id="splash-art-name" class="text-center fw-bold" style="color: white;"></div>
+        <div id="splash-art-name" class="text-center fw-bold"
+            style="color: white; display: none; font-size: 1.2rem; margin-top: 10px;"></div>
         <div id="countdown-bar-container">
             <div id="countdown-bar"></div>
         </div>
@@ -154,7 +173,25 @@
 
 <!-- Red Team Picks (Right Column) -->
 <div id="player2-container" class="col-2">
-    <span style="color: red;" class="text-center">Player 2</span>
+    <!-- Player 2 Info Card -->
+    <div class="player-info-card red-team">
+        <div class="player-avatar-container">
+            <div class="player-avatar red-avatar">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <div class="player-status-indicator offline" title="Chờ kết nối"></div>
+        </div>
+        <div class="player-details">
+            <div class="player-name" id="player2-display-name">Player 2</div>
+            <div class="player-stats">
+                <span class="stat-item" id="player2-turn-info">
+                    <i class="bi bi-unlock2-fill"></i>
+                    <span>Watting...</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
     <div class="picks-container">
         <div class="picks-column phase-1" id="red-picks-p1"></div>
         <div class="picks-column phase-2" id="red-picks-p2"></div>
