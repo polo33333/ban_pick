@@ -85,6 +85,267 @@ body {
   background-color: #555;
 }
 
+
+
+/* ==================== Toast Notification System ==================== */
+
+.toast-container {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  pointer-events: none;
+  max-width: 400px;
+}
+
+.toast {
+  background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(15, 23, 42, 0.98) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-radius: 12px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+  pointer-events: auto;
+  min-width: 300px;
+  max-width: 400px;
+  position: relative;
+  overflow: hidden;
+  border-left: 4px solid;
+}
+
+/* Toast Types */
+.toast-success {
+  border-left-color: #10b981;
+}
+
+.toast-success .toast-icon {
+  color: #10b981;
+}
+
+.toast-error {
+  border-left-color: #ef4444;
+}
+
+.toast-error .toast-icon {
+  color: #ef4444;
+}
+
+.toast-warning {
+  border-left-color: #f59e0b;
+}
+
+.toast-warning .toast-icon {
+  color: #f59e0b;
+}
+
+.toast-info {
+  border-left-color: #3b82f6;
+}
+
+.toast-info .toast-icon {
+  color: #3b82f6;
+}
+
+.toast-confirm {
+  border-left-color: #8b5cf6;
+}
+
+.toast-confirm .toast-icon {
+  color: #8b5cf6;
+}
+
+/* Toast Icon */
+.toast-icon {
+  font-size: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 8px currentColor);
+}
+
+/* Toast Message */
+.toast-message {
+  flex: 1;
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+/* Toast Close Button */
+.toast-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.7);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toast-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  transform: scale(1.1);
+}
+
+.toast-close i {
+  font-size: 18px;
+}
+
+/* Toast Actions (for confirm) */
+.toast-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  width: 100%;
+}
+
+.toast-btn {
+  flex: 1;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.toast-btn-confirm {
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+}
+
+.toast-btn-confirm:hover {
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.toast-btn-cancel {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.toast-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+/* Toast Animations */
+.toast-enter {
+  opacity: 0;
+  transform: translateX(400px) scale(0.8);
+}
+
+.toast-show {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  animation: toast-slide-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.toast-exit {
+  opacity: 0;
+  transform: translateX(0) scale(0.9);
+  transition: all 0.3s ease;
+}
+
+@keyframes toast-slide-in {
+  0% {
+    opacity: 0;
+    transform: translateX(400px) scale(0.8);
+  }
+
+  60% {
+    transform: translateX(-10px) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Progress bar for toast */
+.toast::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: linear-gradient(90deg, currentColor, transparent);
+  width: 100%;
+  opacity: 0.5;
+  animation: toast-progress 3s linear;
+}
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+
+  to {
+    width: 0%;
+  }
+}
+
+/* Remove progress bar for confirm toasts */
+.toast-confirm::after {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .toast-container {
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    transform: none;
+    max-width: none;
+  }
+
+  .toast {
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* Backdrop animations */
+@keyframes backdrop-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes backdrop-fade-out {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
 #main-background {
   position: fixed;
   top: 0;
@@ -458,7 +719,7 @@ div#splash-art-name {
   align-items: center;
   gap: 12px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
-  border: 2px solid transparent;
+  border: 3px solid transparent;
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
@@ -635,31 +896,60 @@ div#splash-art-name {
   transform: translateY(-1px);
 }
 
-/* Active Turn - Only Stat Item Animation */
-/* Card styling removed to prevent layout shift */
+/* ==================== Player Countdown Progress Bar ==================== */
 
-/* Stat Item Pulse Animation when active */
-.player-info-card.active-turn .stat-item {
-  animation: stat-pulse 1.5s ease-in-out infinite;
+.player-countdown-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.1);
+  overflow: hidden;
+  border-radius: 0 0 16px 16px;
 }
 
-@keyframes stat-pulse {
+.player-countdown-bar {
+  height: 100%;
+  width: 100%;
+  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+  transition: width 0.1s linear, background 0.3s ease;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Green gradient for both teams */
+.player-info-card.blue-team .player-countdown-bar,
+.player-info-card.red-team .player-countdown-bar {
+  background: linear-gradient(90deg, #10b981, #34d399, #10b981);
+}
+
+/* Warning state when time is low */
+.player-countdown-bar.warning {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24, #f59e0b) !important;
+  animation: progress-pulse 1s ease-in-out infinite;
+}
+
+@keyframes progress-pulse {
 
   0%,
   100% {
-    background: rgba(16, 185, 129, 0.2);
-    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
-    transform: scale(1);
+    opacity: 1;
   }
 
   50% {
-    background: rgba(16, 185, 129, 0.4);
-    box-shadow: 0 0 20px rgba(16, 185, 129, 0.6);
-    transform: scale(1.05);
+    opacity: 0.7;
   }
 }
 
-/* Old card-pulse removed - now using stat-pulse */
+/* Hide progress bar when not active */
+.player-countdown-progress.hidden {
+  opacity: 0;
+}
+
+/* Old stat-pulse animation removed */
+
 
 /* ==================== Enhanced Ban/Pick Slots ==================== */
 
@@ -833,7 +1123,7 @@ div#splash-art-name {
   position: absolute;
   top: 4px;
   left: 3px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: rgba(255, 255, 255, 0.9);
   z-index: 3;
@@ -1146,7 +1436,7 @@ div#pre-draft-my-champ-grid {
   -webkit-backdrop-filter: blur(20px);
   border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: 24px;
-  padding: 1.5rem;
+  padding: 1.2rem;
   box-shadow: 0 20px 60px rgb(26 14 14 / 50%);
   color: white;
   max-width: 480px;
@@ -1162,7 +1452,7 @@ div#pre-draft-my-champ-grid {
 }
 
 .login-logo-container {
-  margin-bottom: 0.5rem;
+  /* margin-bottom: 0.5rem; */
   animation: float 3s ease-in-out infinite;
 }
 

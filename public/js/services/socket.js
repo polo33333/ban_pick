@@ -2,6 +2,7 @@ import { state } from '../state.js';
 import { handleRoomStateUpdate, handlePreSelectUpdate, handleDraftError, handleHostLeft, handleKicked, handleDraftFinished } from '../ui/draftView.js';
 import { handleSettingsUpdate } from '../ui/settings.js';
 import { handleIncomingMessage, loadChatHistory } from '../ui/chat.js';
+import { showConfirm } from '../ui/toast.js';
 
 // Quản lý kết nối và các sự kiện socket.io
 export function initializeSocket() {
@@ -51,9 +52,10 @@ export function emitPreDraftSelect(champs) {
 
 // Host controls
 export function emitCloseRoom() {
-    if (confirm('Are you sure you want to close this room?')) {
-        state.socket.emit('close-room', { roomId: state.myRoom });
-    }
+    showConfirm(
+        'Bạn có chắc chắn muốn xóa phòng?',
+        () => state.socket.emit('close-room', { roomId: state.myRoom })
+    );
 }
 
 export function emitTogglePause() {

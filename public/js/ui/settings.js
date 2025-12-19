@@ -2,6 +2,7 @@
 
 import { CONFIG } from '../constants.js';
 import { state } from '../state.js';
+import { showError, showConfirm } from './toast.js';
 
 /**
  * Initialize Tools Card Toggles
@@ -33,9 +34,10 @@ export function initSettingsPanel() {
             // Handle Exit tab separately
             if (targetTab === 'exit') {
                 e.preventDefault();
-                if (confirm('Bạn có chắc chắn muốn thoát khỏi phòng và về trang chủ?')) {
-                    window.location.reload();
-                }
+                showConfirm(
+                    'Bạn có chắc chắn muốn thoát khỏi phòng và về trang chủ?',
+                    () => window.location.reload()
+                );
                 return;
             }
 
@@ -278,7 +280,7 @@ function initRoomIdHandlers() {
                     }, 2000);
                 } catch (error) {
                     console.error('Failed to copy room ID:', error);
-                    alert('Không thể copy ID phòng');
+                    showError('Không thể copy ID phòng');
                 }
             }
         });

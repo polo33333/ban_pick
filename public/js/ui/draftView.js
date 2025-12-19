@@ -5,6 +5,7 @@ import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } 
 import { handlePreDraftPhase } from './preDraftView.js';
 import { updateWheelNames, enterFullscreen } from './settings.js';
 import { showChatButton } from './chat.js';
+import { showWarning, showError, showInfo, showConfirm } from './toast.js';
 
 
 // Web Worker will handle countdown timing
@@ -147,7 +148,7 @@ export function initializeDraftView() {
         if (isNaN(time) || time < 1) {
             time = 1;
             input.value = 1;
-            alert('Thời gian đếm ngược phải ít nhất 1 giây');
+            showWarning('Thời gian đếm ngược phải ít nhất 1 giây');
             return;
         }
 
@@ -281,20 +282,20 @@ export function handleDraftFinished(data) {
 }
 
 export function handleDraftError({ message }) {
-    alert(`Lỗi: ${message}`);
+    showError(`Lỗi: ${message}`);
     if (message.toLowerCase().includes('room not found')) {
-        window.location.reload();
+        setTimeout(() => window.location.reload(), 2000);
     }
 }
 
 export function handleHostLeft() {
-    alert("Host đã rời phòng, phòng sẽ được đóng lại.");
-    window.location.reload();
+    showInfo("Host đã rời phòng, phòng sẽ được đóng lại.", 2000);
+    setTimeout(() => window.location.reload(), 2000);
 }
 
 export function handleKicked({ reason }) {
-    alert(`Bạn đã bị kick khỏi phòng: ${reason || 'Bị kick bởi host'}`);
-    window.location.reload();
+    showError(`Bạn đã bị kick khỏi phòng: ${reason || 'Bị kick bởi host'}`, 2000);
+    setTimeout(() => window.location.reload(), 2000);
 }
 
 
@@ -351,9 +352,10 @@ function updateHostControls(room) {
                 btn.title = `Kick ${player.name}`;
 
                 btn.onclick = () => {
-                    if (confirm(`Bạn có chắc muốn kick ${truncateName(player.name)}?`)) {
-                        emitKickPlayer(id);
-                    }
+                    showConfirm(
+                        `Bạn có chắc muốn kick ${truncateName(player.name)}?`,
+                        () => emitKickPlayer(id)
+                    );
                 };
                 DOM.kickButtonsContainer.appendChild(btn);
             }
@@ -580,7 +582,6 @@ function initCountdownWorker() {
     if (!countdownWorker) {
         countdownWorker = new Worker('/js/workers/countdownWorker.js');
 
-        // Listen for messages from worker
         countdownWorker.onmessage = function (e) {
             const { type, data } = e.data;
 
@@ -602,10 +603,10 @@ function initCountdownWorker() {
                     if (DOM.countdownNumber) {
                         DOM.countdownNumber.classList.toggle('time-warning', data.isWarning);
                     }
-                    if (DOM.countdownNumber) {
-                        DOM.countdownNumber.classList.toggle('time-warning', data.isWarning);
-                    }
                     if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'block'; // Ensure visible on update
+
+                    // Update player progress bars
+                    updatePlayerProgressBars(data.scale, data.isWarning);
                     break;
 
                 case 'paused':
@@ -616,14 +617,60 @@ function initCountdownWorker() {
                     if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
                     if (DOM.countdownNumber) DOM.countdownNumber.classList.remove('time-warning');
                     if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none'; // Hide SVG on pause
+
+                    // Hide player progress bars
+                    hidePlayerProgressBars();
                     break;
 
                 case 'complete':
                     // Countdown finished
+                    hidePlayerProgressBars();
                     break;
             }
         };
     }
+}
+
+// Helper functions for player progress bars
+function updatePlayerProgressBars(scale, isWarning) {
+    const room = state.currentRoomState;
+    if (!room || !room.nextTurn) {
+        hidePlayerProgressBars();
+        return;
+    }
+
+    const playerOrder = room.playerOrder || [];
+    const isPlayer1Turn = room.nextTurn.team === playerOrder[0];
+    const isPlayer2Turn = room.nextTurn.team === playerOrder[1];
+
+    const p1Progress = document.getElementById('player1-countdown-progress');
+    const p1Bar = document.getElementById('player1-countdown-bar');
+    const p2Progress = document.getElementById('player2-countdown-progress');
+    const p2Bar = document.getElementById('player2-countdown-bar');
+
+    if (isPlayer1Turn && p1Progress && p1Bar) {
+        p1Progress.classList.remove('hidden');
+        p1Bar.style.width = `${scale * 100}%`;
+        p1Bar.classList.toggle('warning', isWarning);
+    } else if (p1Progress) {
+        p1Progress.classList.add('hidden');
+    }
+
+    if (isPlayer2Turn && p2Progress && p2Bar) {
+        p2Progress.classList.remove('hidden');
+        p2Bar.style.width = `${scale * 100}%`;
+        p2Bar.classList.toggle('warning', isWarning);
+    } else if (p2Progress) {
+        p2Progress.classList.add('hidden');
+    }
+}
+
+function hidePlayerProgressBars() {
+    const p1Progress = document.getElementById('player1-countdown-progress');
+    const p2Progress = document.getElementById('player2-countdown-progress');
+
+    if (p1Progress) p1Progress.classList.add('hidden');
+    if (p2Progress) p2Progress.classList.add('hidden');
 }
 
 function updateCountdown(room, forceRestart = false) {
@@ -651,6 +698,7 @@ function updateCountdown(room, forceRestart = false) {
         // if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
         if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none';
         countdownWorker.postMessage({ type: 'stop' });
+        hidePlayerProgressBars();
     }
 }
 

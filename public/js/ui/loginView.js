@@ -1,5 +1,6 @@
 import { DOM } from '../constants.js';
 import { emitJoinRoom } from '../services/socket.js';
+import { showWarning } from './toast.js';
 
 // Logic cho màn hình đăng nhập
 function generateRandomId(length = 6) {
@@ -30,14 +31,14 @@ export function initializeLoginView() {
         let playerName = null;
 
         if (!roomId) {
-            alert('Vui lòng nhập ID phòng!');
+            showWarning('Vui lòng nhập ID phòng!');
             return;
         }
 
         if (role === 'player') {
             playerName = DOM.playerNameInput.value.trim();
             if (!playerName) {
-                alert('Vui lòng nhập tên người chơi!');
+                showWarning('Vui lòng nhập tên người chơi!');
                 return;
             }
             localStorage.setItem('lastPlayerName', playerName);
