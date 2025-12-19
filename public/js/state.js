@@ -11,4 +11,5 @@ export const state = {
     remotePreSelectedChamp: null,
     myPreDraftSelection: [],
     hasLoadedFromStorage: false,
+    hasShownBanPickView: false, // Track if ban/pick view has been shown
 };

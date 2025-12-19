@@ -1,24 +1,33 @@
 <div class="login-panel animate-fade-in-up">
     <!-- Header Section -->
     <div class="login-header">
-        <div class="login-logo-container">
+        <!-- <div class="login-logo-container">
             <img src="assets/app.ico" alt="App Icon" class="login-logo">
-        </div>
+        </div> -->
         <h2 class="login-title">CẤM CHỌN</h2>
         <p class="login-subtitle">Hệ thống ban/pick Wuwa</p>
     </div>
 
     <!-- Form Section -->
     <div class="login-form">
+        <!-- Role Selection Tabs -->
         <div class="login-form-group">
-            <label for="role" class="login-label">
+            <label class="login-label">
                 <i class="bi bi-person-badge"></i>
                 <span>VAI TRÒ</span>
             </label>
-            <select id="role" class="login-select">
-                <option value="host">Host (Tạo phòng)</option>
-                <option value="player">Player (Người chơi)</option>
-            </select>
+            <div class="role-tabs">
+                <button class="role-tab active" data-role="host">
+                    <i class="bi bi-shield-fill-check"></i>
+                    <span>Host</span>
+                    <small>Tạo phòng</small>
+                </button>
+                <button class="role-tab" data-role="player">
+                    <i class="bi bi-person-fill"></i>
+                    <span>Player</span>
+                    <small>Người chơi</small>
+                </button>
+            </div>
         </div>
 
         <div id="playerName-container" class="login-form-group" style="display: none;">

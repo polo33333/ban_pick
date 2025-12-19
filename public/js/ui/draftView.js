@@ -137,9 +137,23 @@ export function initializeDraftView() {
         state.preSelectedChamp = null;
     };
 
+    // Helper function to collapse the control panel
+    function collapseControlPanel() {
+        const offcanvasElement = document.getElementById('host-controls-panel');
+        if (offcanvasElement) {
+            const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+            if (bsOffcanvas) {
+                bsOffcanvas.hide();
+            }
+        }
+    }
+
     // Host controls are global functions in the original, let's attach them to window
     window.closeRoom = emitCloseRoom;
-    window.togglePause = emitTogglePause;
+    window.togglePause = () => {
+        emitTogglePause();
+        collapseControlPanel();
+    };
     window.setCountdown = () => {
         const input = document.getElementById('countdown-input');
         let time = parseInt(input.value, 10);
@@ -153,6 +167,7 @@ export function initializeDraftView() {
         }
 
         emitSetCountdown(time);
+        collapseControlPanel();
     };
     window.kickPlayer = emitKickPlayer;
     window.chooseFirst = emitChooseFirst;
@@ -193,6 +208,21 @@ export function handleRoomStateUpdate(room) {
     const isInPreDraft = handlePreDraftPhase(room);
     if (isInPreDraft) {
         return; // Stop rendering the rest of the draft view
+    }
+
+    // Show loading overlay only on first time showing ban/pick view
+    // Use a flag to track if we've already shown the ban/pick view
+    const isFirstBanPickLoad = !state.hasShownBanPickView;
+
+    if (isFirstBanPickLoad) {
+        const banPickLoading = document.getElementById('ban-pick-loading');
+        if (banPickLoading) {
+            banPickLoading.style.display = 'flex';
+            banPickLoading.classList.remove('fade-out');
+        }
+
+        // Mark that we've shown the ban/pick view
+        state.hasShownBanPickView = true;
     }
 
     // FIX: Xử lý trường hợp player vừa chuyển từ pre-draft sang ban/pick
@@ -249,6 +279,19 @@ export function handleRoomStateUpdate(room) {
 
     // Update Lucky Wheel names
     updateWheelNames();
+
+    // Hide loading screen after UI is ready (only on first ban/pick load)
+    if (isFirstBanPickLoad) {
+        setTimeout(() => {
+            const banPickLoading = document.getElementById('ban-pick-loading');
+            if (banPickLoading) {
+                banPickLoading.classList.add('fade-out');
+                setTimeout(() => {
+                    banPickLoading.style.display = 'none';
+                }, 500); // Match CSS transition duration
+            }
+        }, 400); // Brief delay to ensure UI is rendered
+    }
 
     // Centralized logic for Lock-in button visibility and state
     const lockInContainer = DOM.lockInButton.parentElement;
@@ -405,6 +448,14 @@ function updateHostControls(room) {
                 if (CONFIG.AUTO_FULLSCREEN) {
                     enterFullscreen();
                 }
+                // Collapse control panel after choosing first player
+                const offcanvasElement = document.getElementById('host-controls-panel');
+                if (offcanvasElement) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
+                }
             };
             DOM.preDraftControls.appendChild(btn1);
 
@@ -418,6 +469,14 @@ function updateHostControls(room) {
                 emitChooseFirst(p2_id);
                 if (CONFIG.AUTO_FULLSCREEN) {
                     enterFullscreen();
+                }
+                // Collapse control panel after choosing first player
+                const offcanvasElement = document.getElementById('host-controls-panel');
+                if (offcanvasElement) {
+                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
+                    if (bsOffcanvas) {
+                        bsOffcanvas.hide();
+                    }
                 }
             };
             DOM.preDraftControls.appendChild(btn2);
@@ -498,6 +557,9 @@ function updateTeamNames(room) {
                 p1Card.classList.toggle('active-turn', isMyTurn);
             }
 
+            // Toggle active-turn class for stat-item blinking animation
+            p1TurnInfo.classList.toggle('active-turn', isMyTurn);
+
             if (isMyTurn) {
                 const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
                 const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
@@ -505,13 +567,13 @@ function updateTeamNames(room) {
 
                 p1TurnInfo.innerHTML = `
                     <i class="${icon}" style="color: ${color}"></i>
-                    <span style="color: ${color}; font-weight: 700;">${turnType}</span>
+                    <span style="color: ${color}; font-weight: 800;">${turnType}</span>
                 `;
                 p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
             } else {
                 p1TurnInfo.innerHTML = `
                     <i class="bi bi-unlock2-fill"></i>
-                    <span>Watting...</span>
+                    <span>...</span>
                 `;
                 p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
             }
@@ -554,6 +616,9 @@ function updateTeamNames(room) {
                 p2Card.classList.toggle('active-turn', isMyTurn);
             }
 
+            // Toggle active-turn class for stat-item blinking animation
+            p2TurnInfo.classList.toggle('active-turn', isMyTurn);
+
             if (isMyTurn) {
                 const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
                 const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
@@ -561,13 +626,13 @@ function updateTeamNames(room) {
 
                 p2TurnInfo.innerHTML = `
                     <i class="${icon}" style="color: ${color}"></i>
-                    <span style="color: ${color}; font-weight: 700;">${turnType}</span>
+                    <span style="color: ${color}; font-weight: 800;">${turnType}</span>
                 `;
                 p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
             } else {
                 p2TurnInfo.innerHTML = `
                     <i class="bi bi-unlock2-fill"></i>
-                    <span>Watting...</span>
+                    <span>...</span>
                 `;
                 p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
             }

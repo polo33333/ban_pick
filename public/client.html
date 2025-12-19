@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
   <link rel="icon" href="/assets/app.ico">
   <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
 
   <script src="/js/lib/socket.io.min.js"></script>
   <!-- Embed spine-webgl runtime (single canvas, single context) -->
@@ -18,6 +19,7 @@
 <body class="bg-light">
   <div id="main-background"></div>
 
+
   <!-- Loading Screen -->
   <div id="loading-screen">
     <div class="loading-content">
@@ -28,6 +30,13 @@
         <div id="loading-progress" class="loading-progress-fill"></div>
       </div>
       <p id="loading-percentage" class="loading-percentage">0%</p>
+    </div>
+  </div>
+
+  <!-- Ban/Pick Transition Loading (minimal - icon only) -->
+  <div id="ban-pick-loading" style="display: none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
     </div>
   </div>
   <!-- <div id="player" style="width:100%;height:100%;"></div>
@@ -379,7 +388,7 @@
             </div>
             <div class="settings-info-item">
               <span class="settings-info-label">Phiên bản</span>
-              <span class="settings-info-value">1.1.0</span>
+              <span class="settings-info-value">1.2.0</span>
             </div>
             <div class="settings-info-item">
               <span class="settings-info-label">Nhà phát triển</span>
@@ -387,7 +396,7 @@
             </div>
             <div class="settings-info-item">
               <span class="settings-info-label">Ngày cập nhật</span>
-              <span class="settings-info-value">12/12/2025</span>
+              <span class="settings-info-value">20/12/2025</span>
             </div>
           </div>
 
@@ -450,7 +459,7 @@
       Development by <strong style="color: rgba(255, 255, 255, 0.9);">KDONE</strong>
     </div>
     <div class="text-center text-white-50" style="font-size: 0.8rem;">
-      Version 1.1.0
+      Version 1.2.0
     </div>
   </div>
 
