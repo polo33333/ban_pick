@@ -71,17 +71,54 @@
                 class="position-absolute bottom-0 start-50 translate-middle-x text-center text-white fw-bold"
                 style="background: rgba(0, 0, 0, 0.5);padding: 5px 10px;border-radius: 8px;justify-content: center;display: none;">
             </div>
-            <div id="selected-champ-element-container"
-                class="position-absolute top-0 start-0 m-3 d-none align-items-center"
-                style="background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 15px; z-index: 3;">
-                <img id="selected-champ-element" src="" style="width: 25px; height: 25px;" alt="">
-                <span id="selected-champ-element-name" class="text-white me-2 fw-bold"
-                    style="font-size: 0.8rem;"></span>
 
+            <!-- Champion Info Display (Left Side) -->
+            <div id="champion-info-display" class="d-none flex-column gap-2">
+                <!-- Element -->
+                <div class="info-item info-element">
+                    <div class="d-flex align-items-center gap-1">
+                        <img id="selected-champ-element" src="" alt="">
+                        <span id="selected-champ-element-name" class="info-label"></span>
+                    </div>
+                </div>
+
+                <!-- Rank -->
+                <div class="info-item info-rank">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-star-fill"></i>
+                        <span id="selected-champ-rank" class="info-value"></span>
+                    </div>
+                </div>
             </div>
-            <div id="selected-champ-rank-container" class="position-absolute d-none align-items-center"
-                style="top: 48px; left: 16px; background: rgba(0,0,0,0.5); padding: 2px 8px; border-radius: 15px; z-index: 3;">
-                <span id="selected-champ-rank" class="text-warning fw-bold" style="font-size: 0.9rem;"></span>
+
+            <!-- Champion Stats Display -->
+            <div id="champion-stats-display" class="d-none flex-column gap-2">
+                <!-- Ban Rate -->
+                <div class="stat-item stat-ban">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-shield-fill"></i>
+                        <span class="stat-label">BAN</span>
+                    </div>
+                    <span id="stat-ban-rate" class="stat-value">0%</span>
+                </div>
+
+                <!-- Pick Rate -->
+                <div class="stat-item stat-pick">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-star-fill"></i>
+                        <span class="stat-label">PICK</span>
+                    </div>
+                    <span id="stat-pick-rate" class="stat-value">0%</span>
+                </div>
+
+                <!-- Total Games -->
+                <div class="stat-item stat-games">
+                    <div class="d-flex align-items-center gap-1">
+                        <i class="bi bi-trophy-fill"></i>
+                        <span class="stat-label">GAMES</span>
+                    </div>
+                    <span id="stat-total-games" class="stat-value">0</span>
+                </div>
             </div>
         </div>
         <div id="splash-art-name" class="text-center fw-bold"

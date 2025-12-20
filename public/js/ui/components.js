@@ -4,6 +4,123 @@ import { emitPreSelectChamp, emitSelectChamp } from '../services/socket.js';
 
 // Chứa các hàm render các thành phần UI nhỏ, tái sử dụng được
 
+// ==================== Champion Stats Management ====================
+let championStatsData = null;
+
+// Load champion statistics from server
+async function loadChampionStats() {
+    try {
+        const response = await fetch('/api/stats');
+        const data = await response.json();
+        championStatsData = data.characters;
+        console.log('Champion stats loaded successfully');
+    } catch (error) {
+        console.error('Failed to load champion stats:', error);
+        championStatsData = null;
+    }
+}
+
+// Update stats display for selected champion
+function updateChampionStatsDisplay(championName) {
+    const statsDisplay = document.getElementById('champion-stats-display');
+
+    if (!statsDisplay) return;
+
+    // Hide if no champion name or no stats data loaded
+    if (!championName || !championStatsData) {
+        statsDisplay.classList.add('d-none');
+        statsDisplay.classList.remove('d-flex');
+        return;
+    }
+
+    const stats = championStatsData[championName];
+
+    // Hide if this champion has no stats
+    if (!stats) {
+        if (statsDisplay.classList.contains('d-flex')) {
+            statsDisplay.classList.add('fade-out');
+            setTimeout(() => {
+                statsDisplay.classList.add('d-none');
+                statsDisplay.classList.remove('d-flex', 'fade-out');
+            }, 300);
+        }
+        return;
+    }
+
+    // Update stat values
+    const banRateEl = document.getElementById('stat-ban-rate');
+    const pickRateEl = document.getElementById('stat-pick-rate');
+    const totalGamesEl = document.getElementById('stat-total-games');
+
+    if (banRateEl) banRateEl.textContent = `${(stats.banRate * 100).toFixed(1)}%`;
+    if (pickRateEl) pickRateEl.textContent = `${(stats.pickRate * 100).toFixed(1)}%`;
+    if (totalGamesEl) totalGamesEl.textContent = stats.totalGames;
+
+    // Show stats display
+    statsDisplay.classList.remove('d-none');
+    statsDisplay.classList.add('d-flex');
+}
+
+// Update champion info display (element and rank)
+function updateChampionInfoDisplay(charData) {
+    const infoDisplay = document.getElementById('champion-info-display');
+
+    if (!infoDisplay) return;
+
+    // Hide if no character data
+    if (!charData) {
+        if (infoDisplay.classList.contains('d-flex')) {
+            infoDisplay.classList.add('fade-out');
+            setTimeout(() => {
+                infoDisplay.classList.add('d-none');
+                infoDisplay.classList.remove('d-flex', 'fade-out');
+            }, 300);
+        }
+        return;
+    }
+
+    const hasElement = charData.element && CONSTANTS.ELEMENT_NAMES[charData.element];
+    const hasRank = charData.rank;
+
+    // Hide if no element and no rank
+    if (!hasElement && !hasRank) {
+        if (infoDisplay.classList.contains('d-flex')) {
+            infoDisplay.classList.add('fade-out');
+            setTimeout(() => {
+                infoDisplay.classList.add('d-none');
+                infoDisplay.classList.remove('d-flex', 'fade-out');
+            }, 300);
+        }
+        return;
+    }
+
+    // Update element
+    const elementItem = infoDisplay.querySelector('.info-element');
+    if (hasElement) {
+        elementItem.style.display = 'flex';
+        DOM.selectedChampElementEl.src = `/element/${CONSTANTS.ELEMENT_NAMES[charData.element]}.webp`;
+        DOM.selectedChampElementNameEl.innerText = CONSTANTS.ELEMENT_NAMES[charData.element];
+    } else {
+        elementItem.style.display = 'none';
+    }
+
+    // Update rank
+    const rankItem = infoDisplay.querySelector('.info-rank');
+    if (hasRank) {
+        rankItem.style.display = 'flex';
+        DOM.selectedChampRankEl.innerHTML = '★'.repeat(charData.rank);
+    } else {
+        rankItem.style.display = 'none';
+    }
+
+    // Show info display
+    infoDisplay.classList.remove('d-none');
+    infoDisplay.classList.add('d-flex');
+}
+
+// Load stats when module loads
+loadChampionStats();
+
 // ==================== Spine WebGL Management (Single Context) ====================
 import { getSpineManager } from '../spine/spineWebGL.js';
 
@@ -291,28 +408,11 @@ export function updateSplashArt(champName) {
             DOM.selectedChampNameEl.style.display = 'block';
         }
 
-        if (DOM.selectedChampElementContainer) {
-            if (charData.element && CONSTANTS.ELEMENT_NAMES[charData.element]) {
-                DOM.selectedChampElementContainer.classList.remove('d-none');
-                DOM.selectedChampElementContainer.classList.add('d-flex');
-                DOM.selectedChampElementEl.src = `/element/${CONSTANTS.ELEMENT_NAMES[charData.element]}.webp`;
-                DOM.selectedChampElementNameEl.innerText = CONSTANTS.ELEMENT_NAMES[charData.element];
-            } else {
-                DOM.selectedChampElementContainer.classList.add('d-none');
-                DOM.selectedChampElementContainer.classList.remove('d-flex');
-            }
-        }
+        // Update stats display
+        updateChampionStatsDisplay(charData.en);
 
-        if (DOM.selectedChampRankContainer) {
-            if (charData.rank) {
-                DOM.selectedChampRankContainer.classList.remove('d-none');
-                DOM.selectedChampRankContainer.classList.add('d-flex');
-                DOM.selectedChampRankEl.innerHTML = '★'.repeat(charData.rank);
-            } else {
-                DOM.selectedChampRankContainer.classList.add('d-none');
-                DOM.selectedChampRankContainer.classList.remove('d-flex');
-            }
-        }
+        // Update info display (element and rank)
+        updateChampionInfoDisplay(charData);
 
     } else { // Trường hợp không có tướng (lượt mới, skip,...)
         DOM.splashArtContainer.style.display = 'block'; // Luôn hiển thị container
@@ -374,15 +474,11 @@ export function updateSplashArt(champName) {
             DOM.selectedChampNameEl.style.display = 'none';
         }
 
-        if (DOM.selectedChampElementContainer) {
-            DOM.selectedChampElementContainer.classList.add('d-none');
-            DOM.selectedChampElementContainer.classList.remove('d-flex');
-        }
+        // Hide stats display
+        updateChampionStatsDisplay(null);
 
-        if (DOM.selectedChampRankContainer) {
-            DOM.selectedChampRankContainer.classList.add('d-none');
-            DOM.selectedChampRankContainer.classList.remove('d-flex');
-        }
+        // Hide info display
+        updateChampionInfoDisplay(null);
     }
 }
 

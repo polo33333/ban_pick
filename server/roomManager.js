@@ -23,6 +23,12 @@ export function createRoom(roomId, hostId) {
         players: {},
         playerOrder: [],
         playerHistory: {},
+        settings: {
+            enableStats: true,  // Default: enabled
+            enableSound: true,
+            enableLive2D: true,
+            autoFullscreen: false
+        }
     };
     console.log(`Room created: ${roomId} (host ${hostId})`);
 }

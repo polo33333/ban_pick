@@ -5,6 +5,7 @@ import path from "path";
 import { fileURLToPath } from "url";
 import fs from "fs/promises";
 import { initializeSocketHandlers } from "./server/socketHandlers.js";
+import { getStats } from "./server/statsManager.js";
 import compression from "compression"; // <-- thêm dòng này
 
 const app = express();
@@ -45,7 +46,7 @@ io.on("connection", socket => {
 });
 
 // ---- Serve UI test ----
-app.get("/characters", async (req, res) => {
+app.get("/api/characters", async (req, res) => {
   try {
     const data = await fs.readFile(path.join(__dirname, 'character_local.json'), 'utf-8');
     const characters = JSON.parse(data);
@@ -65,6 +66,24 @@ app.get("/characters", async (req, res) => {
     res.status(500).send("Error loading character data");
   }
 });
+
+// ---- Serve statistics API ----
+app.get("/api/stats", async (req, res) => {
+  try {
+    const stats = await getStats();
+    res.setHeader('Content-Type', 'application/json');
+    res.json(stats);
+  } catch (error) {
+    console.error("Failed to load statistics:", error);
+    res.status(500).send("Error loading statistics");
+  }
+});
+
+// ---- Serve statistics page ----
+app.get("/stats", (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'stats.html'));
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "client.html"));
 });

@@ -1,5 +1,6 @@
 import { rooms } from "./roomManager.js";
 import { broadcastRoomState } from "./socketHandlers.js";
+import { recordSession } from "./statsManager.js";
 
 // Chứa các logic cốt lõi của game: tạo lượt, chuyển lượt, countdown...
 
@@ -72,6 +73,20 @@ export function nextTurn(roomId) {
             clearTimeout(room.timer);
             room.nextTurn = null;
             broadcastRoomState(roomId);
+
+            // Track statistics if enabled (default: true)
+            if (room.settings?.enableStats !== false) {
+                // All data is already in room object
+                recordSession({
+                    roomId: room.id,
+                    actions: room.actions,
+                    playerOrder: room.playerOrder,
+                    playerHistory: room.playerHistory
+                }).catch(err => {
+                    console.error('Failed to record session statistics:', err);
+                });
+            }
+
             room.io?.to(roomId).emit("draft-finished", { actions: room.actions });
         }
         return;

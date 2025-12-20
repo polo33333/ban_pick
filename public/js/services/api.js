@@ -6,7 +6,7 @@ import { renderChampionGrid, preloadSplashArts } from '../ui/components.js';
 // Quản lý việc tải dữ liệu từ server (ví dụ: danh sách tướng)
 export async function loadCharacters() {
     try {
-        const response = await fetch('/characters');
+        const response = await fetch('/api/characters');
         const rawCharacters = await response.json();
 
         const seen = new Set();

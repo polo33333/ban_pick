@@ -84,4 +84,6 @@ export const CONFIG = {
     ENABLE_SOUND: true,
     // Tự động fullscreen khi chọn người đi đầu
     AUTO_FULLSCREEN: false,
+    // Bật/tắt thống kê ban/pick
+    ENABLE_STATS: true,
 };

@@ -135,6 +135,11 @@ export function initializeDraftView() {
         emitSelectChamp(state.preSelectedChamp.en);
         DOM.lockInButton.disabled = true;
         state.preSelectedChamp = null;
+
+        // Hide countdown immediately after lock-in (will be updated by server if needed)
+        if (DOM.countdownSvg) {
+            DOM.countdownSvg.style.display = 'none';
+        }
     };
 
     // Helper function to collapse the control panel
@@ -167,7 +172,7 @@ export function initializeDraftView() {
         }
 
         emitSetCountdown(time);
-        collapseControlPanel();
+        //collapseControlPanel();
     };
     window.kickPlayer = emitKickPlayer;
     window.chooseFirst = emitChooseFirst;
@@ -188,6 +193,12 @@ export function initializeDraftView() {
 export function handleRoomStateUpdate(room) {
     const turnChanged = state.currentRoomState?.currentTurn !== room.currentTurn;
     const wasPaused = state.currentRoomState?.paused && !room.paused; // Vừa được resume
+
+    // Reset draft complete flag if draft is still ongoing
+    if (room.state === 'drafting' && state.isDraftComplete) {
+        state.isDraftComplete = false;
+    }
+
     state.currentRoomState = room;
 
     DOM.loginViewEl.style.display = 'none';
@@ -321,6 +332,15 @@ export function handlePreSelectUpdate({ champ }) {
 
 export function handleDraftFinished(data) {
     DOM.lockInButton.disabled = true;
+
+    // Set flag to prevent countdown from showing again
+    state.isDraftComplete = true;
+
+    // Hide countdown SVG when draft is complete
+    if (DOM.countdownSvg) {
+        DOM.countdownSvg.style.display = 'none';
+    }
+
     //console.log("DRAFT COMPLETE", data);
 }
 
@@ -668,7 +688,10 @@ function initCountdownWorker() {
                     if (DOM.countdownNumber) {
                         DOM.countdownNumber.classList.toggle('time-warning', data.isWarning);
                     }
-                    if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'block'; // Ensure visible on update
+                    // Only show countdown SVG if draft is not complete
+                    if (DOM.countdownSvg && !state.isDraftComplete && state.currentRoomState?.nextTurn && state.currentRoomState?.state !== 'complete') {
+                        DOM.countdownSvg.style.display = 'block';
+                    }
 
                     // Update player progress bars
                     updatePlayerProgressBars(data.scale, data.isWarning);
@@ -688,7 +711,10 @@ function initCountdownWorker() {
                     break;
 
                 case 'complete':
-                    // Countdown finished
+                    // Countdown finished - hide countdown SVG
+                    if (DOM.countdownSvg) {
+                        DOM.countdownSvg.style.display = 'none !important';
+                    }
                     hidePlayerProgressBars();
                     break;
             }
@@ -745,7 +771,7 @@ function updateCountdown(room, forceRestart = false) {
     if (room.paused) {
         if (DOM.countdownNumber) DOM.countdownNumber.style.display = 'block';
         countdownWorker.postMessage({ type: 'pause' });
-    } else if (room.countdownEndTime != null && room.nextTurn) {
+    } else if (room.countdownEndTime != null && room.nextTurn && room.state !== 'complete') {
         if (DOM.countdownNumber) DOM.countdownNumber.style.display = 'block';
         if (DOM.countdownRing) DOM.countdownRing.style.display = 'block';
         if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'block'; // Show SVG on start
@@ -852,6 +878,23 @@ function updateActionSlots(room, turnChanged) {
             }
         }
     });
+
+    // Add turn numbers to ALL ban slots (both filled and empty)
+    blueBanSlots.forEach((slot, index) => {
+        const turnNumber = index + 1;
+        const turnSpan = document.createElement('span');
+        turnSpan.className = 'slot-turn-number';
+        turnSpan.textContent = turnNumber;
+        slot.appendChild(turnSpan);
+    });
+
+    redBanSlots.forEach((slot, index) => {
+        const turnNumber = index + 1; // Start from 1 for each player
+        const turnSpan = document.createElement('span');
+        turnSpan.className = 'slot-turn-number';
+        turnSpan.textContent = turnNumber;
+        slot.appendChild(turnSpan);
+    });
 }
 
 function updateTurnHighlight(room) {
@@ -885,6 +928,8 @@ function updateSplashOnTurnChange(turnChanged) {
         if (DOM.selectedChampNameEl) {
             DOM.selectedChampNameEl.innerText = '';
         }
+        // Old containers - now handled by champion-info-display
+        /*
         if (DOM.selectedChampElementContainer) {
             DOM.selectedChampElementContainer.classList.add('d-none');
             DOM.selectedChampElementContainer.classList.remove('d-flex');
@@ -893,6 +938,7 @@ function updateSplashOnTurnChange(turnChanged) {
             DOM.selectedChampRankContainer.classList.add('d-none');
             DOM.selectedChampRankContainer.classList.remove('d-flex');
         }
+        */
 
         if (DOM.countdownRing) {
             DOM.countdownRing.style.transition = 'none';

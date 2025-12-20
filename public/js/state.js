@@ -12,4 +12,5 @@ export const state = {
     myPreDraftSelection: [],
     hasLoadedFromStorage: false,
     hasShownBanPickView: false, // Track if ban/pick view has been shown
+    isDraftComplete: false, // Track if draft has finished
 };

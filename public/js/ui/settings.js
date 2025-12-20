@@ -99,6 +99,7 @@ function initToggleSwitches() {
     const soundToggle = document.getElementById('toggle-sound');
     const live2dToggle = document.getElementById('toggle-live2d');
     const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
+    const statsToggle = document.getElementById('toggle-enable-stats');
 
     if (soundToggle) {
         soundToggle.addEventListener('change', (e) => {
@@ -132,6 +133,17 @@ function initToggleSwitches() {
             animateToggle(e.target);
         });
     }
+
+    if (statsToggle) {
+        statsToggle.addEventListener('change', (e) => {
+            CONFIG.ENABLE_STATS = e.target.checked;
+            saveSettings();
+            console.log('Statistics tracking:', CONFIG.ENABLE_STATS ? 'Enabled' : 'Disabled');
+
+            // Animation feedback
+            animateToggle(e.target);
+        });
+    }
 }
 
 /**
@@ -155,6 +167,7 @@ function saveSettings() {
         enableSound: CONFIG.ENABLE_SOUND,
         enableLive2D: CONFIG.ENABLE_LIVE2D,
         autoFullscreen: CONFIG.AUTO_FULLSCREEN,
+        enableStats: CONFIG.ENABLE_STATS,
     };
     localStorage.setItem('app-settings', JSON.stringify(settings));
 
@@ -183,11 +196,15 @@ function loadSettings() {
             if (settings.autoFullscreen !== undefined) {
                 CONFIG.AUTO_FULLSCREEN = settings.autoFullscreen;
             }
+            if (settings.enableStats !== undefined) {
+                CONFIG.ENABLE_STATS = settings.enableStats;
+            }
 
             // Update UI toggles
             const soundToggle = document.getElementById('toggle-sound');
             const live2dToggle = document.getElementById('toggle-live2d');
             const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
+            const statsToggle = document.getElementById('toggle-enable-stats');
 
             if (soundToggle) {
                 soundToggle.checked = CONFIG.ENABLE_SOUND;
@@ -197,6 +214,9 @@ function loadSettings() {
             }
             if (fullscreenToggle) {
                 fullscreenToggle.checked = CONFIG.AUTO_FULLSCREEN;
+            }
+            if (statsToggle) {
+                statsToggle.checked = CONFIG.ENABLE_STATS;
             }
 
             //console.log('Settings loaded:', settings);
@@ -216,12 +236,14 @@ export function handleSettingsUpdate(settings) {
     if (typeof settings.enableSound === 'boolean') CONFIG.ENABLE_SOUND = settings.enableSound;
     if (typeof settings.enableLive2D === 'boolean') CONFIG.ENABLE_LIVE2D = settings.enableLive2D;
     if (typeof settings.autoFullscreen === 'boolean') CONFIG.AUTO_FULLSCREEN = settings.autoFullscreen;
+    if (typeof settings.enableStats === 'boolean') CONFIG.ENABLE_STATS = settings.enableStats;
 
     // Save to local storage
     const storageSettings = {
         enableSound: CONFIG.ENABLE_SOUND,
         enableLive2D: CONFIG.ENABLE_LIVE2D,
         autoFullscreen: CONFIG.AUTO_FULLSCREEN,
+        enableStats: CONFIG.ENABLE_STATS,
     };
     localStorage.setItem('app-settings', JSON.stringify(storageSettings));
 
@@ -229,10 +251,12 @@ export function handleSettingsUpdate(settings) {
     const soundToggle = document.getElementById('toggle-sound');
     const live2dToggle = document.getElementById('toggle-live2d');
     const fullscreenToggle = document.getElementById('toggle-auto-fullscreen');
+    const statsToggle = document.getElementById('toggle-enable-stats');
 
     if (soundToggle) soundToggle.checked = CONFIG.ENABLE_SOUND;
     if (live2dToggle) live2dToggle.checked = CONFIG.ENABLE_LIVE2D;
     if (fullscreenToggle) fullscreenToggle.checked = CONFIG.AUTO_FULLSCREEN;
+    if (statsToggle) statsToggle.checked = CONFIG.ENABLE_STATS;
 
     //console.log('Settings synced from host:', settings);
 }
