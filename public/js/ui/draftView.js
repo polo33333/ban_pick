@@ -583,7 +583,7 @@ function updateTeamNames(room) {
             if (isMyTurn) {
                 const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
                 const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                const color = turn.type === 'ban' ? '#ef4444' : '#10b981';
+                const color = turn.type === 'ban' ? '#deef44ff' : '#10b981';
 
                 p1TurnInfo.innerHTML = `
                     <i class="${icon}" style="color: ${color}"></i>
@@ -642,7 +642,7 @@ function updateTeamNames(room) {
             if (isMyTurn) {
                 const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
                 const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                const color = turn.type === 'ban' ? '#ef4444' : '#10b981';
+                const color = turn.type === 'ban' ? '#deef44ff' : '#10b981';
 
                 p2TurnInfo.innerHTML = `
                     <i class="${icon}" style="color: ${color}"></i>

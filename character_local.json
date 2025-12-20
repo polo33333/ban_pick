@@ -49,6 +49,9 @@
     "ko": "절지",
     "zh-Hans": "折枝",
     "ja": "折枝",
+    "atlasUrl": "/live2d/Zhezhi.atlas",
+    "jsonUrl": "/live2d/Zhezhi.json",
+    "textureUrl": "/live2d/Zhezhi.webp",
     "isActive": true
   },
   "1106": {

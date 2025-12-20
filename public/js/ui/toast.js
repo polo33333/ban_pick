@@ -22,7 +22,7 @@ function initToastContainer() {
         flex-direction: column !important;
         gap: 12px !important;
         pointer-events: none !important;
-        max-width: 400px !important;
+        max-width: 500px !important;
     `;
 
     document.body.appendChild(toastContainer);
@@ -67,8 +67,8 @@ export function showToast(message, type = 'info', duration = 3000) {
         gap: 12px !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
         pointer-events: auto !important;
-        min-width: 300px !important;
-        max-width: 400px !important;
+        min-width: 350px !important;
+        max-width: 500px !important;
         position: relative !important;
         overflow: hidden !important;
         border-left: 4px solid ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : type === 'warning' ? '#f59e0b' : '#3b82f6'} !important;
@@ -178,8 +178,8 @@ export function showConfirm(message, onConfirm, onCancel) {
         gap: 12px !important;
         box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1) !important;
         pointer-events: auto !important;
-        min-width: 300px !important;
-        max-width: 400px !important;
+        min-width: 350px !important;
+        max-width: 500px !important;
         position: relative !important;
         overflow: hidden !important;
         border-left: 4px solid #8b5cf6 !important;

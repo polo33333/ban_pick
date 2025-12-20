@@ -581,7 +581,8 @@ body {
 }
 
 #champ-grid-container {
-  background: #121a2e;
+  /* background: #121a2e; */
+  background: rgb(0 0 0 / 30%);
   border: 1px solid #4f3b3b;
   padding: 10px;
   margin-top: 5px;
@@ -893,7 +894,8 @@ div#splash-art-name {
   border: 3px solid transparent;
   transition: all 0.3s ease;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  /* Changed from hidden to show external indicator */
 }
 
 .player-info-card::before {
@@ -915,33 +917,82 @@ div#splash-art-name {
 }
 
 .player-info-card.blue-team {
-  border-color: rgba(49, 123, 241, 0.3);
+  border-color: rgba(59, 130, 246, 1);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.25) 0%, rgba(30, 41, 59, 0.9) 100%);
 }
 
 .player-info-card.blue-team::before {
-  background: linear-gradient(135deg, #3b82f6, #06b6d4);
+  background: linear-gradient(135deg, #3b82f6, #1d4ed8);
 }
 
 .player-info-card.blue-team:hover {
-  border-color: rgba(49, 123, 241, 0.6);
-  box-shadow: 0 8px 32px rgba(49, 123, 241, 0.4);
+  border-color: rgba(59, 130, 246, 1);
+  box-shadow: 0 8px 32px rgba(59, 130, 246, 0.6);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.35) 0%, rgba(30, 41, 59, 0.9) 100%);
 }
 
 .player-info-card.red-team {
-  border-color: rgba(218, 59, 59, 0.3);
+  border-color: rgba(239, 68, 68, 1);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.25) 0%, rgba(30, 41, 59, 0.9) 100%);
 }
 
 .player-info-card.red-team::before {
-  background: linear-gradient(135deg, #ef4444, #dc2626);
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
 }
 
 .player-info-card.red-team:hover {
-  border-color: rgba(218, 59, 59, 0.6);
-  box-shadow: 0 8px 32px rgba(218, 59, 59, 0.4);
+  border-color: rgba(239, 68, 68, 1);
+  box-shadow: 0 8px 32px rgba(239, 68, 68, 0.6);
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35) 0%, rgba(30, 41, 59, 0.9) 100%);
 }
 
 .player-info-card:hover::before {
   opacity: 1;
+}
+
+/* Active Turn Indicator - External Vertical Blinking Bar (No Text) */
+/* Player 1 (Blue Team) - Right Side */
+#player1-container .player-info-card.active-turn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -20px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 80%;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #10b981, #34d399, #10b981);
+  animation: vertical-bar-blink 1s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+/* Player 2 (Red Team) - Left Side */
+#player2-container .player-info-card.active-turn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: -20px;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 80%;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #10b981, #34d399, #10b981);
+  animation: vertical-bar-blink 1s ease-in-out infinite;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.6);
+}
+
+@keyframes vertical-bar-blink {
+
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 20px rgba(16, 185, 129, 0.8);
+  }
+
+  50% {
+    opacity: 0.4;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+  }
 }
 
 .player-avatar-container {
@@ -1067,12 +1118,12 @@ div#splash-art-name {
   transform: translateY(-1px);
 }
 
-/* Blinking animation for active turn */
-.stat-item.active-turn {
+/* Blinking animation for active turn - DISABLED */
+/* .stat-item.active-turn {
   animation: stat-item-blink 1.5s cubic-bezier(0.18, 0.89, 0.32, 1.28) infinite;
-}
+} */
 
-@keyframes stat-item-blink {
+/* @keyframes stat-item-blink {
 
   0%,
   100% {
@@ -1084,7 +1135,7 @@ div#splash-art-name {
     opacity: 0.5;
     transform: scale(1.05);
   }
-}
+} */
 
 /* ==================== Player Countdown Progress Bar ==================== */
 
@@ -1097,6 +1148,8 @@ div#splash-art-name {
   background: rgba(255, 255, 255, 0.1);
   overflow: hidden;
   border-radius: 0 0 16px 16px;
+  display: none;
+  /* Hidden */
 }
 
 .player-countdown-bar {
@@ -1164,12 +1217,12 @@ div#splash-art-name {
 
 /* Blue Team Border */
 .slot.blue {
-  border-color: rgba(49, 123, 241, 0.6);
+  border-color: rgba(59, 130, 246, 0.9);
 }
 
 /* Red Team Border */
 .slot.red {
-  border-color: rgba(218, 59, 59, 0.6);
+  border-color: rgba(239, 68, 68, 0.9);
 }
 
 /* Enhanced Slot Reveal Animation with 3D Flip */
@@ -1202,12 +1255,13 @@ div#splash-art-name {
 }
 
 .slot.blue:not(:empty) {
-  box-shadow: 0 4px 20px rgba(49, 123, 241, 0.4), 0 0 30px rgba(49, 123, 241, 0.2);
+  box-shadow: 0 4px 20px rgba(59, 130, 246, 0.5);
+  border-color: rgba(59, 130, 246, 1);
 }
 
 .slot.red:not(:empty) {
-  box-shadow: 0 4px 20px rgba(218, 59, 59, 0.3);
-  border-color: rgba(218, 59, 59, 0.8);
+  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.5);
+  border-color: rgba(239, 68, 68, 1);
 }
 
 /* Enhanced Highlight Animation */
@@ -1368,6 +1422,13 @@ div#splash-art-name {
 .pick {
   background: linear-gradient(135deg, #f0f0f0, #ddd);
   color: #000;
+}
+
+.skipped>.pick {
+  background: #141d2f;
+  color: transparent;
+  font-size: 0px;
+  /* text-box: none; */
 }
 
 /* Banned Slot Overlay */

@@ -20,12 +20,12 @@
                 <button class="role-tab active" data-role="host">
                     <i class="bi bi-shield-fill-check"></i>
                     <span>Host</span>
-                    <small>Tạo phòng</small>
+                    <!-- <small>Tạo phòng</small> -->
                 </button>
                 <button class="role-tab" data-role="player">
                     <i class="bi bi-person-fill"></i>
                     <span>Player</span>
-                    <small>Người chơi</small>
+                    <!-- <small>Người chơi</small> -->
                 </button>
             </div>
         </div>
@@ -43,7 +43,12 @@
                 <i class="bi bi-door-closed-fill"></i>
                 <span>ID PHÒNG</span>
             </label>
-            <input id="roomId" class="login-input" placeholder="Nhập ID phòng...">
+            <div class="input-with-icon">
+                <input id="roomId" class="login-input" placeholder="Nhập ID phòng...">
+                <button id="roomId-action-btn" class="input-icon-btn" type="button" title="Copy">
+                    <i class="bi bi-clipboard"></i>
+                </button>
+            </div>
         </div>
 
         <button id="join" class="login-btn">

@@ -1,0 +1,44 @@
+{
+    "skeleton": {
+        "hash": "zhezhi-static",
+        "spine": "4.2.43",
+        "x": 0,
+        "y": 0,
+        "width": 1300,
+        "height": 1018
+    },
+    "bones": [
+        {
+            "name": "root"
+        },
+        {
+            "name": "bone",
+            "parent": "root"
+        }
+    ],
+    "slots": [
+        {
+            "name": "image",
+            "bone": "bone",
+            "attachment": "Zhezhi"
+        }
+    ],
+    "skins": [
+        {
+            "name": "default",
+            "attachments": {
+                "image": {
+                    "Zhezhi": {
+                        "x": 650,
+                        "y": 509,
+                        "width": 1300,
+                        "height": 1018
+                    }
+                }
+            }
+        }
+    ],
+    "animations": {
+        "idle": {}
+    }
+}
