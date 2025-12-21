@@ -112,18 +112,20 @@
 }
 
 .role-tab {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     background: rgba(255, 255, 255, 0.05);
     border: 2px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     padding: 12px 10px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
+    align-content: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
+    text-align: -webkit-center;
+    gap: 10px;
 }
 
 .role-tab::before {
@@ -206,10 +208,10 @@
 .input-icon-btn {
     position: absolute;
     right: 8px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    border: 1px solid transparent;
     border-radius: 8px;
-    padding: 8px 12px;
+    /* padding: 8px 12px; */
     color: rgba(255, 255, 255, 0.7);
     cursor: pointer;
     transition: all 0.3s ease;
@@ -318,6 +320,7 @@
     0% {
         transform: translate(-50%, -60%) rotate(45deg) scale(0);
     }
+
     100% {
         transform: translate(-50%, -60%) rotate(45deg) scale(1);
     }
@@ -343,7 +346,7 @@
     transition: transform 0.3s ease;
 }
 
-.remember-me-checkbox:checked ~ .remember-me-text i {
+.remember-me-checkbox:checked~.remember-me-text i {
     transform: scale(1.1);
 }
 
