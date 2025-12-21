@@ -1,11 +1,68 @@
 {
-  "sessions": [],
-  "characters": {},
+  "sessions": [
+    {
+      "sessionId": "1766310023990-s8xbajqvk",
+      "timestamp": "2025-12-21T09:40:23.990Z",
+      "roomId": "PVXIIH",
+      "players": {
+        "player1": {
+          "id": "gb-z2CGQUxHKq1oPAAAJ",
+          "name": "Nguyễn Văn Anh"
+        },
+        "player2": {
+          "id": "-nGiyAOVO8PlWmnvAAAL",
+          "name": "Nguyễn Văn Em"
+        }
+      },
+      "bans": [
+        "Buling",
+        "Camellya"
+      ],
+      "picks": {
+        "player1": [
+          "Verina"
+        ],
+        "player2": []
+      }
+    }
+  ],
+  "characters": {
+    "Buling": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-21T09:40:23.990Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-21T09:40:23.990Z"
+    },
+    "Camellya": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-21T09:40:23.990Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-21T09:40:23.990Z"
+    },
+    "Verina": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-21T09:40:23.990Z",
+      "lastUpdated": "2025-12-21T09:40:23.990Z"
+    }
+  },
   "metadata": {
-    "totalGames": 0,
-    "totalSessions": 0,
-    "firstSession": null,
-    "lastSession": null,
-    "lastUpdated": null
+    "totalGames": 1,
+    "totalSessions": 1,
+    "firstSession": "2025-12-21T09:40:23.990Z",
+    "lastSession": "2025-12-21T09:40:23.990Z",
+    "lastUpdated": "2025-12-21T09:40:23.990Z"
   }
 }

@@ -1,6 +1,6 @@
 import { DOM, CONSTANTS, CONFIG } from '../constants.js';
 import { state } from '../state.js';
-import { emitChooseFirst, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
+import { emitSwapTeams, emitStartDraft, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
 import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
 import { handlePreDraftPhase } from './preDraftView.js';
 import { updateWheelNames, enterFullscreen } from './settings.js';
@@ -175,7 +175,14 @@ export function initializeDraftView() {
         //collapseControlPanel();
     };
     window.kickPlayer = emitKickPlayer;
-    window.chooseFirst = emitChooseFirst;
+    window.swapTeams = () => {
+        emitSwapTeams();
+        collapseControlPanel();
+    };
+    window.startDraft = () => {
+        emitStartDraft();
+        collapseControlPanel();
+    };
 
     // Room ID Visibility Toggle
     window.isRoomIdHidden = true; // Default hidden
@@ -431,75 +438,65 @@ function updateHostControls(room) {
             DOM.kickButtonsContainer.appendChild(emptyState);
         }
 
-        // Choose first player buttons
+        // Swap teams button - show when both players ready and draft hasn't started
         const connectedPlayersCount = Object.keys(room.players).length;
-        const canChooseFirst = room.playerOrder.length === 2 && connectedPlayersCount === 2 && room.state === 'drafting' && room.draftOrder.length === 0;
-        const hasChosenFirst = room.draftOrder.length > 0;
+        const bothPlayersReady = room.playerOrder.length === 2
+            && connectedPlayersCount === 2
+            && (room.state === 'pre-draft-selection' || room.state === 'drafting');
+        const allPlayersConfirmed = room.playerOrder.every(id => room.preDraftReady?.[id]);
+        const canSwap = bothPlayersReady
+            && allPlayersConfirmed
+            && room.draftOrder.length === 0;
+        const hasStartedDraft = room.draftOrder.length > 0;
 
-        // Hide/show the entire card in settings panel
+        // Show/hide swap teams card (now drag & drop)
+        const swapTeamsCard = document.getElementById('swap-teams-card');
+        if (swapTeamsCard) {
+            swapTeamsCard.style.display = canSwap ? 'block' : 'none';
+
+            // Populate drag & drop zones
+            if (canSwap) {
+                const [p1_id, p2_id] = room.playerOrder;
+                const p1_name = room.playerHistory[p1_id]?.name || 'Player 1';
+                const p2_name = room.playerHistory[p2_id]?.name || 'Player 2';
+
+                // Populate Blue team zone (player 1)
+                const blueZoneContent = document.getElementById('blue-team-content');
+                if (blueZoneContent) {
+                    blueZoneContent.innerHTML = `
+                        <div class="player-card" draggable="true" data-player-id="${p1_id}">
+                            <i class="bi bi-person-fill player-card-icon"></i>
+                            <span class="player-card-name">${truncateName(p1_name)}</span>
+                        </div>
+                    `;
+                }
+
+                // Populate Red team zone (player 2)
+                const redZoneContent = document.getElementById('red-team-content');
+                if (redZoneContent) {
+                    redZoneContent.innerHTML = `
+                        <div class="player-card" draggable="true" data-player-id="${p2_id}">
+                            <i class="bi bi-person-fill player-card-icon"></i>
+                            <span class="player-card-name">${truncateName(p2_name)}</span>
+                        </div>
+                    `;
+                }
+
+                // Initialize drag & drop events
+                initializeDragAndDrop();
+            }
+        }
+
+        // Hide old choose-first card (deprecated)
         const chooseFirstCard = document.getElementById('choose-first-card');
         if (chooseFirstCard) {
-            chooseFirstCard.style.display = canChooseFirst ? 'block' : 'none';
+            chooseFirstCard.style.display = 'none';
         }
 
-        // Hide/show game control card - only show after first player is chosen AND 2 players connected
+        // Hide/show game control card - only show after draft starts AND 2 players connected
         const gameControlCard = document.getElementById('game-control-card');
         if (gameControlCard) {
-            gameControlCard.style.display = (hasChosenFirst && connectedPlayersCount === 2) ? 'block' : 'none';
-        }
-
-        // Also update the controls container for backward compatibility
-        DOM.preDraftControls.style.display = canChooseFirst ? "flex" : "none";
-
-        if (canChooseFirst) {
-            DOM.preDraftControls.innerHTML = "";
-            const [p1_id, p2_id] = room.playerOrder;
-            const p1_name = room.playerHistory[p1_id]?.name;
-            const p2_name = room.playerHistory[p2_id]?.name;
-
-            const btn1 = document.createElement('button');
-            btn1.className = "btn"; // Use inherited styles from .player-selection-group .btn
-            btn1.style.backgroundColor = '#317bf1ff';
-            btn1.style.color = '#ffffffff';
-            btn1.style.border = 'none';
-            btn1.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p1_name)}`;
-            btn1.onclick = () => {
-                emitChooseFirst(p1_id);
-                if (CONFIG.AUTO_FULLSCREEN) {
-                    enterFullscreen();
-                }
-                // Collapse control panel after choosing first player
-                const offcanvasElement = document.getElementById('host-controls-panel');
-                if (offcanvasElement) {
-                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-                    if (bsOffcanvas) {
-                        bsOffcanvas.hide();
-                    }
-                }
-            };
-            DOM.preDraftControls.appendChild(btn1);
-
-            const btn2 = document.createElement('button');
-            btn2.className = "btn"; // Use inherited styles from .player-selection-group .btn
-            btn2.style.backgroundColor = '#da3b3bff';
-            btn2.style.color = '#ffffffff';
-            btn2.style.border = 'none';
-            btn2.innerHTML = `<i class="bi bi-person-fill"></i>${truncateName(p2_name)}`;
-            btn2.onclick = () => {
-                emitChooseFirst(p2_id);
-                if (CONFIG.AUTO_FULLSCREEN) {
-                    enterFullscreen();
-                }
-                // Collapse control panel after choosing first player
-                const offcanvasElement = document.getElementById('host-controls-panel');
-                if (offcanvasElement) {
-                    const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasElement);
-                    if (bsOffcanvas) {
-                        bsOffcanvas.hide();
-                    }
-                }
-            };
-            DOM.preDraftControls.appendChild(btn2);
+            gameControlCard.style.display = (hasStartedDraft && connectedPlayersCount === 2) ? 'block' : 'none';
         }
     }
 }
@@ -541,20 +538,20 @@ function updateTeamNames(room) {
     const playerOrder = room.playerOrder || [];
     const connectedPlayerIds = new Set(Object.keys(room.players));
 
-    // Update Player 1
+    // Update Player 1 (Team Blue - Position 0)
     if (playerOrder[0]) {
         const p1Name = truncateName(room.playerHistory[playerOrder[0]]?.name) || 'Player 1';
         const p1Connected = connectedPlayerIds.has(playerOrder[0]);
 
         // Update old display (for backward compatibility)
         if (DOM.player1NameEl) {
-            DOM.player1NameEl.innerText = p1Name;
+            DOM.player1NameEl.innerText = `${p1Name}`;
         }
 
         // Update new player info card
         const p1DisplayName = document.getElementById('player1-display-name');
         if (p1DisplayName) {
-            p1DisplayName.innerText = p1Name;
+            p1DisplayName.innerText = `${p1Name}`;
         }
 
         // Update status indicator
@@ -600,20 +597,20 @@ function updateTeamNames(room) {
         }
     }
 
-    // Update Player 2
+    // Update Player 2 (Team Red - Position 1)
     if (playerOrder[1]) {
         const p2Name = truncateName(room.playerHistory[playerOrder[1]]?.name) || 'Player 2';
         const p2Connected = connectedPlayerIds.has(playerOrder[1]);
 
         // Update old display (for backward compatibility)
         if (DOM.player2NameEl) {
-            DOM.player2NameEl.innerText = p2Name;
+            DOM.player2NameEl.innerText = `${p2Name}`;
         }
 
         // Update new player info card
         const p2DisplayName = document.getElementById('player2-display-name');
         if (p2DisplayName) {
-            p2DisplayName.innerText = p2Name;
+            p2DisplayName.innerText = `${p2Name}`;
         }
 
         // Update status indicator
@@ -787,7 +784,7 @@ function updateCountdown(room, forceRestart = false) {
     } else {
         if (DOM.countdownNumber) DOM.countdownNumber.innerText = "";
         // if (DOM.countdownRing) DOM.countdownRing.style.strokeDasharray = '1 1';
-        if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none';
+        if (DOM.countdownSvg) DOM.countdownSvg.style.display = 'none !important';
         countdownWorker.postMessage({ type: 'stop' });
         hidePlayerProgressBars();
     }
@@ -947,4 +944,68 @@ function updateSplashOnTurnChange(turnChanged) {
             DOM.countdownRing.style.transition = 'stroke-dasharray 0.1s linear';
         }
     }
+}
+// ==================== Drag & Drop Team Assignment ====================
+let draggedPlayerId = null;
+
+function initializeDragAndDrop() {
+    const playerCards = document.querySelectorAll('.player-card');
+    const dropZones = document.querySelectorAll('.team-drop-zone');
+
+    playerCards.forEach(card => {
+        card.addEventListener('dragstart', handleDragStart);
+        card.addEventListener('dragend', handleDragEnd);
+    });
+
+    dropZones.forEach(zone => {
+        zone.addEventListener('dragover', handleDragOver);
+        zone.addEventListener('dragleave', handleDragLeave);
+        zone.addEventListener('drop', handleDrop);
+    });
+}
+
+function handleDragStart(e) {
+    draggedPlayerId = e.target.dataset.playerId;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+
+    const dropZone = e.currentTarget;
+    const targetTeam = dropZone.dataset.team;
+
+    if (!draggedPlayerId) return;
+
+    const room = state.currentRoomState;
+    if (!room) return;
+
+    const [p1_id, p2_id] = room.playerOrder;
+    const draggedIsPlayer1 = draggedPlayerId === p1_id;
+    const targetPosition = targetTeam === 'blue' ? 0 : 1;
+    const currentPosition = draggedIsPlayer1 ? 0 : 1;
+
+    if (targetPosition === currentPosition) {
+        draggedPlayerId = null;
+        return;
+    }
+
+    emitSwapTeams();
+    draggedPlayerId = null;
 }

@@ -3156,6 +3156,136 @@ div#selected-champ-name {
   margin-top: 0;
 }
 
+/* Team Info Styles */
+.team-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.team-info.team-blue {
+  background: rgba(49, 123, 241, 0.2);
+  border-color: rgba(49, 123, 241, 0.3);
+}
+
+.team-info.team-red {
+  background: rgba(218, 59, 59, 0.2);
+  border-color: rgba(218, 59, 59, 0.3);
+}
+
+.team-label {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.team-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* Drag & Drop Team Assignment */
+.team-assignment-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.team-drop-zone {
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 80px;
+  transition: all 0.3s ease;
+}
+
+.team-drop-zone.team-blue-zone {
+  background: rgba(49, 123, 241, 0.4);
+  border-color: rgb(23 108 245 / 80%);
+}
+
+.team-drop-zone.team-red-zone {
+  background: rgb(203 51 51 / 40%);
+  border-color: rgba(218, 59, 59, 0.8);
+}
+
+.team-drop-zone.drag-over {
+  border-style: solid;
+  border-width: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+}
+
+.team-drop-zone.team-blue-zone.drag-over {
+  border-color: rgba(49, 123, 241, 0.8);
+  background: rgba(49, 123, 241, 0.2);
+  box-shadow: 0 0 20px rgba(49, 123, 241, 0.3);
+}
+
+.team-drop-zone.team-red-zone.drag-over {
+  border-color: rgba(218, 59, 59, 0.8);
+  background: rgba(218, 59, 59, 0.2);
+  box-shadow: 0 0 20px rgba(218, 59, 59, 0.3);
+}
+
+.team-zone-header {
+  display: flex;
+  align-items: center;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+}
+
+.team-zone-content {
+  min-height: 40px;
+}
+
+.team-zone-placeholder {
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 0.75rem;
+  font-style: italic;
+  padding: 0.5rem;
+}
+
+.player-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  cursor: grab;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-card:active {
+  cursor: grabbing;
+}
+
+.player-card.dragging {
+  opacity: 0.5;
+  transform: scale(0.95);
+}
+
+.player-card:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+.player-card-icon {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.player-card-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  flex: 1;
+}
+
 /* Room ID Display */
 .room-id-card {
   border: 1px solid rgba(59, 130, 246, 0.3);
@@ -3247,7 +3377,7 @@ span.sub-title {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  background: conic-gradient(#3b82f6 0% 50%, #ef4444 50% 100%);
+  background: conic-gradient(#f97316 0% 50%, #a855f7 50% 100%);
   border: 4px solid rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
   position: relative;

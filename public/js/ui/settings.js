@@ -366,43 +366,53 @@ function initLuckyWheel() {
             isSpinning = false;
             spinBtn.disabled = false;
 
-            // Calculate winner
+            // Calculate winner based on INITIAL player order (not current)
             // Normalize current rotation to 0-360
             const actualRotation = currentRotation % 360;
-            // Pointer is at Top (0deg).
-            // The segment under pointer is (360 - actualRotation) % 360
             const winningAngle = (360 - actualRotation) % 360;
 
-            // Blue (P1): 0-180
-            // Red (P2): 180-360
-            // Note: WinningAngle 0 is mathematically boundary.
-
             const { state } = await import('../state.js');
-            // Get names again
             const room = state.currentRoomState;
+
+            // Ensure we have initial order
+            if (!initialWheelPlayerOrder && room?.playerOrder?.length >= 2) {
+                initialWheelPlayerOrder = [...room.playerOrder];
+            }
+
             let p1Name = 'Người Chơi 1';
             let p2Name = 'Người Chơi 2';
 
-            if (room && room.playerOrder && room.playerOrder.length >= 2) {
-                p1Name = room.playerHistory[room.playerOrder[0]]?.name || 'P1';
-                p2Name = room.playerHistory[room.playerOrder[1]]?.name || 'P2';
+            if (room && initialWheelPlayerOrder && initialWheelPlayerOrder.length >= 2) {
+                p1Name = room.playerHistory[initialWheelPlayerOrder[0]]?.name || 'P1';
+                p2Name = room.playerHistory[initialWheelPlayerOrder[1]]?.name || 'P2';
             }
 
             let winner = '';
-            let color = '';
+            let winnerPlayerId = null;
 
+            // Winner is determined by wheel position + INITIAL order
             if (winningAngle >= 0 && winningAngle < 180) {
                 winner = p1Name;
-                color = '#60a5fa'; // Blue
+                winnerPlayerId = initialWheelPlayerOrder[0];
             } else {
                 winner = p2Name;
-                color = '#f87171'; // Red
+                winnerPlayerId = initialWheelPlayerOrder[1];
             }
 
+            // Show winner name only - no color change
             resultEl.textContent = `Chọn: ${truncateName(winner)}`;
-            resultEl.style.color = color;
 
-            // Fire confetti or visual effect?
+            // Auto-apply to team assignment if checkbox is checked
+            const autoApplyCheckbox = document.getElementById('wheel-auto-apply');
+            if (autoApplyCheckbox && autoApplyCheckbox.checked && winnerPlayerId && room) {
+                // Check if winner is already in Blue team (position 0)
+                const currentBluePlayer = room.playerOrder[0];
+                if (winnerPlayerId !== currentBluePlayer) {
+                    // Swap teams silently
+                    const { emitSwapTeams } = await import('../services/socket.js');
+                    emitSwapTeams();
+                }
+            }
 
         }, 4000);
     });
@@ -417,6 +427,9 @@ function initLuckyWheel() {
     }
 }
 
+// Store initial player order for wheel (so names don't swap)
+let initialWheelPlayerOrder = null;
+
 export async function updateWheelNames() {
     const p1El = document.getElementById('wheel-p1-name');
     const p2El = document.getElementById('wheel-p2-name');
@@ -429,8 +442,14 @@ export async function updateWheelNames() {
 
         const room = state.currentRoomState;
         if (room && room.playerOrder && room.playerOrder.length >= 2) {
-            const p1Val = room.playerHistory[room.playerOrder[0]]?.name || 'P1';
-            const p2Val = room.playerHistory[room.playerOrder[1]]?.name || 'P2';
+            // Store initial order on first call
+            if (!initialWheelPlayerOrder) {
+                initialWheelPlayerOrder = [...room.playerOrder];
+            }
+
+            // Always use initial order for wheel display
+            const p1Val = room.playerHistory[initialWheelPlayerOrder[0]]?.name || 'P1';
+            const p2Val = room.playerHistory[initialWheelPlayerOrder[1]]?.name || 'P2';
 
             p1El.textContent = truncateName(p1Val);
             p2El.textContent = truncateName(p2Val);

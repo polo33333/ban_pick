@@ -112,8 +112,8 @@
         <!-- Tab: Thiết Lập Phòng -->
         <div class="settings-tab-content active" data-tab-content="tools">
 
-          <!-- Chọn Người Đi Trước -->
-          <div class="tools-card" id="choose-first-card">
+          <!-- Chọn Người Đi Trước (DEPRECATED - Hidden) -->
+          <div class="tools-card" id="choose-first-card" style="display: none;">
             <div class="tools-card-header">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-people-fill"></i>
@@ -125,8 +125,55 @@
             </div>
             <div class="tools-card-body">
               <div id="pre-draft-controls" class="player-selection-group">
-                <!-- Nút chọn player đi trước sẽ được tạo động bằng JS -->
+                <!-- Deprecated - Draft now auto-starts -->
               </div>
+            </div>
+          </div>
+
+          <!-- Bắt Đầu Draft -->
+          <div class="tools-card" id="swap-teams-card" style="display: none;">
+            <div class="tools-card-header">
+              <div class="d-flex align-items-center gap-2">
+                <i class="bi bi-play-circle-fill"></i>
+                <span>Bắt Đầu Draft</span>
+              </div>
+              <button class="btn btn-link text-white p-0 tools-card-toggle">
+                <i class="bi bi-chevron-down"></i>
+              </button>
+            </div>
+            <div class="tools-card-body">
+              <p class="text-white-50 small mb-3">Team Blue (xanh) luôn đi trước. Bạn có thể thay đổi team bằng cách kéo
+                thả player vào team</p>
+
+              <div class="team-assignment-container mb-3">
+                <!-- Blue Team Drop Zone -->
+                <div class="team-drop-zone team-blue-zone" id="blue-team-zone" data-team="blue">
+                  <div class="team-zone-header">
+                    <i class="bi bi-circle-fill text-primary me-2"></i>
+                    <span>Team Blue</span>
+                  </div>
+                  <div class="team-zone-content" id="blue-team-content">
+                    <!-- Player card will be dropped here -->
+                    <div class="team-zone-placeholder">Kéo player vào đây</div>
+                  </div>
+                </div>
+
+                <!-- Red Team Drop Zone -->
+                <div class="team-drop-zone team-red-zone" id="red-team-zone" data-team="red">
+                  <div class="team-zone-header">
+                    <i class="bi bi-circle-fill text-danger me-2"></i>
+                    <span>Team Red</span>
+                  </div>
+                  <div class="team-zone-content" id="red-team-content">
+                    <!-- Player card will be dropped here -->
+                    <div class="team-zone-placeholder">Kéo player vào đây</div>
+                  </div>
+                </div>
+              </div>
+
+              <button class="btn tools-btn-primary w-100" onclick="startDraft()">
+                <i class="bi bi-play-fill me-2"></i>Bắt Đầu
+              </button>
             </div>
           </div>
 
@@ -286,12 +333,12 @@
             </div>
           </div>
 
-          <!-- Vòng Quay May Mắn -->
+          <!-- Vòng Quay Chọn Team Blue -->
           <div class="tools-card collapsed" id="random-wheel-card">
             <div class="tools-card-header">
               <div class="d-flex align-items-center gap-2">
                 <i class="bi bi-pie-chart-fill"></i>
-                <span>Vòng Quay May Mắn</span>
+                <span>Chọn Team Blue (Đi Trước)</span>
               </div>
               <button class="btn btn-link text-white p-0 tools-card-toggle">
                 <i class="bi bi-chevron-down"></i>
@@ -312,6 +359,15 @@
               </div>
               <div id="wheel-result" class="mt-3 text-center fw-bold" style="min-height: 1.5rem; color: #fbbf24;">
               </div>
+
+              <!-- Auto-apply checkbox -->
+              <div class="form-check mt-2 mb-3">
+                <input class="form-check-input" type="checkbox" id="wheel-auto-apply" checked>
+                <label class="form-check-label text-white-50 small" for="wheel-auto-apply">
+                  Tự động áp dụng vào chọn team blue
+                </label>
+              </div>
+
               <button class="btn tools-btn-primary w-100 mt-3" id="spin-wheel-btn">
                 <i class="bi bi-arrow-repeat me-2"></i>Quay Ngẫu Nhiên
               </button>

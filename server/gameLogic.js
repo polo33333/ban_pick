@@ -4,21 +4,36 @@ import { recordSession } from "./statsManager.js";
 
 // Chứa các logic cốt lõi của game: tạo lượt, chuyển lượt, countdown...
 
-export function generateDraftOrder(firstPlayerId, secondPlayerId, phase = 1) {
+// Team-based draft order: Blue team (position 0) ALWAYS goes first, Red team (position 1) ALWAYS goes second
+export function generateDraftOrder(playerOrder, phase = 1) {
+    const blueTeam = playerOrder[0];  // Team Blue - ALWAYS first
+    const redTeam = playerOrder[1];   // Team Red - ALWAYS second
+
     const phase1 = [
-        { team: firstPlayerId, type: "ban" }, { team: secondPlayerId, type: "ban" },
-        { team: firstPlayerId, type: "pick" }, { team: secondPlayerId, type: "pick" },
-        { team: secondPlayerId, type: "pick" }, { team: firstPlayerId, type: "pick" },
-        { team: firstPlayerId, type: "pick" }, { team: secondPlayerId, type: "pick" },
-        { team: secondPlayerId, type: "pick" }, { team: firstPlayerId, type: "pick" },
+        { team: blueTeam, type: "ban" },    // Blue BAN
+        { team: redTeam, type: "ban" },     // Red BAN
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
     ];
     const phase2 = [
-        { team: secondPlayerId, type: "ban" }, { team: firstPlayerId, type: "ban" },
-        { team: secondPlayerId, type: "pick" }, { team: firstPlayerId, type: "pick" },
-        { team: firstPlayerId, type: "pick" }, { team: secondPlayerId, type: "pick" },
-        { team: secondPlayerId, type: "pick" }, { team: firstPlayerId, type: "pick" },
-        { team: firstPlayerId, type: "pick" }, { team: secondPlayerId, type: "pick" },
-        { team: secondPlayerId, type: "pick" }, { team: firstPlayerId, type: "pick" },
+        { team: redTeam, type: "ban" },     // Red BAN (Phase 2 starts with Red)
+        { team: blueTeam, type: "ban" },    // Blue BAN
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: redTeam, type: "pick" },    // Red PICK
+        { team: blueTeam, type: "pick" },   // Blue PICK
     ];
     return phase === 1 ? phase1 : phase2;
 }
@@ -116,10 +131,8 @@ function startPhase2(roomId) {
     if (!room) return;
 
     room.phase = 2;
-    const [p1, p2] = room.playerOrder;
-    const firstPlayerIdPhase1 = room.draftOrder[0].team;
-    const secondPlayerIdPhase1 = (p1 === firstPlayerIdPhase1) ? p2 : p1;
-    room.draftOrder = generateDraftOrder(firstPlayerIdPhase1, secondPlayerIdPhase1, 2);
+    // Team-based: Always use playerOrder (Blue = 0, Red = 1)
+    room.draftOrder = generateDraftOrder(room.playerOrder, 2);
     room.currentTurn = 0;
     room.nextTurn = room.draftOrder[0];
     startCountdown(roomId);

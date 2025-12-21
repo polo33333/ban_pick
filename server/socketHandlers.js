@@ -18,7 +18,8 @@ export function initializeSocketHandlers(io, socket) {
 
     // --- Handlers ---
     socket.on("join-room", ({ roomId, role, playerName }) => handleJoinRoom(io, socket, { roomId, role, playerName }));
-    socket.on("choose-first", (data) => handleChooseFirst(socket, data));
+    socket.on("swap-teams", (data) => handleSwapTeams(socket, data));
+    socket.on("start-draft", (data) => handleStartDraft(socket, data));
     socket.on("select-champ", (data) => handleSelectChamp(socket, data));
     socket.on("pre-select-champ", (data) => handlePreSelectChamp(socket, data));
     socket.on('pre-draft-select', (data) => handlePreDraftSelect(socket, data));
@@ -129,13 +130,46 @@ function handlePlayerJoin(socket, room, playerName) {
 }
 
 
-function handleChooseFirst(socket, { roomId, team }) {
+function handleSwapTeams(socket, { roomId }) {
     const room = rooms[roomId];
-    if (!room || room.hostId !== socket.id || room.state !== 'drafting' || room.draftOrder.length > 0) return;
-    if (room.playerOrder.length !== 2) return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi." });
+    if (!room || room.hostId !== socket.id) return;
 
-    const secondPlayerId = room.playerOrder.find(id => id !== team);
-    room.draftOrder = generateDraftOrder(team, secondPlayerId, 1);
+    // Only allow swap when:
+    // 1. Have 2 players
+    // 2. Draft hasn't started yet (draftOrder.length === 0)
+    if (room.playerOrder.length !== 2) {
+        return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi." });
+    }
+
+    if (room.draftOrder.length > 0) {
+        return socket.emit("draft-error", { message: "Không thể đổi vị trí khi đã bắt đầu draft." });
+    }
+
+    // Swap positions in playerOrder (Blue <-> Red)
+    [room.playerOrder[0], room.playerOrder[1]] = [room.playerOrder[1], room.playerOrder[0]];
+
+    broadcastRoomState(roomId);
+}
+
+function handleStartDraft(socket, { roomId }) {
+    const room = rooms[roomId];
+    if (!room || room.hostId !== socket.id) return;
+
+    // Only allow start when in drafting state, have 2 players, and draft hasn't started
+    if (room.state !== 'drafting') {
+        return socket.emit("draft-error", { message: "Chưa sẵn sàng để bắt đầu draft." });
+    }
+
+    if (room.playerOrder.length !== 2) {
+        return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi." });
+    }
+
+    if (room.draftOrder.length > 0) {
+        return socket.emit("draft-error", { message: "Draft đã bắt đầu rồi." });
+    }
+
+    // Start draft with team-based order
+    room.draftOrder = generateDraftOrder(room.playerOrder, 1);
     room.currentTurn = 0;
     room.phase = 1;
     room.nextTurn = room.draftOrder[0];
@@ -171,9 +205,12 @@ function handleConfirmPreDraft(socket, { roomId }) {
 
     const allPlayersIn = room.playerOrder.length === 2;
     const allPlayersReady = allPlayersIn && room.playerOrder.every(id => room.preDraftReady[id]);
+
     if (allPlayersReady) {
         room.state = 'drafting';
+        // Draft will start when host clicks start button or swaps teams
     }
+
     broadcastRoomState(roomId);
 }
 

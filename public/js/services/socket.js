@@ -28,8 +28,12 @@ export function emitJoinRoom(roomId, role, playerName) {
     state.socket.emit("join-room", { roomId, role, playerName });
 }
 
-export function emitChooseFirst(teamId) {
-    state.socket.emit("choose-first", { roomId: state.myRoom, team: teamId });
+export function emitSwapTeams() {
+    state.socket?.emit('swap-teams', { roomId: state.myRoom });
+}
+
+export function emitStartDraft() {
+    state.socket?.emit('start-draft', { roomId: state.myRoom });
 }
 
 export function emitSelectChamp(champName) {
