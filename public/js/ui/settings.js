@@ -4,6 +4,23 @@ import { CONFIG } from '../constants.js';
 import { state } from '../state.js';
 import { showError, showConfirm } from './toast.js';
 
+// Load settings immediately when module is imported (before any room creation)
+(function loadSettingsEarly() {
+    const saved = localStorage.getItem('app-settings');
+    if (saved) {
+        try {
+            const settings = JSON.parse(saved);
+            if (settings.enableSound !== undefined) CONFIG.ENABLE_SOUND = settings.enableSound;
+            if (settings.enableLive2D !== undefined) CONFIG.ENABLE_LIVE2D = settings.enableLive2D;
+            if (settings.autoFullscreen !== undefined) CONFIG.AUTO_FULLSCREEN = settings.autoFullscreen;
+            if (settings.enableStats !== undefined) CONFIG.ENABLE_STATS = settings.enableStats;
+            //console.log('Settings loaded early from localStorage:', settings);
+        } catch (error) {
+            console.error('Error loading settings early:', error);
+        }
+    }
+})();
+
 /**
  * Initialize Tools Card Toggles
  */
@@ -231,6 +248,13 @@ function loadSettings() {
  */
 export function handleSettingsUpdate(settings) {
     if (!settings) return;
+
+    // If current user is host, don't overwrite their own settings
+    // Host settings are already saved locally
+    if (state.myRole === 'host') {
+        console.log('Skipping settings sync - user is host');
+        return;
+    }
 
     // Update CONFIG
     if (typeof settings.enableSound === 'boolean') CONFIG.ENABLE_SOUND = settings.enableSound;

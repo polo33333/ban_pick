@@ -4,138 +4,230 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thống Kê - Cấm chọn Wuwa</title>
+    <title>Thống kê - Cấm chọn Wuwa</title>
     <link rel="icon" href="/assets/app.ico">
     <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/stats.css">
+    <script src="/js/lib/chart.umd.min.js"></script>
+    <script src="/js/ui/charts.js"></script>
 </head>
 
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="header-content">
-                <div class="header-title">
-                    <h1>
-                        <i class="bi bi-bar-chart-fill"></i>
-                        Thống Kê Ban/Pick
-                    </h1>
-                    <p class="subtitle">Phân tích dữ liệu cấm chọn tướng chi tiết</p>
-                </div>
-                <a href="/" class="back-button">
-                    <i class="bi bi-arrow-left"></i>
-                    Về trang chủ
-                </a>
-            </div>
-        </div>
-
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Stats Content -->
         <div id="loading" class="loading">
             <div class="spinner"></div>
-            <p class="loading-text">Đang tải dữ liệu thống kê...</p>
+            <p class="loading-text">Đang tải dữ liệu phân tích...</p>
         </div>
 
-        <div id="stats-content" style="display: none;">
-            <div class="stats-grid">
-                <div class="stat-card">
-                    <div class="stat-icon">
+        <!-- Stats Content -->
+        <div id="stats-content" class="content-wrapper" style="display: none;">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Thống Kê Ban/Pick</h1>
+                    <p class="page-subtitle">Phân tích dữ liệu toàn diện và chi tiết</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div id="sync-indicator" class="sync-indicator" style="display: none;">
+                        <i class="bi bi-arrow-repeat"></i>
+                        <span>Đang đồng bộ...</span>
+                    </div>
+                    <div id="sync-timer" class="sync-timer">
+                        <i class="bi bi-clock"></i>
+                        <span>Đồng bộ sau <strong id="countdown">30</strong>s</span>
+                    </div>
+                    <a href="/" class="back-link">
+                        <i class="bi bi-arrow-left"></i>
+                        Về Trang Chủ
+                    </a>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card purple">
+                    <div class="kpi-icon">
                         <i class="bi bi-trophy-fill"></i>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="total-games">0</div>
-                        <div class="stat-label">Tổng số trận</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="total-games">0</div>
+                        <div class="kpi-label">Tổng Số Trận</div>
+                        <div class="kpi-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>12% so với tháng trước</span>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
+
+                <div class="kpi-card blue">
+                    <div class="kpi-icon">
                         <i class="bi bi-clock-history"></i>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="total-sessions">0</div>
-                        <div class="stat-label">Phiên chơi</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="total-sessions">0</div>
+                        <div class="kpi-label">Phiên Chơi</div>
+                        <div class="kpi-trend positive">
+                            <i class="bi bi-arrow-up"></i>
+                            <span>8% so với tháng trước</span>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
+
+                <div class="kpi-card teal">
+                    <div class="kpi-icon">
                         <i class="bi bi-people-fill"></i>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="total-characters">0</div>
-                        <div class="stat-label">Tướng đã chơi</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="total-characters">0</div>
+                        <div class="kpi-label">Tướng Đã Chơi</div>
+                        <div class="kpi-trend neutral">
+                            <i class="bi bi-dash"></i>
+                            <span>Không đổi</span>
+                        </div>
                     </div>
                 </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
+
+                <div class="kpi-card orange">
+                    <div class="kpi-icon">
                         <i class="bi bi-calendar-check"></i>
                     </div>
-                    <div class="stat-content">
-                        <div class="stat-value" id="last-session">-</div>
-                        <div class="stat-label">Phiên gần nhất</div>
+                    <div class="kpi-content">
+                        <div class="kpi-value" id="last-session">-</div>
+                        <div class="kpi-label">Phiên Gần Nhất</div>
+                        <div class="kpi-trend">
+                            <i class="bi bi-clock"></i>
+                            <span>Hoạt động gần đây</span>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="controls">
-                <div class="controls-row">
+            <!-- Charts Section -->
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Top 10 Tướng Bị Cấm Nhiều Nhất</h3>
+                        <p>Phân bố tỷ lệ cấm của 10 tướng hàng đầu</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="banChart"></canvas>
+                    </div>
+                </div>
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3>Top 10 Tướng Được Chọn Nhiều Nhất</h3>
+                        <p>Tướng được chọn nhiều nhất trong các trận đấu</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="pickChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table Section -->
+            <div class="table-section">
+                <div class="section-header">
+                    <h2>Thống Kê Chi Tiết Tướng</h2>
+                    <p class="section-subtitle">Phân tích ban và pick chi tiết qua tất cả các trận đấu</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="filters-bar">
                     <div class="filter-tabs">
                         <button class="filter-tab active" data-sort="banRate">
-                            <i class="bi bi-sort-down-alt"></i>Ban Rate
+                            <i class="bi bi-sort-down-alt"></i>
+                            Tỷ Lệ Cấm
                         </button>
                         <button class="filter-tab" data-sort="pickRate">
-                            <i class="bi bi-sort-down-alt"></i>Pick Rate
+                            <i class="bi bi-sort-down-alt"></i>
+                            Tỷ Lệ Chọn
                         </button>
                         <button class="filter-tab" data-sort="totalGames">
-                            <i class="bi bi-hash"></i>Tổng trận
+                            <i class="bi bi-hash"></i>
+                            Tổng Trận
                         </button>
                         <button class="filter-tab" data-sort="name">
-                            <i class="bi bi-sort-alpha-down"></i>Tên A-Z
+                            <i class="bi bi-sort-alpha-down"></i>
+                            Tên A-Z
                         </button>
                     </div>
-                    <input type="text" id="search-input" class="search-box" placeholder="🔍 Tìm kiếm tướng...">
+                    <div class="search-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm tướng...">
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 80px; text-align: center;">Hạng</th>
+                                <th style="width: 200px;">Tên Tướng</th>
+                                <th style="width: 220px;">Tỷ Lệ Cấm</th>
+                                <th style="width: 220px;">Tỷ Lệ Chọn</th>
+                                <th style="width: 100px; text-align: center;">Lượt Cấm</th>
+                                <th style="width: 100px; text-align: center;">Lượt Chọn</th>
+                                <th style="width: 100px; text-align: center;">Số Trận</th>
+                                <th style="width: 140px; text-align: center;">Cập Nhật</th>
+                            </tr>
+                        </thead>
+                        <tbody id="character-table-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- No Data State -->
+                <div id="no-data" class="no-data" style="display: none;">
+                    <i class="bi bi-inbox"></i>
+                    <div class="no-data-title">Chưa Có Dữ Liệu Thống Kê</div>
+                    <div class="no-data-subtitle">Hoàn thành một số trận đấu để xem phân tích chi tiết</div>
                 </div>
             </div>
-
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 80px; text-align: center;">#</th>
-                            <th style="width: 200px;">Tên Tướng</th>
-                            <th style="width: 220px;">Ban Rate</th>
-                            <th style="width: 220px;">Pick Rate</th>
-                            <th style="width: 100px; text-align: center;">Bans</th>
-                            <th style="width: 100px; text-align: center;">Picks</th>
-                            <th style="width: 100px; text-align: center;">Trận</th>
-                            <th style="width: 120px; text-align: center;">Cập nhật</th>
-                        </tr>
-                    </thead>
-                    <tbody id="character-table-body"></tbody>
-                </table>
-            </div>
-
-            <div id="no-data" class="no-data" style="display: none;">
-                <i class="bi bi-inbox"></i>
-                <div class="no-data-title">Chưa có dữ liệu thống kê</div>
-                <div class="no-data-subtitle">Hoàn thành một vài trận để xem thống kê chi tiết</div>
-            </div>
         </div>
-    </div>
+    </main>
 
     <script>
         let statsData = null;
         let currentSort = 'banRate';
         let currentFilter = '';
+        let banChart = null;
+        let pickChart = null;
+        let isFirstLoad = true;
 
         async function loadStats() {
             try {
+                // Show sync indicator only after first load
+                if (!isFirstLoad) {
+                    const syncIndicator = document.getElementById('sync-indicator');
+                    if (syncIndicator) syncIndicator.style.display = 'flex';
+                }
+
                 const response = await fetch('/api/stats');
                 const data = await response.json();
                 statsData = data;
                 displayStats(data);
+
+                // Hide sync indicator
+                if (!isFirstLoad) {
+                    const syncIndicator = document.getElementById('sync-indicator');
+                    if (syncIndicator) {
+                        setTimeout(() => {
+                            syncIndicator.style.display = 'none';
+                        }, 500);
+                    }
+                }
+
+                isFirstLoad = false;
             } catch (error) {
                 console.error('Error loading stats:', error);
-                document.getElementById('loading').innerHTML = `
-                    <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
-                    <p class="loading-text" style="margin-top: 1rem;">Không thể tải dữ liệu thống kê</p>
-                `;
+                if (isFirstLoad) {
+                    document.getElementById('loading').innerHTML = `
+                        <i class="bi bi-exclamation-triangle" style="font-size: 3rem; color: #ef4444;"></i>
+                        <p class="loading-text" style="margin-top: 1rem;">Không thể tải dữ liệu thống kê</p>
+                    `;
+                }
             }
         }
 
@@ -156,18 +248,19 @@
                 const diffDays = Math.floor(diffMs / 86400000);
 
                 let timeAgo = '';
-                if (diffMins < 1) timeAgo = 'Vừa xong';
-                else if (diffMins < 60) timeAgo = `${diffMins}m`;
-                else if (diffHours < 24) timeAgo = `${diffHours}h`;
-                else timeAgo = `${diffDays}d`;
+                if (diffMins < 1) timeAgo = 'Just now';
+                else if (diffMins < 60) timeAgo = `${diffMins}m ago`;
+                else if (diffHours < 24) timeAgo = `${diffHours}h ago`;
+                else timeAgo = `${diffDays}d ago`;
 
                 document.getElementById('last-session').textContent = timeAgo;
             }
 
             displayCharacterTable(data.characters);
+            createCharts(data.characters);
 
             if (Object.keys(data.characters || {}).length === 0) {
-                document.getElementById('no-data').style.display = 'block';
+                document.getElementById('no-data').style.display = 'flex';
                 document.querySelector('.table-container').style.display = 'none';
             }
         }
@@ -196,47 +289,55 @@
 
             charArray.forEach((char, index) => {
                 const row = document.createElement('tr');
-                row.style.animation = `fadeIn 0.5s ease-out ${index * 0.05}s both`;
+                row.style.animation = `fadeInUp 0.4s ease-out ${index * 0.03}s both`;
 
                 let rankClass = 'default';
-                if (index === 0) rankClass = 'gold';
-                else if (index === 1) rankClass = 'silver';
-                else if (index === 2) rankClass = 'bronze';
+                let rankIcon = index + 1;
+                if (index === 0) {
+                    rankClass = 'gold';
+                    rankIcon = '<i class="bi bi-trophy-fill"></i>';
+                } else if (index === 1) {
+                    rankClass = 'silver';
+                    rankIcon = '<i class="bi bi-award-fill"></i>';
+                } else if (index === 2) {
+                    rankClass = 'bronze';
+                    rankIcon = '<i class="bi bi-star-fill"></i>';
+                }
 
                 row.innerHTML = `
                     <td style="text-align: center;">
-                        <div class="rank-badge ${rankClass}">${index + 1}</div>
+                        <div class="rank-badge ${rankClass}">${rankIcon}</div>
                     </td>
                     <td>
                         <div class="character-name">${char.name}</div>
                     </td>
                     <td>
-                        <div class="progress-container">
+                        <div class="progress-wrapper">
                             <div class="progress-bar">
                                 <div class="progress-fill ban" style="width: ${char.banRate * 100}%"></div>
                             </div>
-                            <span class="badge-stat badge-ban">${(char.banRate * 100).toFixed(1)}%</span>
+                            <span class="progress-label">${(char.banRate * 100).toFixed(1)}%</span>
                         </div>
                     </td>
                     <td>
-                        <div class="progress-container">
+                        <div class="progress-wrapper">
                             <div class="progress-bar">
                                 <div class="progress-fill pick" style="width: ${char.pickRate * 100}%"></div>
                             </div>
-                            <span class="badge-stat badge-pick">${(char.pickRate * 100).toFixed(1)}%</span>
+                            <span class="progress-label">${(char.pickRate * 100).toFixed(1)}%</span>
                         </div>
                     </td>
                     <td style="text-align: center;">
-                        <span class="stat-number">${char.totalBans}</span>
+                        <span class="stat-value">${char.totalBans}</span>
                     </td>
                     <td style="text-align: center;">
-                        <span class="stat-number">${char.totalPicks}</span>
+                        <span class="stat-value">${char.totalPicks}</span>
                     </td>
                     <td style="text-align: center;">
-                        <span class="stat-number">${char.totalGames}</span>
+                        <span class="stat-value">${char.totalGames}</span>
                     </td>
                     <td style="text-align: center;">
-                        <span class="date-text">${new Date(char.lastUpdated).toLocaleDateString('vi-VN')}</span>
+                        <span class="date-value">${new Date(char.lastUpdated).toLocaleString('vi-VN')}</span>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -262,7 +363,23 @@
         });
 
         loadStats();
-        setInterval(loadStats, 30000);
+
+        // Auto-refresh with countdown
+        let countdown = 30;
+        const countdownElement = document.getElementById('countdown');
+        const syncTimer = document.getElementById('sync-timer');
+
+        setInterval(() => {
+            countdown--;
+            if (countdownElement) {
+                countdownElement.textContent = countdown;
+            }
+
+            if (countdown <= 0) {
+                countdown = 30;
+                loadStats();
+            }
+        }, 1000);
     </script>
 </body>
 

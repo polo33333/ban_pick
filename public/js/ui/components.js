@@ -13,7 +13,7 @@ async function loadChampionStats() {
         const response = await fetch('/api/stats');
         const data = await response.json();
         championStatsData = data.characters;
-        console.log('Champion stats loaded successfully');
+        // console.log('Champion stats loaded successfully');
     } catch (error) {
         console.error('Failed to load champion stats:', error);
         championStatsData = null;
