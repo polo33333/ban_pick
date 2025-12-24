@@ -417,10 +417,10 @@ function initLuckyWheel() {
             // Winner is determined by wheel position + INITIAL order
             if (winningAngle >= 0 && winningAngle < 180) {
                 winner = p1Name;
-                winnerPlayerId = initialWheelPlayerOrder[0];
+                winnerPlayerId = initialWheelPlayerOrder ? initialWheelPlayerOrder[0] : null;
             } else {
                 winner = p2Name;
-                winnerPlayerId = initialWheelPlayerOrder[1];
+                winnerPlayerId = initialWheelPlayerOrder ? initialWheelPlayerOrder[1] : null;
             }
 
             // Show winner name only - no color change
