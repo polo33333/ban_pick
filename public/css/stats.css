@@ -352,7 +352,7 @@ body {
 /* Charts Section */
 .charts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--spacing-lg);
     margin-bottom: var(--spacing-xl);
     animation: fadeInUp 0.4s ease-out 0.2s both;
@@ -365,6 +365,7 @@ body {
     padding: var(--spacing-xl);
     box-shadow: var(--shadow-sm);
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
 .chart-card:hover {
@@ -390,6 +391,14 @@ body {
 .chart-container {
     position: relative;
     height: 300px;
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+}
+
+.chart-container canvas {
+    max-width: 100% !important;
+    width: 100% !important;
 }
 
 /* Table Section */
@@ -707,6 +716,24 @@ body {
 }
 
 /* Responsive Design */
+@media (max-width: 1200px) {
+    .charts-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 900px;
+    }
+}
+
 @media (max-width: 1024px) {
     .sidebar {
         transform: translateX(-100%);
@@ -721,11 +748,47 @@ body {
     }
 
     .kpi-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 
     .charts-grid {
         grid-template-columns: 1fr;
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    .data-table {
+        min-width: 800px;
+    }
+}
+
+@media (max-width: 900px) {
+    .content-wrapper {
+        padding: var(--spacing-lg);
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-md);
+    }
+
+    .charts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .chart-container {
+        height: 280px;
+        width: 100%;
+    }
+
+    .table-section {
+        padding: var(--spacing-lg);
+    }
+
+    .data-table {
+        min-width: 750px;
     }
 }
 
@@ -752,7 +815,8 @@ body {
     }
 
     .chart-container {
-        height: 250px;
+        height: 260px;
+        width: 100%;
     }
 
     .kpi-card {
