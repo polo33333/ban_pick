@@ -24,6 +24,50 @@
         ],
         "player2": []
       }
+    },
+    {
+      "sessionId": "1766566588467-6095hwp75",
+      "timestamp": "2025-12-24T08:56:28.467Z",
+      "roomId": "WYK836",
+      "players": {
+        "player1": {
+          "id": "2PAf8XVOQdVmaZgEAAAD",
+          "name": "Nguyễn Văn Anh"
+        },
+        "player2": {
+          "id": "Hmq2SrNiFHXRk5k8AAAF",
+          "name": "Nguyễn Văn Em"
+        }
+      },
+      "bans": [
+        "Augusta",
+        "Iuno",
+        "Zani",
+        "Phrolova"
+      ],
+      "picks": {
+        "player1": [
+          "Lupa",
+          "Brant",
+          "Chisa",
+          "Phoebe",
+          "Changli",
+          "Carlotta",
+          "Xiangli Yao",
+          "Verina"
+        ],
+        "player2": [
+          "Galbrena",
+          "Qiuyuan",
+          "Cartethyia",
+          "Ciaccona",
+          "Shorekeeper",
+          "Cantarella",
+          "Jinhsi",
+          "Roccia",
+          "Zhezhi"
+        ]
+      }
     }
   ],
   "characters": {
@@ -49,20 +93,220 @@
     },
     "Verina": {
       "totalBans": 0,
+      "totalPicks": 2,
+      "totalGames": 2,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Augusta": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-24T08:56:28.467Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Iuno": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-24T08:56:28.467Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Lupa": {
+      "totalBans": 0,
       "totalPicks": 1,
       "totalGames": 1,
       "banRate": 0,
       "pickRate": 1,
       "lastBanned": null,
-      "lastPicked": "2025-12-21T09:40:23.990Z",
-      "lastUpdated": "2025-12-21T09:40:23.990Z"
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Galbrena": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Qiuyuan": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Brant": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Chisa": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Cartethyia": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Ciaccona": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Phoebe": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Zani": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-24T08:56:28.467Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Phrolova": {
+      "totalBans": 1,
+      "totalPicks": 0,
+      "totalGames": 1,
+      "banRate": 1,
+      "pickRate": 0,
+      "lastBanned": "2025-12-24T08:56:28.467Z",
+      "lastPicked": null,
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Shorekeeper": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Changli": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Carlotta": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Cantarella": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Jinhsi": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Xiangli Yao": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Roccia": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
+    },
+    "Zhezhi": {
+      "totalBans": 0,
+      "totalPicks": 1,
+      "totalGames": 1,
+      "banRate": 0,
+      "pickRate": 1,
+      "lastBanned": null,
+      "lastPicked": "2025-12-24T08:56:28.467Z",
+      "lastUpdated": "2025-12-24T08:56:28.467Z"
     }
   },
   "metadata": {
-    "totalGames": 1,
-    "totalSessions": 1,
+    "totalGames": 2,
+    "totalSessions": 2,
     "firstSession": "2025-12-21T09:40:23.990Z",
-    "lastSession": "2025-12-21T09:40:23.990Z",
-    "lastUpdated": "2025-12-21T09:40:23.990Z"
+    "lastSession": "2025-12-24T08:56:28.467Z",
+    "lastUpdated": "2025-12-24T08:56:28.467Z"
   }
 }

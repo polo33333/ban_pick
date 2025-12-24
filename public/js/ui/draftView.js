@@ -139,6 +139,7 @@ export function initializeDraftView() {
         // Hide countdown immediately after lock-in (will be updated by server if needed)
         if (DOM.countdownSvg) {
             DOM.countdownSvg.style.display = 'none';
+            DOM.countdownNumber.style.display = 'none';
         }
     };
 
@@ -346,6 +347,7 @@ export function handleDraftFinished(data) {
     // Hide countdown SVG when draft is complete
     if (DOM.countdownSvg) {
         DOM.countdownSvg.style.display = 'none';
+        DOM.countdownNumber.style.display = 'none';
     }
 
     //console.log("DRAFT COMPLETE", data);

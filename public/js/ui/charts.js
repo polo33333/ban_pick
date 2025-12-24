@@ -43,7 +43,7 @@ function createCharts(characters) {
                     'rgba(124, 58, 237, 1)',
                     'rgba(219, 39, 119, 1)'
                 ],
-                borderWidth: 2
+                borderWidth: 3
             }]
         },
         options: {
@@ -81,7 +81,7 @@ function createCharts(characters) {
         }
     });
 
-    // Pick Chart - Bar Chart
+    // Pick Chart - Bar Chart with different colors for each bar
     window.pickChart = new Chart(document.getElementById('pickChart').getContext('2d'), {
         type: 'bar',
         data: {
@@ -89,8 +89,30 @@ function createCharts(characters) {
             datasets: [{
                 label: 'Pick Count',
                 data: topPicked.map(c => c.totalPicks),
-                backgroundColor: 'rgba(59, 130, 246, 0.8)',
-                borderColor: 'rgba(37, 99, 235, 1)',
+                backgroundColor: [
+                    'rgba(239, 68, 68, 0.8)',   // Red
+                    'rgba(249, 115, 22, 0.8)',  // Orange
+                    'rgba(245, 158, 11, 0.8)',  // Amber
+                    'rgba(234, 179, 8, 0.8)',   // Yellow
+                    'rgba(132, 204, 22, 0.8)',  // Lime
+                    'rgba(34, 197, 94, 0.8)',   // Green
+                    'rgba(20, 184, 166, 0.8)',  // Teal
+                    'rgba(59, 130, 246, 0.8)',  // Blue
+                    'rgba(139, 92, 246, 0.8)',  // Purple
+                    'rgba(236, 72, 153, 0.8)'   // Pink
+                ],
+                borderColor: [
+                    'rgba(220, 38, 38, 1)',
+                    'rgba(234, 88, 12, 1)',
+                    'rgba(217, 119, 6, 1)',
+                    'rgba(202, 138, 4, 1)',
+                    'rgba(101, 163, 13, 1)',
+                    'rgba(22, 163, 74, 1)',
+                    'rgba(13, 148, 136, 1)',
+                    'rgba(37, 99, 235, 1)',
+                    'rgba(124, 58, 237, 1)',
+                    'rgba(219, 39, 119, 1)'
+                ],
                 borderWidth: 1,
                 borderRadius: 6
             }]

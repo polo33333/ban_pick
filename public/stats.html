@@ -34,7 +34,7 @@
                         <i class="bi bi-arrow-repeat"></i>
                         <span>Đang đồng bộ...</span>
                     </div>
-                    <div id="sync-timer" class="sync-timer">
+                    <div id="sync-timer" class="sync-timer" style="display: none;">
                         <i class="bi bi-clock"></i>
                         <span>Đồng bộ sau <strong id="countdown">30</strong>s</span>
                     </div>
@@ -292,17 +292,14 @@
                 row.style.animation = `fadeInUp 0.4s ease-out ${index * 0.03}s both`;
 
                 let rankClass = 'default';
-                let rankIcon = index + 1;
                 if (index === 0) {
                     rankClass = 'gold';
-                    rankIcon = '<i class="bi bi-trophy-fill"></i>';
                 } else if (index === 1) {
                     rankClass = 'silver';
-                    rankIcon = '<i class="bi bi-award-fill"></i>';
                 } else if (index === 2) {
                     rankClass = 'bronze';
-                    rankIcon = '<i class="bi bi-star-fill"></i>';
                 }
+                let rankIcon = index + 1;
 
                 row.innerHTML = `
                     <td style="text-align: center;">
