@@ -1,6 +1,7 @@
 import { DOM } from '../constants.js';
 import { state } from '../state.js';
 import { emitConfirmPreDraft, emitPreDraftSelect } from '../services/socket.js';
+import { debounce } from '../utils/debounce.js';
 
 // Logic cho màn hình chọn tướng không sở hữu
 function truncateNameNoDot(name, maxLength = 18) {
@@ -63,13 +64,13 @@ export function initializePreDraftView() {
     DOM.confirmPreDraftBtn.onclick = emitConfirmPreDraft;
 
     if (DOM.preDraftSearchInput) {
-        DOM.preDraftSearchInput.addEventListener('input', (e) => {
+        DOM.preDraftSearchInput.addEventListener('input', debounce((e) => {
             const value = e.target.value;
             renderPreDraftChampionGrid(value);
             if (DOM.preDraftClearSearchBtn) {
                 DOM.preDraftClearSearchBtn.style.display = value ? 'block' : 'none';
             }
-        });
+        }, 200)); // 200ms debounce
     }
 
     if (DOM.preDraftClearSearchBtn) {

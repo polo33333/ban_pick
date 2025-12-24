@@ -1,6 +1,7 @@
 import { DOM } from '../constants.js';
 import { emitJoinRoom } from '../services/socket.js';
 import { showWarning } from './toast.js';
+import { copyToClipboard, pasteFromClipboard, showButtonFeedback } from '../utils/domHelpers.js';
 
 // Logic cho màn hình đăng nhập
 function generateRandomId(length = 6) {
@@ -139,36 +140,19 @@ export function initializeLoginView() {
                 // Copy for host
                 const roomId = DOM.roomIdInput.value;
                 if (roomId) {
-                    try {
-                        await navigator.clipboard.writeText(roomId);
-                        // Visual feedback
-                        const originalIcon = actionBtn.innerHTML;
-                        actionBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
-                        setTimeout(() => {
-                            actionBtn.innerHTML = originalIcon;
-                        }, 2000);
-                    } catch (err) {
-                        console.error('Failed to copy: ', err);
-                        showWarning('Không thể copy ID phòng!');
-                    }
+                    await copyToClipboard(
+                        roomId,
+                        actionBtn,
+                        () => showWarning('Không thể copy ID phòng!')
+                    );
                 }
             } else {
                 // Paste for player
-                try {
-                    const text = await navigator.clipboard.readText();
-                    if (text) {
-                        DOM.roomIdInput.value = text.trim();
-                        // Visual feedback
-                        const originalIcon = actionBtn.innerHTML;
-                        actionBtn.innerHTML = '<i class="bi bi-check-lg"></i>';
-                        setTimeout(() => {
-                            actionBtn.innerHTML = originalIcon;
-                        }, 2000);
-                    }
-                } catch (err) {
-                    console.error('Failed to paste: ', err);
-                    showWarning('Không thể paste! Vui lòng cho phép quyền truy cập clipboard.');
-                }
+                await pasteFromClipboard(
+                    DOM.roomIdInput,
+                    actionBtn,
+                    () => showWarning('Không thể paste! Vui lòng cho phép quyền truy cập clipboard.')
+                );
             }
         };
     }

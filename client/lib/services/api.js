@@ -1,5 +1,5 @@
 import { state } from '../state.js';
-import { renderChampionGrid, preloadSplashArts } from '../ui/components.js';
+import { renderChampionGrid, preloadSplashArts } from '../ui/uiHelpers.js';
 
 // function lazyLoadMainBackground() { ... } // Removed in favor of CSS background
 

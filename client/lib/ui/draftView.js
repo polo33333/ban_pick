@@ -1,11 +1,13 @@
 import { DOM, CONSTANTS, CONFIG } from '../constants.js';
 import { state } from '../state.js';
 import { emitSwapTeams, emitStartDraft, emitKickPlayer, emitCloseRoom, emitTogglePause, emitSetCountdown, emitSelectChamp } from '../services/socket.js';
-import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './components.js';
+import { truncateName, updateSplashArt, setupInitialSlots, renderChampionGrid } from './uiHelpers.js';
 import { handlePreDraftPhase } from './preDraftView.js';
 import { updateWheelNames, enterFullscreen } from './settings.js';
 import { showChatButton } from './chat.js';
 import { showWarning, showError, showInfo, showConfirm } from './toast.js';
+import { debounce } from '../utils/debounce.js';
+import { updatePlayerStatus, updatePlayerTurnInfo } from '../utils/domHelpers.js';
 
 
 // Web Worker will handle countdown timing
@@ -73,15 +75,15 @@ export function initializeDraftView() {
         }
     }
 
-    // Search Input
+    // Search Input - Debounced for better performance
     if (DOM.champSearchInput) {
-        DOM.champSearchInput.oninput = () => {
+        DOM.champSearchInput.oninput = debounce(() => {
             currentFilters.query = DOM.champSearchInput.value.trim().toLowerCase();
             if (DOM.clearSearchBtn) {
                 DOM.clearSearchBtn.style.display = currentFilters.query.length > 0 ? 'block' : 'none';
             }
             applyFilters();
-        };
+        }, 200); // 200ms debounce
     }
 
     if (DOM.clearSearchBtn) {
@@ -191,7 +193,7 @@ export function initializeDraftView() {
         window.isRoomIdHidden = !window.isRoomIdHidden;
         // Re-render status to update ID visibility
         if (state.currentRoomState) {
-            updatePlayerStatus(state.currentRoomState);
+            updateRoomIdDisplay(state.currentRoomState);
         }
     };
 }
@@ -286,7 +288,7 @@ export function handleRoomStateUpdate(room) {
 
     // Update UI elements
     updateHostControls(room);
-    updatePlayerStatus(room);
+    updateRoomIdDisplay(room);
     updateTeamNames(room);
     updatePreDraftDisplay(room);
     updateDisabledChamps(room);
@@ -503,7 +505,7 @@ function updateHostControls(room) {
     }
 }
 
-function updatePlayerStatus(room) {
+function updateRoomIdDisplay(room) {
     const roomIdDisplay = window.isRoomIdHidden ? '******' : state.myRoom;
     const eyeIcon = window.isRoomIdHidden ? 'bi-eye-slash-fill' : 'bi-eye-fill';
 
@@ -558,45 +560,22 @@ function updateTeamNames(room) {
 
         // Update status indicator
         const p1Card = document.querySelector('#player1-container .player-info-card');
-        const p1StatusIndicator = p1Card?.querySelector('.player-status-indicator');
-        if (p1StatusIndicator) {
-            p1StatusIndicator.classList.toggle('online', p1Connected);
-            p1StatusIndicator.classList.toggle('offline', !p1Connected);
-            p1StatusIndicator.title = p1Connected ? 'Online' : 'Offline';
-        }
+        updatePlayerStatus(p1Card, p1Connected);
 
         // Update turn info and active state
         const p1TurnInfo = document.getElementById('player1-turn-info');
-        if (p1TurnInfo) {
-            const turn = room.nextTurn;
-            const isMyTurn = turn && turn.team === playerOrder[0];
+        const turn = room.nextTurn;
+        const isP1Turn = turn && turn.team === playerOrder[0];
 
-            // Toggle active-turn class for card animation
-            if (p1Card) {
-                p1Card.classList.toggle('active-turn', isMyTurn);
-            }
-
-            // Toggle active-turn class for stat-item blinking animation
-            p1TurnInfo.classList.toggle('active-turn', isMyTurn);
-
-            if (isMyTurn) {
-                const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
-                const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                const color = turn.type === 'ban' ? '#deef44ff' : '#10b981';
-
-                p1TurnInfo.innerHTML = `
-                    <i class="${icon}" style="color: ${color}"></i>
-                    <span style="color: ${color}; font-weight: 800;">${turnType}</span>
-                `;
-                p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
-            } else {
-                p1TurnInfo.innerHTML = `
-                    <i class="bi bi-unlock2-fill"></i>
-                    <span>...</span>
-                `;
-                p1TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
-            }
+        // Toggle active-turn class for card animation
+        if (p1Card) {
+            p1Card.classList.toggle('active-turn', isP1Turn);
         }
+
+        updatePlayerTurnInfo(p1TurnInfo, {
+            isMyTurn: isP1Turn,
+            turnType: turn?.type
+        });
     }
 
     // Update Player 2 (Team Red - Position 1)
@@ -617,45 +596,22 @@ function updateTeamNames(room) {
 
         // Update status indicator
         const p2Card = document.querySelector('#player2-container .player-info-card');
-        const p2StatusIndicator = p2Card?.querySelector('.player-status-indicator');
-        if (p2StatusIndicator) {
-            p2StatusIndicator.classList.toggle('online', p2Connected);
-            p2StatusIndicator.classList.toggle('offline', !p2Connected);
-            p2StatusIndicator.title = p2Connected ? 'Online' : 'Offline';
-        }
+        updatePlayerStatus(p2Card, p2Connected);
 
         // Update turn info and active state
         const p2TurnInfo = document.getElementById('player2-turn-info');
-        if (p2TurnInfo) {
-            const turn = room.nextTurn;
-            const isMyTurn = turn && turn.team === playerOrder[1];
+        const turn = room.nextTurn;
+        const isP2Turn = turn && turn.team === playerOrder[1];
 
-            // Toggle active-turn class for card animation
-            if (p2Card) {
-                p2Card.classList.toggle('active-turn', isMyTurn);
-            }
-
-            // Toggle active-turn class for stat-item blinking animation
-            p2TurnInfo.classList.toggle('active-turn', isMyTurn);
-
-            if (isMyTurn) {
-                const turnType = turn.type === 'ban' ? 'Banning' : 'Picking';
-                const icon = turn.type === 'ban' ? 'bi-x-circle-fill' : 'bi-check-circle-fill';
-                const color = turn.type === 'ban' ? '#deef44ff' : '#10b981';
-
-                p2TurnInfo.innerHTML = `
-                    <i class="${icon}" style="color: ${color}"></i>
-                    <span style="color: ${color}; font-weight: 800;">${turnType}</span>
-                `;
-                p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.2)';
-            } else {
-                p2TurnInfo.innerHTML = `
-                    <i class="bi bi-unlock2-fill"></i>
-                    <span>...</span>
-                `;
-                p2TurnInfo.style.background = 'rgba(255, 255, 255, 0.1)';
-            }
+        // Toggle active-turn class for card animation
+        if (p2Card) {
+            p2Card.classList.toggle('active-turn', isP2Turn);
         }
+
+        updatePlayerTurnInfo(p2TurnInfo, {
+            isMyTurn: isP2Turn,
+            turnType: turn?.type
+        });
     }
 }
 
@@ -664,7 +620,7 @@ let countdownWorker = null;
 
 function initCountdownWorker() {
     if (!countdownWorker) {
-        countdownWorker = new Worker('/js/workers/countdownWorker.js');
+        countdownWorker = new Worker('/lib/workers/countdownWorker.js');
 
         countdownWorker.onmessage = function (e) {
             const { type, data } = e.data;

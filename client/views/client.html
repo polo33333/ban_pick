@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Cấm Chọn Wuwa</title>
+  <link rel="stylesheet" href="/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
+  <link rel="icon" href="/assets/app.ico">
+  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/login.css">
+
+  <script src="/js/socket.io.min.js"></script>
+  <!-- Embed spine-webgl runtime (single canvas, single context) -->
+  <!-- <script src="/js/spine-webgl.min.js"></script> -->
+  <script src="/js/spine-webgl-4.2.43.min.js"></script>
+  <!-- <script src="https://unpkg.com/@esotericsoftware/spine-player@4.2.43/dist/iife/spine-player.min.js"></script> -->
+</head>
+
+<body class="bg-light">
+  <div id="main-background"></div>
+
+
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <!-- <h2 class="loading-title">Cấm-Chọn Wuwa</h2> -->
+      <p class="loading-text">Đang tải...</p>
+      <div class="loading-progress-bar">
+        <div id="loading-progress" class="loading-progress-fill"></div>
+      </div>
+      <p id="loading-percentage" class="loading-percentage">0%</p>
+    </div>
+  </div>
+
+  <!-- Ban/Pick Transition Loading (minimal - icon only) -->
+  <div id="ban-pick-loading" style="display: none;">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+    </div>
+  </div>
+  <!-- <div id="player" style="width:100%;height:100%;"></div>
+  <script>
+    new spine.SpinePlayer("player", {
+      atlasUrl: "/live2d/Zhezhi.atlas",
+      jsonUrl: "/live2d/Zhezhi.json",
+      textureUrl: "/live2d/Zhezhi.webp",
+      alpha: true,
+      premultipliedAlpha: false,
+      preserveDrawingBuffer: true,
+      fixAtlasScale: true,
+      animation: "idle",
+      loop: true,
+      showControls: false,
+      showLoading: false,
+      backgroundColor: "#00000000",
+      interactive: false,
+    });
+  </script> -->
+
+  <!-- Login View -->
+  <div id="login-view" class="container mt-5" style="max-width: 500px; display: none;"></div>
+  <!-- Draft View -->
+  <div id="draft-view" class="container mt-3" style="display: none;">
+    <!-- Host Controls Offcanvas -->
+    <button id="host-controls-toggle"
+      class="btn glass-toggle-btn position-fixed top-0 end-0 m-3 rounded-circle d-flex justify-content-center align-items-center d-none"
+      type="button" data-bs-toggle="offcanvas" data-bs-target="#host-controls-panel" aria-controls="host-controls-panel"
+      style="z-index: 1050;" aria-label="Bảng điều khiển">
+      <i class="bi bi-gear-fill fs-5 text-white"></i>
+    </button>
+
+    <!-- Host Controls Panel (loaded from /components/host-controls.html) -->
+    <div id="host-controls-container"></div>
+
+    <!-- <div id="player-status" class="text-center" role="alert"></div> -->
+
+    <div id="first-pick-status" class="text-center" style="font-weight: bold; color: white;"></div>
+
+    <!-- Pre-Draft Selection View -->
+    <div id="pre-draft-selection-view" style="display: none;"></div>
+
+    <div id="teams-container" class="row align-items-start"></div>
+  </div>
+  <!-- Chat Widget (loaded from /components/chat-widget.html) -->
+  <div id="chat-widget-container"></div>
+
+  <!-- Developer Credit Footer -->
+  <div id="developer-footer" class="position-fixed bottom-0 start-0 w-100 text-center pb-3" style="z-index: 1000;">
+    <div class="text-white-50" style="font-size: 0.75rem;">
+      Development by <strong style="color: rgba(255, 255, 255, 0.9);">KDONE</strong>
+    </div>
+    <div class="text-center text-white-50" style="font-size: 0.8rem;">
+      Version 1.2.2
+    </div>
+  </div>
+
+  </div>
+  <script src="/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/lib/app.js"></script>
+</body>
+
+</html>

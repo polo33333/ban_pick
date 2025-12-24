@@ -19,10 +19,12 @@ const __dirname = path.dirname(__filename);
 
 // 2. Serve large static files (images) BEFORE compression to avoid conflicts/overhead
 // This ensures that images are served directly by express.static without any compression logic touching them.
-app.use('/assets', express.static(path.join(__dirname, 'public', 'assets')));
-app.use('/icon', express.static(path.join(__dirname, 'public', 'icon')));
-app.use('/background', express.static(path.join(__dirname, 'public', 'background')));
-app.use('/live2d', express.static(path.join(__dirname, 'public', 'live2d')));
+app.use('/assets', express.static(path.join(__dirname, 'client', 'assets')));
+// Legacy paths for backward compatibility (redirect to new paths)
+app.use('/icon', express.static(path.join(__dirname, 'client', 'assets', 'icons')));
+app.use('/background', express.static(path.join(__dirname, 'client', 'assets', 'backgrounds')));
+app.use('/element', express.static(path.join(__dirname, 'client', 'assets', 'elements')));
+app.use('/live2d', express.static(path.join(__dirname, 'client', 'assets', 'live2d')));
 
 // 3. Compression middleware (now only affects things below it)
 // 🛠️ Chỉ nén JSON/HTML, không nén ảnh
@@ -37,7 +39,7 @@ app.use(
 );
 
 // 4. Serve the rest of public (CSS, JS, HTML) - these WILL be compressed
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'client')));
 
 // ---- Khi client kết nối ----
 io.on("connection", socket => {
@@ -79,13 +81,13 @@ app.get("/api/stats", async (req, res) => {
   }
 });
 
-// ---- Serve statistics page ----
-app.get("/stats", (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'stats.html'));
+// ---- Serve UI test ----
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'views', 'client.html'));
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "client.html"));
+app.get('/stats', (req, res) => {
+  res.sendFile(path.join(__dirname, 'client', 'views', 'stats.html'));
 });
 
 server.listen(PORT, () =>

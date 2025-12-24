@@ -1,5 +1,6 @@
 import { rooms, createRoom, deleteRoom, getSafeRoomState } from "./roomManager.js";
 import { generateDraftOrder, startCountdown, resumeCountdown, nextTurn } from "./gameLogic.js";
+import { updateTeamId, validateHostPermission, validateDraftState, calculateRemainingTime } from "./utils/helpers.js";
 
 let ioInstance;
 
@@ -99,14 +100,13 @@ function handlePlayerJoin(socket, room, playerName) {
         console.log(`Player ${playerName} reconnected. Mapping ${oldSocketId} to ${newSocketId}`);
 
         // Cập nhật các cấu trúc dữ liệu với socket.id mới
-        const updateId = (obj) => { if (obj && obj.team === oldSocketId) obj.team = newSocketId; };
         room.playerOrder = room.playerOrder.map(id => (id === oldSocketId ? newSocketId : id));
         room.players[newSocketId] = room.playerHistory[oldSocketId];
         delete room.playerHistory[oldSocketId];
         room.playerHistory[newSocketId] = room.players[newSocketId];
-        room.draftOrder.forEach(updateId);
-        room.actions.forEach(updateId);
-        updateId(room.nextTurn);
+        room.draftOrder.forEach(obj => updateTeamId(obj, oldSocketId, newSocketId));
+        room.actions.forEach(obj => updateTeamId(obj, oldSocketId, newSocketId));
+        updateTeamId(room.nextTurn, oldSocketId, newSocketId);
         if (room.preDraftSelections?.[oldSocketId]) {
             room.preDraftSelections[newSocketId] = room.preDraftSelections[oldSocketId];
             delete room.preDraftSelections[oldSocketId];
@@ -132,18 +132,13 @@ function handlePlayerJoin(socket, room, playerName) {
 
 function handleSwapTeams(socket, { roomId }) {
     const room = rooms[roomId];
-    if (!room || room.hostId !== socket.id) return;
+    if (!validateHostPermission(room, socket.id)) return;
 
-    // Only allow swap when:
-    // 1. Have 2 players
-    // 2. Draft hasn't started yet (draftOrder.length === 0)
-    if (room.playerOrder.length !== 2) {
-        return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi." });
-    }
-
-    if (room.draftOrder.length > 0) {
-        return socket.emit("draft-error", { message: "Không thể đổi vị trí khi đã bắt đầu draft." });
-    }
+    // Validate: need 2 players and draft not started
+    if (!validateDraftState(room, socket, {
+        requireTwoPlayers: true,
+        requireDraftNotStarted: true
+    })) return;
 
     // Swap positions in playerOrder (Blue <-> Red)
     [room.playerOrder[0], room.playerOrder[1]] = [room.playerOrder[1], room.playerOrder[0]];
@@ -153,20 +148,14 @@ function handleSwapTeams(socket, { roomId }) {
 
 function handleStartDraft(socket, { roomId }) {
     const room = rooms[roomId];
-    if (!room || room.hostId !== socket.id) return;
+    if (!validateHostPermission(room, socket.id)) return;
 
-    // Only allow start when in drafting state, have 2 players, and draft hasn't started
-    if (room.state !== 'drafting') {
-        return socket.emit("draft-error", { message: "Chưa sẵn sàng để bắt đầu draft." });
-    }
-
-    if (room.playerOrder.length !== 2) {
-        return socket.emit("draft-error", { message: "Cần có đủ 2 người chơi." });
-    }
-
-    if (room.draftOrder.length > 0) {
-        return socket.emit("draft-error", { message: "Draft đã bắt đầu rồi." });
-    }
+    // Validate: must be in drafting state, have 2 players, and draft not started
+    if (!validateDraftState(room, socket, {
+        requireState: 'drafting',
+        requireTwoPlayers: true,
+        requireDraftNotStarted: true
+    })) return;
 
     // Start draft with team-based order
     room.draftOrder = generateDraftOrder(room.playerOrder, 1);
@@ -230,7 +219,7 @@ function handleTogglePause(socket, { roomId }) {
         } else {
             // Hủy timeout hiện tại và tính thời gian còn lại
             clearTimeout(room.timer);
-            room.remainingTime = Math.max(0, room.countdownEndTime - Date.now());
+            room.remainingTime = calculateRemainingTime(room.countdownEndTime);
 
             room.paused = true;
             broadcastRoomState(roomId);
@@ -300,7 +289,7 @@ function handleDisconnect(io, socket) {
             clearTimeout(room.timer); // Hủy timeout khi người chơi thoát
 
             // TÍNH TOÁN VÀ LƯU LẠI THỜI GIAN CÒN LẠI (FIX)
-            room.remainingTime = Math.max(0, room.countdownEndTime - Date.now());
+            room.remainingTime = calculateRemainingTime(room.countdownEndTime);
             room.paused = true;
 
         }

@@ -8,8 +8,8 @@
     <link rel="icon" href="/assets/app.ico">
     <link rel="stylesheet" href="/css/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/stats.css">
-    <script src="/js/lib/chart.umd.min.js"></script>
-    <script src="/js/ui/charts.js"></script>
+    <script src="/js/chart.umd.min.js"></script>
+    <script src="/lib/ui/charts.js"></script>
 </head>
 
 <body>
@@ -362,7 +362,7 @@
         loadStats();
 
         // Auto-refresh with countdown
-        let countdown = 30;
+        let countdown = 120;
         const countdownElement = document.getElementById('countdown');
         const syncTimer = document.getElementById('sync-timer');
 
@@ -373,7 +373,7 @@
             }
 
             if (countdown <= 0) {
-                countdown = 30;
+                countdown = 120;
                 loadStats();
             }
         }, 1000);

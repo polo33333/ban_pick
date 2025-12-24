@@ -462,7 +462,7 @@ export async function updateWheelNames() {
 
     try {
         const { state } = await import('../state.js');
-        const { truncateName } = await import('./components.js');
+        const { truncateName } = await import('./uiHelpers.js');
 
         const room = state.currentRoomState;
         if (room && room.playerOrder && room.playerOrder.length >= 2) {

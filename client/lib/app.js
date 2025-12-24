@@ -4,7 +4,7 @@ import { initializeLoginView } from './ui/loginView.js';
 import { initializeDraftView } from './ui/draftView.js';
 import { initializePreDraftView } from './ui/preDraftView.js';
 import { DOM, CONFIG } from './constants.js';
-import { preloadAllSpineAnimations } from './ui/components.js';
+import { preloadAllSpineAnimations } from './ui/uiHelpers.js';
 import { initSettingsPanel } from './ui/settings.js';
 import { initChat } from './ui/chat.js';
 
@@ -88,9 +88,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadComponents() {
     const components = [
-        { id: 'login-view', url: '/components/login.html' },
-        { id: 'pre-draft-selection-view', url: '/components/pre_draft.html' },
-        { id: 'teams-container', url: '/components/ban_pick.html' }
+        { id: 'login-view', url: '/views/login.html' },
+        { id: 'pre-draft-selection-view', url: '/views/pre_draft.html' },
+        { id: 'teams-container', url: '/views/ban_pick.html' },
+        { id: 'host-controls-container', url: '/views/host-controls.html' },
+        { id: 'chat-widget-container', url: '/views/chat-widget.html' }
     ];
 
     for (const component of components) {

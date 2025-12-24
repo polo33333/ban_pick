@@ -1,6 +1,7 @@
 import { DOM, CONSTANTS, CONFIG } from '../constants.js';
 import { state } from '../state.js';
 import { emitPreSelectChamp, emitSelectChamp } from '../services/socket.js';
+import { toggleFade } from '../utils/domHelpers.js';
 
 // Chứa các hàm render các thành phần UI nhỏ, tái sử dụng được
 
@@ -37,13 +38,7 @@ function updateChampionStatsDisplay(championName) {
 
     // Hide if this champion has no stats
     if (!stats) {
-        if (statsDisplay.classList.contains('d-flex')) {
-            statsDisplay.classList.add('fade-out');
-            setTimeout(() => {
-                statsDisplay.classList.add('d-none');
-                statsDisplay.classList.remove('d-flex', 'fade-out');
-            }, 300);
-        }
+        toggleFade(statsDisplay, false);
         return;
     }
 
@@ -57,8 +52,7 @@ function updateChampionStatsDisplay(championName) {
     if (totalGamesEl) totalGamesEl.textContent = stats.totalGames;
 
     // Show stats display
-    statsDisplay.classList.remove('d-none');
-    statsDisplay.classList.add('d-flex');
+    toggleFade(statsDisplay, true);
 }
 
 // Update champion info display (element and rank)
@@ -69,13 +63,7 @@ function updateChampionInfoDisplay(charData) {
 
     // Hide if no character data
     if (!charData) {
-        if (infoDisplay.classList.contains('d-flex')) {
-            infoDisplay.classList.add('fade-out');
-            setTimeout(() => {
-                infoDisplay.classList.add('d-none');
-                infoDisplay.classList.remove('d-flex', 'fade-out');
-            }, 300);
-        }
+        toggleFade(infoDisplay, false);
         return;
     }
 
@@ -84,13 +72,7 @@ function updateChampionInfoDisplay(charData) {
 
     // Hide if no element and no rank
     if (!hasElement && !hasRank) {
-        if (infoDisplay.classList.contains('d-flex')) {
-            infoDisplay.classList.add('fade-out');
-            setTimeout(() => {
-                infoDisplay.classList.add('d-none');
-                infoDisplay.classList.remove('d-flex', 'fade-out');
-            }, 300);
-        }
+        toggleFade(infoDisplay, false);
         return;
     }
 
@@ -114,8 +96,7 @@ function updateChampionInfoDisplay(charData) {
     }
 
     // Show info display
-    infoDisplay.classList.remove('d-none');
-    infoDisplay.classList.add('d-flex');
+    toggleFade(infoDisplay, true);
 }
 
 // Load stats when module loads
