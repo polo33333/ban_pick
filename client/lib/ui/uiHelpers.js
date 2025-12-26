@@ -120,14 +120,142 @@ function ensureSpineManagerInit() {
 }
 
 // ==================== Public Preload Functions ====================
+
+// Preload character icons
+export async function preloadIcons(characters, onProgress = null) {
+    const characterList = Object.values(characters).filter(char => char.icon);
+    const total = characterList.length;
+    let loaded = 0;
+
+    const promises = characterList.map(char => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, char.en);
+                }
+                resolve();
+            };
+            img.onerror = () => {
+                console.warn(`Failed to load icon: ${char.icon}`);
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, char.en);
+                }
+                resolve();
+            };
+            img.src = char.icon;
+        });
+    });
+
+    await Promise.all(promises);
+}
+
+// Preload character backgrounds
+export async function preloadBackgrounds(characters, onProgress = null) {
+    const characterList = Object.values(characters).filter(char => char.background);
+    const total = characterList.length;
+    let loaded = 0;
+
+    const promises = characterList.map(char => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, char.en);
+                }
+                resolve();
+            };
+            img.onerror = () => {
+                console.warn(`Failed to load background: ${char.background}`);
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, char.en);
+                }
+                resolve();
+            };
+            img.src = char.background;
+        });
+    });
+
+    await Promise.all(promises);
+}
+
+// Preload element icons
+export async function preloadElements(onProgress = null) {
+    const elements = ['Glacio', 'Fusion', 'Electro', 'Aero', 'Spectro', 'Havoc'];
+    const total = elements.length;
+    let loaded = 0;
+
+    const promises = elements.map(element => {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, element);
+                }
+                resolve();
+            };
+            img.onerror = () => {
+                console.warn(`Failed to load element: ${element}`);
+                loaded++;
+                if (onProgress) {
+                    onProgress(loaded, total, element);
+                }
+                resolve();
+            };
+            img.src = `/element/${element}.webp`;
+        });
+    });
+
+    await Promise.all(promises);
+}
+
 export function preloadSpinePlayer() {
     console.log('SpineWebGL: Single context mode - preloading skeletons');
 }
 
-// Preload function - now a no-op since we use pure on-demand loading
-// Kept for backward compatibility
-export function preloadAllSpineAnimations(onProgress = null) {
-    return Promise.resolve();
+
+// Preload all Live2D spine animations
+export async function preloadAllSpineAnimations(characters, onProgress = null) {
+    if (!CONFIG.ENABLE_LIVE2D) {
+        return;
+    }
+
+    // Ensure spine manager is initialized
+    ensureSpineManagerInit();
+    const manager = getSpineManager();
+
+    // Get all characters with Live2D
+    const charactersWithLive2D = Object.values(characters).filter(
+        char => char.atlasUrl && char.jsonUrl && char.textureUrl && char.isActive !== false
+    );
+
+    const total = charactersWithLive2D.length;
+    let loaded = 0;
+
+    for (const char of charactersWithLive2D) {
+        try {
+            await manager.preloadSkeleton({
+                atlasUrl: char.atlasUrl,
+                jsonUrl: char.jsonUrl,
+                textureUrl: char.textureUrl
+            });
+            loaded++;
+            if (onProgress) {
+                onProgress(loaded, total, char.en);
+            }
+        } catch (error) {
+            console.warn(`Failed to preload Live2D for ${char.en}:`, error);
+            loaded++;
+            if (onProgress) {
+                onProgress(loaded, total, char.en);
+            }
+        }
+    }
 }
 
 // Track pending timeouts to cancel them when switching characters

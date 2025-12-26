@@ -4,7 +4,7 @@ import { initializeLoginView } from './ui/loginView.js';
 import { initializeDraftView } from './ui/draftView.js';
 import { initializePreDraftView } from './ui/preDraftView.js';
 import { DOM, CONFIG } from './constants.js';
-import { preloadAllSpineAnimations } from './ui/uiHelpers.js';
+import { preloadAllSpineAnimations, preloadIcons, preloadBackgrounds, preloadElements } from './ui/uiHelpers.js';
 import { initSettingsPanel } from './ui/settings.js';
 import { initChat } from './ui/chat.js';
 
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Calculate total steps
-        totalSteps = 3;
+        totalSteps = 7;
 
         // Step 1: Load components
         updateProgress('Đang tải giao diện...');
@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         // Step 2: Load characters data
         updateProgress('Đang tải dữ liệu tướng...');
-        await loadCharacters();
+        const characters = await loadCharacters();
         completedSteps++;
         updateProgress();
 
@@ -49,8 +49,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         completedSteps++;
         updateProgress();
 
-        // Step 4: Preload spine animations (Live2D) - chỉ khi bật
-        // Removed Spine preload step from loading screen
+        // Step 4: Preload character icons
+        updateProgress('Đang tải icons...');
+        await preloadIcons(characters, (loaded, total, name) => {
+            updateProgress(`Đang tải icons... ${loaded}/${total}`);
+        });
+        completedSteps++;
+        updateProgress();
+
+        // Step 5: Preload character backgrounds
+        updateProgress('Đang tải backgrounds...');
+        await preloadBackgrounds(characters, (loaded, total, name) => {
+            updateProgress(`Đang tải backgrounds... ${loaded}/${total}`);
+        });
+        completedSteps++;
+        updateProgress();
+
+        // Step 6: Preload element icons
+        updateProgress('Đang tải elements...');
+        await preloadElements((loaded, total, name) => {
+            updateProgress(`Đang tải elements... ${loaded}/${total}`);
+        });
+        completedSteps++;
+        updateProgress();
+
+        // Step 7: Preload Live2D animations
+        if (CONFIG.ENABLE_LIVE2D) {
+            updateProgress('Đang tải Live2D...');
+            await preloadAllSpineAnimations(characters, (loaded, total, name) => {
+                updateProgress(`Đang tải Live2D... ${loaded}/${total}`);
+            });
+        }
+        completedSteps++;
+        updateProgress();
 
         updateProgress('Hoàn tất!');
         const lastPlayerName = localStorage.getItem('lastPlayerName');

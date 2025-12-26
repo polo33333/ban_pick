@@ -22,13 +22,13 @@ export async function loadCharacters() {
         }, {});
 
         renderChampionGrid(state.uniqueCharacters);
-        // Tạm thời vô hiệu hóa preload tất cả ảnh để tránh lỗi quá tải.
-        // Bạn nên xem xét một chiến lược preload thông minh hơn,
-        // ví dụ: chỉ preload ảnh của các tướng phổ biến hoặc khi người dùng hover.
         // preloadSplashArts(state.uniqueCharacters);
         console.log("Characters loaded successfully.");
         // lazyLoadMainBackground(); // Removed
+
+        return state.characters; // Return characters for preloading
     } catch (error) {
         console.error("Failed to load characters:", error);
+        return {}; // Return empty object on error
     }
 }
