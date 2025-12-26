@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // Calculate total steps
-        totalSteps = 7;
+        totalSteps = 6;
 
         // Step 1: Load components
         updateProgress('Đang tải giao diện...');
@@ -74,14 +74,14 @@ document.addEventListener('DOMContentLoaded', async () => {
         updateProgress();
 
         // Step 7: Preload Live2D animations
-        if (CONFIG.ENABLE_LIVE2D) {
-            updateProgress('Đang tải Live2D...');
-            await preloadAllSpineAnimations(characters, (loaded, total, name) => {
-                updateProgress(`Đang tải Live2D... ${loaded}/${total}`);
-            });
-        }
-        completedSteps++;
-        updateProgress();
+        // if (CONFIG.ENABLE_LIVE2D) {
+        //     updateProgress('Đang tải Live2D...');
+        //     await preloadAllSpineAnimations(characters, (loaded, total, name) => {
+        //         updateProgress(`Đang tải Live2D... ${loaded}/${total}`);
+        //     });
+        // }
+        // completedSteps++;
+        // updateProgress();
 
         updateProgress('Hoàn tất!');
         const lastPlayerName = localStorage.getItem('lastPlayerName');
