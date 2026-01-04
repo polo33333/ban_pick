@@ -183,6 +183,12 @@ export function initializeDraftView() {
         collapseControlPanel();
     };
     window.startDraft = () => {
+        // Auto-enter fullscreen if enabled in settings
+        // MUST call BEFORE any async operations to preserve user gesture
+        if (CONFIG.AUTO_FULLSCREEN) {
+            enterFullscreen();
+        }
+
         emitStartDraft();
         collapseControlPanel();
     };
