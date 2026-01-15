@@ -200,7 +200,7 @@
     "atlasUrl": "/live2d/Mornye.atlas",
     "jsonUrl": "/live2d/Mornye.json",
     "textureUrl": "/live2d/Mornye.webp",
-    "isActive": false
+    "isActive": true
   },
   "1301": {
     "icon": "/icon/Calcharo.webp",
