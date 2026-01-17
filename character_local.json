@@ -202,6 +202,19 @@
     "textureUrl": "/live2d/Mornye.webp",
     "isActive": true
   },
+  "1210": {
+    "icon": "/icon/Aemeath.webp",
+    "background": "/background/Aemeath.webp",
+    "rank": 5,
+    "weapon": 1,
+    "element": 2,
+    "en": "Aemeath",
+    "nickname": "Aemeath",
+    "ko": "",
+    "zh-Hans": "",
+    "ja": "",
+    "isActive": false
+  },
   "1301": {
     "icon": "/icon/Calcharo.webp",
     "background": "/background/Calcharo.webp",
@@ -554,6 +567,19 @@
     "atlasUrl": "/live2d/Lynae.atlas",
     "jsonUrl": "/live2d/Lynae.json",
     "textureUrl": "/live2d/Lynae.webp",
+    "isActive": false
+  },
+  "1510": {
+    "icon": "/icon/Luuk.webp",
+    "background": "/background/Luuk.webp",
+    "rank": 5,
+    "weapon": 3,
+    "element": 5,
+    "en": "Luuk",
+    "nickname": "Luuk",
+    "ko": "",
+    "zh-Hans": "",
+    "ja": "",
     "isActive": false
   },
   "1601": {
