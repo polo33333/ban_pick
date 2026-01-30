@@ -213,6 +213,9 @@
     "ko": "",
     "zh-Hans": "",
     "ja": "",
+    "atlasUrl": "/live2d/Aemeath.atlas",
+    "jsonUrl": "/live2d/Aemeath.json",
+    "textureUrl": "/live2d/Aemeath.webp",
     "isActive": false
   },
   "1301": {
@@ -570,16 +573,19 @@
     "isActive": false
   },
   "1510": {
-    "icon": "/icon/Luuk.webp",
-    "background": "/background/Luuk.webp",
+    "icon": "/icon/Luuk Herssen.webp",
+    "background": "/background/Luuk Herssen.webp",
     "rank": 5,
     "weapon": 3,
     "element": 5,
-    "en": "Luuk",
-    "nickname": "Luuk",
+    "en": "Luuk Herssen",
+    "nickname": "Luuk Herssen",
     "ko": "",
     "zh-Hans": "",
     "ja": "",
+    "atlasUrl": "/live2d/Luuk Herssen.atlas",
+    "jsonUrl": "/live2d/Luuk Herssen.json",
+    "textureUrl": "/live2d/Luuk Herssen.webp",
     "isActive": false
   },
   "1601": {
