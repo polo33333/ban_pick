@@ -570,7 +570,7 @@
     "atlasUrl": "/live2d/Lynae.atlas",
     "jsonUrl": "/live2d/Lynae.json",
     "textureUrl": "/live2d/Lynae.webp",
-    "isActive": false
+    "isActive": true
   },
   "1510": {
     "icon": "/icon/Luuk Herssen.webp",
