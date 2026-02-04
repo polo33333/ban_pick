@@ -210,13 +210,13 @@
     "element": 2,
     "en": "Aemeath",
     "nickname": "Aemeath",
-    "ko": "",
-    "zh-Hans": "",
-    "ja": "",
+    "ko": "에메스",
+    "zh-Hans": "艾米斯",
+    "ja": "アイミス",
     "atlasUrl": "/live2d/Aemeath.atlas",
     "jsonUrl": "/live2d/Aemeath.json",
     "textureUrl": "/live2d/Aemeath.webp",
-    "isActive": false
+    "isActive": true
   },
   "1301": {
     "icon": "/icon/Calcharo.webp",
