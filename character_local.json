@@ -586,7 +586,7 @@
     "atlasUrl": "/live2d/Luuk Herssen.atlas",
     "jsonUrl": "/live2d/Luuk Herssen.json",
     "textureUrl": "/live2d/Luuk Herssen.webp",
-    "isActive": false
+    "isActive": true
   },
   "1601": {
     "icon": "/icon/Taoqi.webp",
