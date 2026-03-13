@@ -690,5 +690,21 @@
     "jsonUrl": "/live2d/Phrolova.json",
     "textureUrl": "/live2d/Phrolova.webp",
     "isActive": true
+  },
+  "1609": {
+    "icon": "/icon/Sigrika.webp",
+    "background": "/background/Sigrika.webp",
+    "rank": 5,
+    "weapon": 5,
+    "element": 6,
+    "en": "Sigrika",
+    "nickname": "Sigrika",
+    "ko": "시그리카",
+    "zh-Hans": "西格莉卡",
+    "ja": "シグリッカ",
+    "atlasUrl": "/live2d/Sigrika.atlas",
+    "jsonUrl": "/live2d/Sigrika.json",
+    "textureUrl": "/live2d/Sigrika.webp",
+    "isActive": true
   }
 }
