@@ -1970,7 +1970,8 @@ button#confirm-pre-draft-button {
 }
 
 .glass-toggle-btn {
-  background: linear-gradient(45deg, #ff357a, #fff172);
+  background: linear-gradient(135deg, #1d1925 0%, #173737 100%);
+  color: white;
   border: none;
   box-shadow: 0 0 15px rgba(255, 53, 122, 0.5);
   transition: transform 0.3s ease, opacity 0.3s ease;
