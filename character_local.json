@@ -711,7 +711,7 @@
     "icon": "/icon/Hiyuki.webp",
     "background": "/background/Hiyuki.webp",
     "rank": 5,
-    "weapon": 5,
+    "weapon": 2,
     "element": 1,
     "en": "Hiyuki",
     "nickname": "Hiyuki",
@@ -785,6 +785,38 @@
     "atlasUrl": "/live2d/Lucilla.atlas",
     "jsonUrl": "/live2d/Lucilla.json",
     "textureUrl": "/live2d/Lucilla.webp",
+    "isActive": true
+  },
+  "1615": {
+    "icon": "/icon/Xuanling.webp",
+    "background": "/background/Xuanling.webp",
+    "rank": 5,
+    "weapon": 2,
+    "element": 6,
+    "en": "Xuanling",
+    "nickname": "Xuanling",
+    "ko": "현령",
+    "zh-Hans": "玄铃",
+    "ja": "ルシーラ",
+    "atlasUrl": "/live2d/Xuanling.atlas",
+    "jsonUrl": "/live2d/Xuanling.json",
+    "textureUrl": "/live2d/Xuanling.webp",
+    "isActive": true
+  },
+  "1616": {
+    "icon": "/icon/Suisui.webp",
+    "background": "/background/Suisui.webp",
+    "rank": 5,
+    "weapon": 5,
+    "element": 1,
+    "en": "Suisui",
+    "nickname": "Suisui",
+    "ko": "수이수이",
+    "zh-Hans": "水水",
+    "ja": "スイスイ",
+    "atlasUrl": "/live2d/Suisui.atlas",
+    "jsonUrl": "/live2d/Suisui.json",
+    "textureUrl": "/live2d/Suisui.webp",
     "isActive": true
   }
 }
